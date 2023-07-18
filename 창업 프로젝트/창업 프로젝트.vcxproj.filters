@@ -18,8 +18,5 @@
     <ClCompile Include="미용실 예약 프로그.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="클릭.c">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
