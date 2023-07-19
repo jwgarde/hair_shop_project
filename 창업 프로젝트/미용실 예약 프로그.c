@@ -277,7 +277,6 @@ void box_clear() { //기본 UI 클리어 해주는 함수
 void membership() { // 회원가입 함수 
 	HideCursor();
 	int xx, yy, lr = 0;
-	int xx2, yy2, lr2 = 0;
 	char name[20] = " ";
 	char phone[20] = " ";
 	char gender[5] = " ";
@@ -322,6 +321,7 @@ void membership() { // 회원가입 함수
 	Mouse();
 	//ExClick();
 	while (1) {
+		xx = 0, yy = 0;
 		click(&xx, &yy);
 		if (xx > 38 && xx < 53) {
 			if (yy > 45 && yy < 49) {
@@ -433,6 +433,11 @@ void membership() { // 회원가입 함수
 							check = 1;
 						}
 					}
+					small_box(80, 46, 10);
+					textcolor(6);
+					goto_xy(86, 47);
+					printf("가입");
+					Sleep(500);
 					box_clear();
 					goto_xy(62, 5);
 					textcolor(6);
@@ -459,11 +464,12 @@ void membership() { // 회원가입 함수
 						all[member_count].brith = brith;
 						file_append();
 					}
-					click(&xx2, &yy2);
+					xx = 0;
+					yy = 0;
+					click(&xx, &yy);
 					while (1) {
-						printf("%d %d", xx2, yy2);
-						if (xx2 > 38 && xx2 < 53) {
-							if (yy2 > 45 && yy2 < 49) {
+						if (xx > 38 && xx < 53) {
+							if (yy > 45 && yy < 49) {
 								small_box(38, 46, 10);
 								textcolor(6);
 								goto_xy(44, 47);
@@ -472,9 +478,8 @@ void membership() { // 회원가입 함수
 								break;
 							}
 						}
-						else if (xx2 > 80 && xx2 < 95) {
-							if (yy2 > 45 && yy2 < 49) {
-								printf("%d %d", xx, yy);
+						else if (xx > 80 && xx < 95) {
+							if (yy > 45 && yy < 49) {
 								small_box(80, 46, 10);
 								textcolor(6);
 								goto_xy(85, 47);
@@ -485,6 +490,8 @@ void membership() { // 회원가입 함수
 							}
 						}
 					}
+					xx = 0;
+					yy = 0;
 					break;
 				}
 			}
@@ -494,7 +501,7 @@ void membership() { // 회원가입 함수
 void initial_screen() { // 초기화면
 	box_clear();
 	HideCursor();
-	int xx, yy, lr;
+	int xx, yy, lr = 0;
 	basic_UI();
 	big_box(57,20, 6);
 	big_box(57, 27, 6);
@@ -520,6 +527,7 @@ void initial_screen() { // 초기화면
 			if (yy > 46 && yy < 49) {
 				small_box(59, 46, 10);
 				goto_xy(63, 47);
+				textcolor(6);
 				printf("회원가입");
 				Sleep(500);
 				box_clear();
@@ -531,6 +539,7 @@ void initial_screen() { // 초기화면
 			if (yy > 46 && yy < 49) {
 				small_box(36, 46, 10);
 				goto_xy(41, 47);
+				textcolor(6);
 				printf("로그인");
 				Sleep(500);
 				box_clear();
