@@ -274,6 +274,304 @@ void box_clear() { //기본 UI 클리어 해주는 함수
 	}
 
 }
+int  member_login() { //회원 로그인 하는 부분
+	box_clear();
+	small_box(38, 46, 6);
+	small_box(80, 46, 6);
+	char phone[20] = " ";
+	char pw[15] = " ";
+	int xx, yy, lr = 0;
+	int check = 0;
+	goto_xy(62, 5);
+	textcolor(6);
+	printf("회원 로그인");
+	goto_xy(44, 47);
+	printf("이전");
+	goto_xy(85, 47);
+	printf("로그인");
+	goto_xy(53, 19);
+	printf("전화번호 11자리 ex) 010xxxxxxxx ");
+	goto_xy(53, 21);
+	printf(":");
+	goto_xy(53, 28);
+	printf("비밀번호(숫자 4자리) ex) 0000");
+	goto_xy(53, 30);
+	printf(":");
+	//ExClick();
+	while (1) {
+		xx = 0, yy = 0;
+		click(&xx, &yy);
+		if (xx > 38 && xx < 53) {
+			if (yy > 45 && yy < 49) {
+				small_box(38, 46, 10);
+				textcolor(6);
+				goto_xy(44, 47);
+				printf("이전");
+				Sleep(500);
+				break;
+			}
+		}
+		if (xx > 53 && xx < 85) {
+			if (yy > 19 && yy < 23) {
+				textcolor(6);
+				goto_xy(55, 21);
+				printf("                                 ");
+				goto_xy(55, 21);
+				EnableConsoleCursor();
+				scanf("%s", phone);
+				HideCursor();
+				check = isValidPhone_or_pw_Number(phone, 1);
+				if (check == 0) {
+					strcpy(phone, " ");
+					goto_xy(55, 21);
+					printf("형식이 올바르지 않습니다..");
+				}
+
+			}
+		}
+		if (xx > 53 && xx < 85) {
+			if (yy > 28 && yy < 32) {
+				textcolor(6);
+				goto_xy(55, 30);
+				printf("                                 ");
+				goto_xy(55, 30);
+				EnableConsoleCursor();
+				char ch;
+				int i = 0;
+				while (1) {
+					ch = _getch();
+
+					// Check if Enter key is pressed (ASCII value 13)
+					if (ch == 13) {
+						pw[i] = '\0'; // Null-terminate the password string
+						break;
+					}
+
+					// Check if the input is a printable character (ASCII range 32 to 126)
+					if (ch == 8 && i > 0) { // Backspace (ASCII value 8)
+						i--;
+						printf("\b \b"); // Move the cursor back, print space to erase the last character, move the cursor back again
+					}
+					else if (ch >= 32 && ch <= 126 && i < 4) { // Printable characters (ASCII range 32 to 126)
+						printf("*");
+						pw[i] = ch; // Store the character in the password array
+						i++;
+					}
+				}
+				HideCursor();
+				check = isValidPhone_or_pw_Number(pw, 2);
+				if (check == 0) {
+					strcpy(pw, " ");
+					goto_xy(55, 30);
+					printf("형식이 올바르지 않습니다..");
+				}
+			}
+		}
+		if (xx > 80 && xx < 95) {
+			if (yy > 45 && yy < 49) {
+				if (strcmp(pw, " ") != 0 && strcmp(phone, " ") != 0) {
+					small_box(80, 46, 10);
+					textcolor(6);
+					goto_xy(85, 47);
+					printf("로그인");
+					check = -1;
+					for (int i = 0; i < member_count; i++) {
+						if (strcmp(all[i].phone, phone) == 0 && strcmp(all[i].pw, pw) == 0) {
+							check = i;
+							break;
+						}
+					}
+					Sleep(500);
+					if (check >= 0) {
+						return 1;
+					}
+					else {
+						small_box(80, 46, 6);
+						textcolor(6);
+						goto_xy(85, 47);
+						printf("로그인");
+						goto_xy(49, 40);
+						textcolor(4);
+						printf("전화번호 혹은 비밀번호를 찾을 수 없습니다.");
+					}
+				}
+
+			}
+		}
+	}
+
+}
+void login_menu_choice() { // 로그인 선택 하는 부분 (회원 관리자 디자이너)
+	int xx, yy, lr = 0;
+	int choice = 0;
+	int check = 0;
+	//ExClick();
+	while (1) {
+		box_clear();
+		big_box(57, 15, 6);
+		big_box(57, 23, 6);
+		big_box(57, 31, 6);
+		small_box(38, 46, 6);
+		small_box(80, 46, 6);
+		goto_xy(64, 5);
+		textcolor(6);
+		printf("로그인");
+		goto_xy(66, 17);
+		printf("회원");
+		goto_xy(64, 25);
+		printf("디자이너");
+		goto_xy(65, 33);
+		printf("관리자");
+		goto_xy(44, 47);
+		printf("이전");
+		goto_xy(86, 47);
+		printf("다음");
+		while (1) {
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (xx > 38 && xx < 53) {
+				if (yy > 45 && yy < 49) {
+					small_box(38, 46, 10);
+					textcolor(6);
+					goto_xy(44, 47);
+					printf("이전");
+					check = 1;
+					Sleep(400);
+					break;
+				}
+			}
+			if (xx > 57 && xx < 78) {
+				if (yy > 14 && yy < 19) {
+					big_box(57, 15, 10);
+					goto_xy(66, 17);
+					textcolor(6);
+					printf("회원");
+					big_box(57, 23, 6);
+					goto_xy(64, 25);
+					printf("디자이너");
+					big_box(57, 31, 6);
+					goto_xy(65, 33);
+					printf("관리자");
+					choice = 1;
+				}
+			}
+			if (xx > 80 && xx < 95) {
+				if (yy > 45 && yy < 49) {
+					if (choice != 0) {
+						small_box(80, 46, 10);
+						textcolor(6);
+						goto_xy(86, 47);
+						printf("다음");
+						Sleep(500);
+						choice = 0;
+						check = member_login();
+						break;
+					}
+				}
+			}
+		}
+		if (check == 1) {
+			break;
+		}
+		check = 0;
+	}
+
+}
+void pw_find() {
+	box_clear();
+	int xx, yy, lr = 0;
+	char name[20] = " ";
+	char phone[15] = " ";
+	int brith = 0;
+	int check = 0;
+	basic_UI();
+	goto_xy(61, 5);
+	textcolor(6);
+	printf("비밀번호 찾기");
+	small_box(38, 46, 6);
+	small_box(80, 46, 6);
+	goto_xy(44, 47);
+	printf("이전");
+	goto_xy(86, 47);
+	printf("가입");
+	goto_xy(53, 17);
+	printf("이름 ex) 홍길동");
+	goto_xy(53, 19);
+	printf(":");
+	goto_xy(53, 26);
+	printf("전화번호 11자리 ex) 010xxxxxxxx ");
+	goto_xy(53, 28);
+	printf(":");
+	goto_xy(53, 34);
+	printf("생년월일(8자리) ex) 20030728 ");
+	goto_xy(53, 36);
+	printf(":");
+	ExClick();
+	while (1) {
+		xx = 0, yy = 0;
+		click(&xx, &yy);
+		if (xx > 38 && xx < 53) {
+			if (yy > 45 && yy < 49) {
+				small_box(38, 46, 10);
+				textcolor(6);
+				goto_xy(44, 47);
+				printf("이전");
+				Sleep(500);
+				return;
+			}
+		}
+		   
+	}
+	if (xx > 38 && xx < 80) {
+		if (yy > 18 && yy < 22) {
+			strcpy(name, " ");
+			textcolor(6);
+			goto_xy(58, 20);
+			printf("                                 ");
+			goto_xy(58, 20);
+			EnableConsoleCursor();
+			gets(name);
+			HideCursor();
+		}
+	}
+	if (xx > 50 && xx < 82) {
+		if (yy > 25 && yy < 28) {
+			textcolor(6);
+			goto_xy(58, 26);
+			printf("                                 ");
+			goto_xy(58, 26);
+			EnableConsoleCursor();
+			scanf("%s", phone);
+			HideCursor();
+			check = isValidPhone_or_pw_Number(phone, 1);
+			if (check == 0) {
+				strcpy(phone, " ");
+				goto_xy(58, 26);
+				printf("형식이 올바르지 않습니다..");
+			}
+
+		}
+	}
+	if (xx > 52 && xx < 78) {
+		if (yy > 29 && yy < 34) {
+			textcolor(6);
+			goto_xy(58, 32);
+			printf("                                 ");
+			goto_xy(58, 32);
+			EnableConsoleCursor();
+			scanf("%d", &brith);
+			HideCursor();
+			check = isValidDate(brith);
+			if (check == 0) {
+				brith = 0;
+				goto_xy(58, 32);
+				printf("형식이 올바르지 않습니다..");
+			}
+		}
+	}
+
+
+}
 void membership() { // 회원가입 함수 
 	HideCursor();
 	int xx, yy, lr = 0;
@@ -318,7 +616,7 @@ void membership() { // 회원가입 함수
 	printf("비밀번호(숫자 4자리) ex) 0000");
 	goto_xy(50, 38);
 	printf(":");
-	Mouse();
+	//Mouse();
 	//ExClick();
 	while (1) {
 		xx = 0, yy = 0;
@@ -330,7 +628,7 @@ void membership() { // 회원가입 함수
 				goto_xy(44, 47);
 				printf("이전");
 				Sleep(500);
-				break;
+				return;
 			}
 		}
 		if (xx > 50 && xx < 64) {
@@ -484,8 +782,8 @@ void membership() { // 회원가입 함수
 								textcolor(6);
 								goto_xy(85, 47);
 								printf("로그인");
-								//login();
 								Sleep(500);
+								member_login();
 								break;
 							}
 						}
@@ -521,6 +819,7 @@ void initial_screen() { // 초기화면
 	goto_xy(87, 47);
 	printf("PW 찾기");
 	Mouse();
+	//ExClick();
 	while (1) {
 		click(&xx, &yy);
 		if (xx > 59 && xx < 74) {
@@ -542,9 +841,19 @@ void initial_screen() { // 초기화면
 				textcolor(6);
 				printf("로그인");
 				Sleep(500);
-				box_clear();
-				//login();
+				login_menu_choice();
 				break;
+			}
+		}
+		if (xx > 82 && xx < 97) {
+			if (yy > 46 && yy < 49) {
+				small_box(82, 46, 10);
+				goto_xy(87, 47);
+				textcolor(6);
+				printf("PW 찾기");
+				Sleep(500);
+				pw_find();
+
 			}
 		}
 		
