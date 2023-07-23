@@ -206,7 +206,41 @@ void basic_UI() { // 기본 UI
 	}
 	printf("┛");
 }
-void small_box(int x,int y,int color) { // 체크 박스 UI
+void m_basic_UI() { // 로그인 후 회원 기본 UI
+	int x = 30;
+	int y = 3;
+	textcolor(DarkYellow);
+	goto_xy(x, y);
+	printf("┏");
+	for (int i = 0; i < 35; i++)
+	{
+		printf("━");
+	}
+	printf("┓");
+	for (int i = 0; i < 45; i++) {
+		y += 1;
+		if (i == 3 || i == 7 || i == 40) {
+			goto_xy(x, y);
+			printf("┣");
+			for (int i = 0; i < 35; i++) {
+				printf("━");
+			}
+			printf("┫");
+		}
+		else {
+			goto_xy(x, y);
+			printf("┃                                                                      ┃");
+		}
+	}
+	goto_xy(x, y + 1);
+	printf("┗");
+	for (int i = 0; i < 35; i++)
+	{
+		printf("━");
+	}
+	printf("┛");
+}
+void small_box(int x, int y, int color,int xx, int yy,char *str,int color2) { // 체크 박스 UI
 	textcolor(color);
 	goto_xy(x, y);
 	printf("┏");
@@ -228,9 +262,12 @@ void small_box(int x,int y,int color) { // 체크 박스 UI
 		printf("━");
 	}
 	printf("┛");
+	textcolor(color2);
+	goto_xy(xx, yy);
+	printf("%s", str);
 
-} 
-void big_box(int x, int y,int color) { // 체크박스 큰거 UI
+}
+void big_box(int x, int y,int color,int xx, int yy, char *str) { // 체크박스 큰거 UI
 	textcolor(color);
 	goto_xy(x, y);
 	printf("┏");
@@ -252,6 +289,9 @@ void big_box(int x, int y,int color) { // 체크박스 큰거 UI
 		printf("━");
 	}
 	printf("┛");
+	textcolor(6);
+	goto_xy(xx, yy);
+	printf("%s", str);
 }
 void box_clear() { //기본 UI 클리어 해주는 함수
 	int x = 62;
@@ -274,21 +314,107 @@ void box_clear() { //기본 UI 클리어 해주는 함수
 	}
 
 }
-int  member_login() { //회원 로그인 하는 부분
+void modifying_membership(int index) {
+	char name[20] = "";
+	char phone[15] = "";
+	basic_UI();
+	goto_xy(62, 5);
+	textcolor(6);
+	printf("회원정보");
+	small_box(38, 46, 6, 44, 47, "이전", 6);
+	small_box(80, 46, 6, 86, 47, "저장", 6);
+	goto_xy(51, 11);
+	textcolor(4);
+	printf("이름, 전화번호, 비밀번호만 수정 가능");
+	textcolor(6);
+	goto_xy(51, 17);
+	printf("이름 :");
+	goto_xy(68, 17);
+	printf("%s", all[index].name);
+	goto_xy(51, 22);
+	printf("전화번호 :");
+	goto_xy(68, 22);
+	printf("%s", all[index].phone);
+	goto_xy(51, 27);
+	printf("성별 :");
+	goto_xy(68, 27);
+	if (strcmp(all[index].gender, "남") == 0) {\
+		printf("남자");
+	}
+	else {
+		printf("여자");
+	}
+	goto_xy(51, 32);
+	printf("생년월일(8자리) :");
+	goto_xy(68, 32);
+	printf("%d", all[index].brith);
+	goto_xy(51, 37);
+	printf("비밀번호(4자리) :");
+	goto_xy(68, 37);
+	printf("%s", all[index].pw);
+	ExClick();
+}
+int member_initial_screen(int index) {
+	int xx, yy, lr = 0;
+	int choice = 0;
 	box_clear();
-	small_box(38, 46, 6);
-	small_box(80, 46, 6);
+	m_basic_UI();
+	while (1) {
+		goto_xy(63, 5);
+		textcolor(6);
+		printf("%s님", all[index].name);
+		big_box(57, 18, 6, 66, 20, "예약");
+		big_box(57, 25, 6, 61, 27, "예약 내역 조회");
+		big_box(57, 32, 6, 63, 34, "정보 수정");
+		small_box(38, 46, 6, 42, 47, "로그아웃", 6);
+		small_box(80, 46, 6, 86, 47, "다음", 6);
+		while (1) {
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (xx > 38 && xx < 53) {
+				if (yy > 45 && yy < 49) {
+					small_box(38, 46, 10, 42, 47, "로그아웃", 6);
+					Sleep(400);
+					return;
+				}
+			}
+			if (xx > 57 && xx < 78) {
+				if (yy > 31 && yy < 37) {
+					big_box(57, 18, 6, 66, 20, "예약", 6);
+					big_box(57, 25, 6, 61, 27, "예약 내역 조회", 6);
+					big_box(57, 32, 10, 63, 34, "정보 수정", 6);
+					choice = 1;
+				}
+			}
+			if (xx > 80 && xx < 95) {
+				if (yy > 45 && yy < 49) {
+					if (choice != 0) {
+						small_box(80, 46, 10, 86, 47, "다음", 6);
+						Sleep(500);
+						if (choice == 1) {
+							modifying_membership(index);
+							break;
+						}
+					}
+				}
+			}
+		}
+		choice = 0;
+		//ExClick();
+	}
+
+}
+int member_login() { //회원 로그인 하는 부분
+	box_clear();
+	goto_xy(62, 5);
+	textcolor(6);
+	printf("회원 로그인");
+	small_box(38, 46, 6,44,47,"이전",6);
+	small_box(80, 46, 6,85,47,"로그인",6);
 	char phone[20] = " ";
 	char pw[15] = " ";
 	int xx, yy, lr = 0;
 	int check = 0;
-	goto_xy(62, 5);
-	textcolor(6);
-	printf("회원 로그인");
-	goto_xy(44, 47);
-	printf("이전");
-	goto_xy(85, 47);
-	printf("로그인");
 	goto_xy(53, 19);
 	printf("전화번호 11자리 ex) 010xxxxxxxx ");
 	goto_xy(53, 21);
@@ -303,10 +429,7 @@ int  member_login() { //회원 로그인 하는 부분
 		click(&xx, &yy);
 		if (xx > 38 && xx < 53) {
 			if (yy > 45 && yy < 49) {
-				small_box(38, 46, 10);
-				textcolor(6);
-				goto_xy(44, 47);
-				printf("이전");
+				small_box(38, 46, 10,44,47,"이전",6);
 				Sleep(500);
 				return;
 			}
@@ -370,10 +493,7 @@ int  member_login() { //회원 로그인 하는 부분
 		if (xx > 80 && xx < 95) {
 			if (yy > 45 && yy < 49) {
 				if (strcmp(pw, " ") != 0 && strcmp(phone, " ") != 0) {
-					small_box(80, 46, 10);
-					textcolor(6);
-					goto_xy(85, 47);
-					printf("로그인");
+					small_box(80, 46, 10,85,47,"로그인",6);
 					check = -1;
 					for (int i = 0; i < member_count; i++) {
 						if (strcmp(all[i].phone, phone) == 0 && strcmp(all[i].pw, pw) == 0) {
@@ -383,13 +503,11 @@ int  member_login() { //회원 로그인 하는 부분
 					}
 					Sleep(500);
 					if (check >= 0) {
+						member_initial_screen(check);
 						return 1;
 					}
 					else {
-						small_box(80, 46, 6);
-						textcolor(6);
-						goto_xy(85, 47);
-						printf("로그인");
+						small_box(80, 46, 6,85,47,"로그인",6);
 						goto_xy(48, 40);
 						textcolor(4);
 						printf("전화번호 혹은 비밀번호를 다시 입력 해주세요.");
@@ -408,33 +526,20 @@ void login_menu_choice() { // 로그인 선택 하는 부분 (회원 관리자 디자이너)
 	//ExClick();
 	while (1) {
 		box_clear();
-		big_box(57, 15, 6);
-		big_box(57, 23, 6);
-		big_box(57, 31, 6);
-		small_box(38, 46, 6);
-		small_box(80, 46, 6);
 		goto_xy(64, 5);
 		textcolor(6);
 		printf("로그인");
-		goto_xy(66, 17);
-		printf("회원");
-		goto_xy(64, 25);
-		printf("디자이너");
-		goto_xy(65, 33);
-		printf("관리자");
-		goto_xy(44, 47);
-		printf("이전");
-		goto_xy(86, 47);
-		printf("다음");
+		big_box(57, 15, 6,66,17,"회원",6);
+		big_box(57, 23, 6,64,25,"디자이너",6);
+		big_box(57, 31, 6,65,33,"관리자",6);
+		small_box(38, 46, 6,44,47,"이전",6);
+		small_box(80, 46, 6,86,47,"다음",6);
 		while (1) {
 			xx = 0, yy = 0;
 			click(&xx, &yy);
 			if (xx > 38 && xx < 53) {
 				if (yy > 45 && yy < 49) {
-					small_box(38, 46, 10);
-					textcolor(6);
-					goto_xy(44, 47);
-					printf("이전");
+					small_box(38, 46, 10,44,47,"이전",6);
 					check = 1;
 					Sleep(400);
 					break;
@@ -442,30 +547,22 @@ void login_menu_choice() { // 로그인 선택 하는 부분 (회원 관리자 디자이너)
 			}
 			if (xx > 57 && xx < 78) {
 				if (yy > 14 && yy < 19) {
-					big_box(57, 15, 10);
-					goto_xy(66, 17);
-					textcolor(6);
-					printf("회원");
-					big_box(57, 23, 6);
-					goto_xy(64, 25);
-					printf("디자이너");
-					big_box(57, 31, 6);
-					goto_xy(65, 33);
-					printf("관리자");
+					big_box(57, 15, 10,66,17,"회원", 6);
+					big_box(57, 23, 6,64,25,"디자이너",6);
+					big_box(57, 31, 6,65,33,"관리자",6);
 					choice = 1;
 				}
 			}
 			if (xx > 80 && xx < 95) {
 				if (yy > 45 && yy < 49) {
 					if (choice != 0) {
-						small_box(80, 46, 10);
-						textcolor(6);
-						goto_xy(86, 47);
-						printf("다음");
+						small_box(80, 46, 10,86,47,"다음", 6);
 						Sleep(500);
-						choice = 0;
-						check = member_login();
-						break;
+						if (choice == 1) {
+							check = member_login();
+							choice = 0;
+							break;
+						}
 					}
 				}
 			}
@@ -487,12 +584,8 @@ void pw_find() {
 	basic_UI();
 	goto_xy(61, 5);
 	printf("비밀번호 찾기");
-	small_box(38, 46, 6);
-	small_box(80, 46, 6);
-	goto_xy(44, 47);
-	printf("이전");
-	goto_xy(86, 47);
-	printf("찾기");
+	small_box(38, 46, 6,44,47,"이전",6);
+	small_box(80, 46, 6,86,47,"찾기",6);
 	goto_xy(53, 17);
 	printf("이름 ex) 홍길동");
 	goto_xy(53, 19);
@@ -511,10 +604,7 @@ void pw_find() {
 		click(&xx, &yy);
 		if (xx > 38 && xx < 53) {
 			if (yy > 45 && yy < 49) {
-				small_box(38, 46, 10);
-				textcolor(6);
-				goto_xy(44, 47);
-				printf("이전");
+				small_box(38, 46, 10,44,47,"이전",6);
 				Sleep(500);
 				return;
 			}
@@ -577,20 +667,13 @@ void pw_find() {
 						}
 					}
 					if (check >= 0) {
-						small_box(80, 46, 10);
-						textcolor(6);
-						goto_xy(86, 47);
-						printf("찾기");
+						small_box(80, 46, 10,86,47,"찾기",6);
 						Sleep(500);
 						box_clear();
 						goto_xy(61, 5);
 						printf("비밀번호 찾기");
-						small_box(38, 46, 6);
-						small_box(80, 46, 6);
-						goto_xy(44, 47);
-						printf("이전");
-						goto_xy(85, 47);
-						printf("로그인");
+						small_box(38, 46, 6,44,47,"이전",6);
+						small_box(80, 46, 6,85,47,"로그인",6);
 						goto_xy(54, 24);
 						printf("%s님의 비밀번호는 %s입니다.", all[check].name,all[check].pw);
 						xx = 0;
@@ -599,20 +682,14 @@ void pw_find() {
 						while (1) {
 							if (xx > 38 && xx < 53) {
 								if (yy > 45 && yy < 49) {
-									small_box(38, 46, 10);
-									textcolor(6);
-									goto_xy(44, 47);
-									printf("이전");
+									small_box(38, 46, 10,44,47,"이전",6);
 									Sleep(500);
 									break;
 								}
 							}
 							else if (xx > 80 && xx < 95) {
 								if (yy > 45 && yy < 49) {
-									small_box(80, 46, 10);
-									textcolor(6);
-									goto_xy(85, 47);
-									printf("로그인");
+									small_box(80, 46, 10,85,47,"로그인",6);
 									Sleep(500);
 									member_login();
 									break;
@@ -645,22 +722,10 @@ void membership() { // 회원가입 함수
 	goto_xy(62, 5);
 	textcolor(6);
 	printf("회원가입");
-	small_box(50, 10, 6);
-	small_box(67, 10, 6);
-	small_box(38, 46, 6);
-	small_box(80, 46, 6);
-	goto_xy(56, 11);
-	textcolor(BLUE);
-	printf("남자");
-	goto_xy(73,11);
-	textcolor(RED);
-	printf("여자");
-	goto_xy(44, 47);
-	textcolor(6);
-	printf("이전");
-	goto_xy(86, 47);
-	textcolor(6);
-	printf("가입");
+	small_box(50, 10, 6,56,11,"남자",9);
+	small_box(67, 10, 6,73,11,"여자",12);
+	small_box(38, 46, 6,44,47,"이전",6);
+	small_box(80, 46, 6,86,47,"가입",6);
 	goto_xy(50, 18);
 	printf("이름 ex) 홍길동");
 	goto_xy(50, 20);
@@ -684,10 +749,7 @@ void membership() { // 회원가입 함수
 		click(&xx, &yy);
 		if (xx > 38 && xx < 53) {
 			if (yy > 45 && yy < 49) {
-				small_box(38, 46, 10);
-				textcolor(6);
-				goto_xy(44, 47);
-				printf("이전");
+				small_box(38, 46, 10,44,47,"이전",6);
 				Sleep(500);
 				return;
 			}
@@ -695,27 +757,15 @@ void membership() { // 회원가입 함수
 		if (xx > 50 && xx < 64) {
 			if (yy > 9 && yy < 13) {
 				strcpy(gender, "남");
-				small_box(67, 10, 6);
-				goto_xy(73, 11);
-				textcolor(RED);
-				printf("여자");
-				small_box(50, 10, 10);
-				goto_xy(56, 11);
-				textcolor(BLUE);
-				printf("남자");
+				small_box(67, 10, 6,73,11,"여자",12);
+				small_box(50, 10, 10,56,11,"남자",9);
 			}
 		}
 		if (xx > 67 && xx < 82) {
 			if (yy > 9 && yy < 13) {
 				strcpy(gender, "여");
-				small_box(50, 10,6);
-				goto_xy(56, 11);
-				textcolor(BLUE);
-				printf("남자");
-				small_box(67, 10, 10);
-				goto_xy(73, 11);
-				textcolor(RED);
-				printf("여자");
+				small_box(50, 10,6,56,11,"남자",9);
+				small_box(67, 10, 10,73,11,"여자",12);
 			}
 		}
 	    if (xx > 38 && xx < 80) {
@@ -799,21 +849,13 @@ void membership() { // 회원가입 함수
 						continue;
 					}
 					else {
-						small_box(80, 46, 10);
-						textcolor(6);
-						goto_xy(86, 47);
-						printf("가입");
+						small_box(80, 46, 10,86,47,"가입",6);
 						Sleep(500);
 						box_clear();
 						goto_xy(62, 5);
-						textcolor(6);
 						printf("회원가입");
-						small_box(38, 46, 6);
-						small_box(80, 46, 6);
-						goto_xy(44, 47);
-						printf("이전");
-						goto_xy(85, 47);
-						printf("로그인");
+						small_box(38, 46, 6,44,47,"이전",6);
+						small_box(80, 46, 6,85,47,"로그인",6);
 						goto_xy(54, 24);
 						printf("회원가입이 완료되었습니다.");
 						strcpy(all[member_count].name, name);
@@ -822,26 +864,21 @@ void membership() { // 회원가입 함수
 						strcpy(all[member_count].gender, gender);
 						all[member_count].brith = brith;
 						file_append();
+						member_count += 1;
 						xx = 0;
 						yy = 0;
 						click(&xx, &yy);
 						while (1) {
 							if (xx > 38 && xx < 53) {
 								if (yy > 45 && yy < 49) {
-									small_box(38, 46, 10);
-									textcolor(6);
-									goto_xy(44, 47);
-									printf("이전");
+									small_box(38, 46, 10,44,47,"이전",6);
 									Sleep(500);
 									break;
 								}
 							}
 							else if (xx > 80 && xx < 95) {
 								if (yy > 45 && yy < 49) {
-									small_box(80, 46, 10);
-									textcolor(6);
-									goto_xy(85, 47);
-									printf("로그인");
+									small_box(80, 46, 10,85,47,"로그인",6);
 									Sleep(500);
 									member_login();
 									break;
@@ -862,33 +899,20 @@ void initial_screen() { // 초기화면
 	HideCursor();
 	int xx, yy, lr = 0;
 	basic_UI();
-	big_box(57,20, 6);
-	big_box(57, 27, 6);
-	small_box(36, 46, 6);
-	small_box(59, 46, 6);
-	small_box(82, 46, 6);
 	goto_xy(62, 5);
 	printf("가든 헤어샵");
-	goto_xy(66, 22);
-	printf("예약");
-	goto_xy(61, 29);
-	printf("예약 내역 조회");
-	goto_xy(41, 47);
-	printf("로그인");
-	goto_xy(63, 47);
-	printf("회원가입");
-	goto_xy(87, 47);
-	printf("PW 찾기");
+	big_box(57,20, 6, 66, 22,"예약");
+	big_box(57, 27, 6, 61, 29,"예약 내역 조회");
+	small_box(36, 46, 6, 41, 47, "로그인",6);
+	small_box(59, 46, 6, 63, 47,"회원가입",6);
+	small_box(82, 46, 6, 87, 47,"PW 찾기",6);
 	Mouse();
 	//ExClick();
 	while (1) {
 		click(&xx, &yy);
 		if (xx > 59 && xx < 74) {
 			if (yy > 46 && yy < 49) {
-				small_box(59, 46, 10);
-				goto_xy(63, 47);
-				textcolor(6);
-				printf("회원가입");
+				small_box(59, 46, 10,63,47,"회원가입",6);
 				Sleep(500);
 				box_clear();
 				membership();
@@ -897,10 +921,7 @@ void initial_screen() { // 초기화면
 		}
 		if (xx > 36 && xx < 50) {
 			if (yy > 46 && yy < 49) {
-				small_box(36, 46, 10);
-				goto_xy(41, 47);
-				textcolor(6);
-				printf("로그인");
+				small_box(36, 46, 10,41,47,"로그인",6);
 				Sleep(500);
 				login_menu_choice();
 				break;
@@ -908,10 +929,7 @@ void initial_screen() { // 초기화면
 		}
 		if (xx > 82 && xx < 97) {
 			if (yy > 46 && yy < 49) {
-				small_box(82, 46, 10);
-				goto_xy(87, 47);
-				textcolor(6);
-				printf("PW 찾기");
+				small_box(82, 46, 10,87,47,"PW 찾기",6);
 				Sleep(500);
 				pw_find();
 				break;
