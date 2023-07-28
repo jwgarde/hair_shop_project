@@ -5,10 +5,18 @@
 #include<conio.h>
 #include<stdlib.h>
 #include<string.h>
+#include <stdbool.h>
+#include"resource.h"
 INPUT_RECORD rec;
 DWORD dwNOER;
 HANDLE CIN = 0;
 int member_count = 0;
+int designer_count = 0;
+// 콘솔 윈도우 창의 핸들값    
+static HWND hWnd;
+// 프로그램의 인스턴스 핸들값
+static HINSTANCE hInst;
+
 typedef struct { // 회원 구조체
 	char name[20];
 	char phone[20];
@@ -17,14 +25,15 @@ typedef struct { // 회원 구조체
 	char pw[15];
 }member;
 member all[MAX];
-void HideCursor() { //마우스 커서 숨기는 함수
-	CONSOLE_CURSOR_INFO cursor_info = { 1, FALSE };
-	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);
-}
-void EnableConsoleCursor() { //마우스 커서 보이게 하는 함수
-	CONSOLE_CURSOR_INFO cursor_info = { 1, TRUE };
-	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);
-}
+typedef struct {
+	char name[20];
+	char phone[20];
+	char gender[15];
+	int brith;
+	char n_name[15];
+	char introduce[30];
+}DESIGNER;
+DESIGNER d_all[3];
 void file_read() { // 파일 읽어서 구조체에 저장하는 함수
 	char c;
 	FILE* member = fopen("member.txt", "r");
@@ -38,7 +47,7 @@ void file_read() { // 파일 읽어서 구조체에 저장하는 함수
 			if (feof(member) != 0) {
 				break;
 			}
-			fscanf(member,"%s %s %s %d %s\n", all[member_count].name, all[member_count].phone, all[member_count].gender,&all[member_count].brith,all[member_count].pw);
+			fscanf(member, "%s %s %s %d %s\n", all[member_count].name, all[member_count].phone, all[member_count].gender, &all[member_count].brith, all[member_count].pw);
 			member_count++;
 		}
 	}
@@ -53,84 +62,44 @@ void file_write() {
 	FILE* member;
 	member = fopen("member.txt", "w");
 	for (int i = 0; i < member_count; i++) {
-		fprintf(member, "%s %s %s %d %s\n", all[i].name, all[i].phone, all[i].gender,all[i].brith, all[i].pw);
+		fprintf(member, "%s %s %s %d %s\n", all[i].name, all[i].phone, all[i].gender, all[i].brith, all[i].pw);
 
 	}
 	fclose(member);
 }
-int isValidPhone_or_pw_Number(char* str, int check) { // 전화번호 비밀번호 유효한지 체크해주는 함수
-	if (check == 1) {
-		int length = strlen(str);
-
-		// 전화번호는 11자리여야 함
-		if (length != 11)
-			return 0;
-
-		// 전화번호는 "010xxxxxxxx" 형식이어야 함
-		if (str[0] != '0' || str[1] != '1' || str[2] != '0')
-			return 0;
-
-		// 나머지 자리는 숫자여야 함
-		for (int i = 3; i < length; i++) {
-			if (str[i] < '0' || str[i] > '9')
-				return 0;
-		}
-
-		// 모든 조건을 만족하는 경우 유효한 전화번호
-		return 1;
+void d_file_read() {
+	char c;
+	FILE* designer = fopen("designer.txt", "r");
+	if (designer == NULL) {
+		return 0;
 	}
-	else if(check == 2) {
-		int length = strlen(str);
-		if (length != 4) {
-			return 0;
-		}
-		else {
-			for (int i = 0; i < length; i++) {
-				if (str[i] < '0' || str[i] > '9') {
-					return 0;
-				}
-				else {
-					return 1;
-				}
+	else {
+		while (c = fgetc(designer) != EOF) {
+
+			fseek(designer, -1, SEEK_CUR);
+			if (feof(designer) != 0) {
+				break;
 			}
+			fscanf(designer, "%s %s %s %d %s %s\n", d_all[designer_count].name, d_all[designer_count].phone, d_all[designer_count].gender, &d_all[designer_count].brith, d_all[designer_count].n_name, d_all[designer_count].introduce);
+			designer_count++;
 		}
-		
 	}
 }
-int isValidDate(int date) { //생년월일 유효한지 체크해주는 함수
-	int year = date / 10000;
-	int month = (date % 10000) / 100;
-	int day = date % 100;
-
-	// 생년월일은 8자리여야 함
-	if (date < 10000000 || date > 99999999)
-		return 0;
-
-	// 연도, 월, 일의 범위를 확인
-	if (year < 1900 || month < 1 || month > 12 || day < 1 || day > 31)
-		return 0;
-
-	// 모든 조건을 만족하는 경우 유효한 생년월일
-	return 1;
+void d_file_write() {
+	FILE* designer = fopen("designer.txt", "w");
+	for (int i = 0; i < designer_count; i++) {
+		fprintf(designer, "%s %s %s %d %s %s\n", d_all[designer_count].name, d_all[designer_count].phone, d_all[designer_count].gender, d_all[designer_count].brith, d_all[designer_count].n_name, d_all[designer_count].introduce);
+	}
+	fclose(designer);
 }
-enum ColorType {  // 글씨 컬러 
-	BLACK,  	//0
-	darkBLUE,	//1
-	DarkGreen,	//2
-	darkSkyBlue,    //3
-	DarkRed,  	//4
-	DarkPurple,	//5
-	DarkYellow,	//6
-	GRAY,		//7
-	DarkGray,	//8
-	BLUE,		//9
-	GREEN,		//10
-	SkyBlue,	//11
-	RED,		//12
-	PURPLE,		//13
-	YELLOW,		//14
-	WHITE		//15
-} COLOR;
+void HideCursor() { //마우스 커서 숨기는 함수
+	CONSOLE_CURSOR_INFO cursor_info = { 1, FALSE };
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);
+}
+void EnableConsoleCursor() { //마우스 커서 보이게 하는 함수
+	CONSOLE_CURSOR_INFO cursor_info = { 1, TRUE };
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);
+}
 void textcolor(int colorNum) { // 글씨 컬러 바꿔주는 함수
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), colorNum);
 }
@@ -158,8 +127,25 @@ void click(int* xx, int* yy) { // 마우스 클릭 이벤트
 		}
 	}
 }
+enum ColorType {  // 글씨 컬러 
+	BLACK,  	//0
+	darkBLUE,	//1
+	DarkGreen,	//2
+	darkSkyBlue,    //3
+	DarkRed,  	//4
+	DarkPurple,	//5
+	DarkYellow,	//6
+	GRAY,		//7
+	DarkGray,	//8
+	BLUE,		//9
+	GREEN,		//10
+	SkyBlue,	//11
+	RED,		//12
+	PURPLE,		//13
+	YELLOW,		//14
+	WHITE		//15
+} COLOR;
 void clearconsole() { //콘솔창 클리어
-	printf("Asd");
 	COORD Coor = { 0, 0 };
 	DWORD dw;
 	FillConsoleOutputCharacter(GetStdHandle(STD_OUTPUT_HANDLE), ' ', 100 * 100, Coor, &dw); // 콘솔창 화면을 지운다.
@@ -249,7 +235,7 @@ void m_basic_UI() { // 로그인 후 회원 기본 UI
 	}
 	printf("┛");
 }
-void small_box(int x, int y, int color,int xx, int yy,char *str,int color2) { // 체크 박스 UI
+void small_box(int x, int y, int color, int xx, int yy, char* str, int color2) { // 체크 박스 UI
 	textcolor(color);
 	goto_xy(x, y);
 	printf("┏");
@@ -276,7 +262,7 @@ void small_box(int x, int y, int color,int xx, int yy,char *str,int color2) { //
 	printf("%s", str);
 
 }
-void big_box(int x, int y,int color,int xx, int yy, char *str) { // 체크박스 큰거 UI
+void big_box(int x, int y, int color, int xx, int yy, char* str) { // 체크박스 큰거 UI
 	textcolor(color);
 	goto_xy(x, y);
 	printf("┏");
@@ -322,6 +308,186 @@ void box_clear() { //기본 UI 클리어 해주는 함수
 		y += 1;
 	}
 
+}
+void Render(int x, int y, int num)
+{
+	const int pictureWidth = 130;
+	const int pictureHeight = 150;
+	// DC의 핸들값을 받을 변수를 선언한다.(hDC : 실제화면DC, hMemDC : 이미지를 담을 DC)
+	// Device Context는 그래픽에 필요한 모든 옵션을 넣어둔 구조체라고 볼 수 있다.
+	// 그림그릴때 그림을 그릴 화폭이라 보면된다.
+	HDC hDC, hMemDC;
+	// 후면버퍼이다. static 변수는 정적변수로서, 메모리의 Data영역에 저장되는 함수가 끝나도 사라지지 않고 메모리에 남아있는 변수이다.
+	static HDC hBackDC;
+	// 이미지 비트맵의 핸들값을 저장할 변수이다.
+	HBITMAP hBitmap = NULL, hOldBitmap, hBackBitmap;
+	// 핸들값으로부터 얻어올 실제 비트맵 구조체.
+	BITMAP Bitmap;
+	// 현재 윈도우의 Rect값(크기)를 얻어온다. Rect는 왼쪽위, 오른쪽 아래의 값을 가지는 정사각형을 나타내는 구조체이다.
+	RECT WindowRect;
+	GetWindowRect(hWnd, &WindowRect);
+
+	// 현재 윈도우의 DC 핸들값을 얻어온다. GetWindowDC(hWnd)도 가능하다.
+	hDC = GetDC(hWnd);
+	// hDC와 호환되는 DC를 메모리에 만들어 핸들값을 반환한다.
+	hBackDC = CreateCompatibleDC(hDC);
+	hMemDC = CreateCompatibleDC(hDC);
+
+	// 비트맵 메모리를 할당하고 핸들을 반환한다.
+	hBackBitmap = CreateCompatibleBitmap(hDC, WindowRect.right, WindowRect.bottom);
+	// 그릴 도화지를 준비한다.
+	hOldBitmap = (HBITMAP)SelectObject(hBackDC, hBackBitmap);
+	// 비트맵을 로드하여 핸들을 반환한다. resource.h에 정수로 define되어있는 불러온 리소스를 로드한다.
+	if (num == 0) {
+		hBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP1));
+	}
+	else if (num == 1) {
+		hBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP2));
+	}
+	else if (num == 2) {
+		hBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP3));
+	}
+	// 크기를 받기위해 비트맵 구조체를 비트맵 핸들로부터 생성한다.
+	GetObject(hBitmap, sizeof(BITMAP), &Bitmap);
+
+	HBITMAP hResizedBitmap = (HBITMAP)CopyImage(hBitmap, IMAGE_BITMAP, pictureWidth, pictureHeight, LR_COPYDELETEORG);
+	GetObject(hResizedBitmap, sizeof(BITMAP), &Bitmap);
+	// 읽어온 비트맵 리소스를 메모리 DC에 선택한다.
+	SelectObject(hMemDC, hResizedBitmap);
+
+	// hMemDC의 이미지를 hBackDC의 원하는 위치로 고속복사시킨다.(출력하려는 이미지를 후면버퍼에 복사시킨다.)
+	BitBlt(hBackDC, 0, 0, Bitmap.bmWidth, Bitmap.bmHeight, hMemDC, 0, 0, SRCCOPY);
+	// hBackDC(후면 버퍼)의 완성된 그림을 화면으로 고속복사시킨다.
+	BitBlt(hDC, x, y, x + Bitmap.bmWidth, y + Bitmap.bmHeight, hBackDC, 0, 0, SRCCOPY);
+
+	// 메모리와 오브젝트를 해지한다.
+	DeleteObject(SelectObject(hBackDC, hBackBitmap));
+	DeleteObject(hResizedBitmap);
+	DeleteDC(hBackDC);
+	DeleteDC(hMemDC);
+
+	ReleaseDC(hWnd, hDC);
+}
+int buid(int num) {
+	// 테스트용으로 입력을 받을 버퍼
+	char buf[100] = { 0, };
+	int i = 0;
+	// 콘솔 윈도우 창의 핸들값을 얻어온다.
+	hWnd = GetConsoleWindow();
+	// 프로그램의 인스턴스 핸들값을 얻어온다.
+	hInst = GetModuleHandle(NULL);
+	// 루프를 돈다.
+	bool isFinished = true;
+	while (1) {
+		// 그림을 그린다.
+		Render(10, 10, num);
+
+		// 그림 그리기 작업이 처음부터 완료되었다고 가정하고 isFinished를 true로 초기화한다.
+
+		if (isFinished) {
+			break; // 반복문을 종료한다.
+		}
+	}
+}
+void copy() {
+	char sourcePath[100];  // 입력 받은 경로를 저장할 변수
+	char destinationPath[] = "C:\\Users\\chlwj\\source\\repos\\그만\\그만\\bitmap2.bmp";
+	goto_xy(5, 40);
+	printf("파일 경로를 입력하세요: ");
+	fgets(sourcePath, sizeof(sourcePath), stdin);
+	sourcePath[strcspn(sourcePath, "\n")] = '\0';  // 개행 문자 제거
+
+	// 파일 복사 수행
+	FILE* sourceFile = fopen(sourcePath, "rb");
+	FILE* destinationFile = fopen(destinationPath, "wb");
+
+	if (sourceFile == NULL) {
+		printf("입력한 경로에 파일을 찾을 수 없습니다.\n");
+		return 1;
+	}
+
+	if (destinationFile == NULL) {
+		printf("목적지 경로에 파일을 생성할 수 없습니다.\n");
+		fclose(sourceFile);
+		return 1;
+	}
+
+	int bufferSize = 1024;  // 복사할 때 사용할 버퍼 크기
+	char* buffer = (char*)malloc(bufferSize);
+
+	if (buffer == NULL) {
+		printf("메모리 할당에 실패했습니다.\n");
+		fclose(sourceFile);
+		fclose(destinationFile);
+		return 1;
+	}
+
+	size_t bytesRead;
+	while ((bytesRead = fread(buffer, 1, bufferSize, sourceFile)) > 0) {
+		fwrite(buffer, 1, bytesRead, destinationFile);
+	}
+
+	printf("파일이 성공적으로 복사되었습니다.\n");
+
+	fclose(sourceFile);
+	fclose(destinationFile);
+	free(buffer);
+
+}
+int isValidPhone_or_pw_Number(char* str, int check) { // 전화번호 비밀번호 유효한지 체크해주는 함수
+	if (check == 1) {
+		int length = strlen(str);
+
+		// 전화번호는 11자리여야 함
+		if (length != 11)
+			return 0;
+
+		// 전화번호는 "010xxxxxxxx" 형식이어야 함
+		if (str[0] != '0' || str[1] != '1' || str[2] != '0')
+			return 0;
+
+		// 나머지 자리는 숫자여야 함
+		for (int i = 3; i < length; i++) {
+			if (str[i] < '0' || str[i] > '9')
+				return 0;
+		}
+
+		// 모든 조건을 만족하는 경우 유효한 전화번호
+		return 1;
+	}
+	else if(check == 2) {
+		int length = strlen(str);
+		if (length != 4) {
+			return 0;
+		}
+		else {
+			for (int i = 0; i < length; i++) {
+				if (str[i] < '0' || str[i] > '9') {
+					return 0;
+				}
+				else {
+					return 1;
+				}
+			}
+		}
+		
+	}
+}
+int isValidDate(int date) { //생년월일 유효한지 체크해주는 함수
+	int year = date / 10000;
+	int month = (date % 10000) / 100;
+	int day = date % 100;
+
+	// 생년월일은 8자리여야 함
+	if (date < 10000000 || date > 99999999)
+		return 0;
+
+	// 연도, 월, 일의 범위를 확인
+	if (year < 1900 || month < 1 || month > 12 || day < 1 || day > 31)
+		return 0;
+
+	// 모든 조건을 만족하는 경우 유효한 생년월일
+	return 1;
 }
 void modifying_membership(int index) {
 	int n_len = 0;
