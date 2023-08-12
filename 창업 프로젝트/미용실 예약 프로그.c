@@ -54,7 +54,12 @@ typedef struct {
 	char account[220];
 }style;
 style STYLE[100];
-void long_box_UI(int x, int y) {
+void long_box_UI(int x, int y, int i,int color) {
+	int len = 0;
+	if (D_MENU[i].index == -1) {
+		return;
+	}
+	textcolor(color);
 	goto_xy(x, y);
 	printf("┏");
 	for (int i = 0; i < 30; i++)
@@ -75,6 +80,29 @@ void long_box_UI(int x, int y) {
 		printf("━");
 	}
 	printf("┛");
+	textcolor(6);
+	x = 39;
+	goto_xy(x, y);
+	printf("%s", D_MENU[i].name);
+	goto_xy(x + 15, y);
+	printf("%d", D_MENU[i].price);
+	goto_xy(x + 30, y);
+	if (strcmp(D_MENU[i].account, " ") == 0 || strcmp(D_MENU[i].account, "") == 0) {
+		goto_xy(x + 39, y);
+		printf("X");
+	}
+	else {
+		len = strlen(D_MENU[i].account);
+		for (int k = 0; k < len; k++) {
+			if (D_MENU[i].account[k] == ' ') {
+				printf("...");
+				break;
+			}
+			else {
+				printf("%c", D_MENU[i].account[k]);
+			}
+		}
+	}
 }
 int getMaskedInput() { //디자이너 비밀번호 생일 입력 할떄 *로 출력 해주는 함수
 	int birth = 0;
@@ -227,7 +255,7 @@ void EnableConsoleCursor() { //마우스 커서 보이게 하는 함수
 void design_take_menu(int index, char *str) {
 	take_menu_count = 0;
 	for (int i = 0; i < 20; i++) {
-		D_MENU[i].index = 0;
+		D_MENU[i].index = -1;
 		strcpy(D_MENU[i].name, " ");
 		D_MENU[i].price = 0;
 		strcpy(D_MENU[i].account," ");
@@ -242,7 +270,7 @@ void design_take_menu(int index, char *str) {
 		}
 	}
 }
-void textcolor(int colorNum) { // 글씨 컬러 바꿔주는 함수
+int textcolor(int colorNum) { // 글씨 컬러 바꿔주는 함수
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), colorNum);
 }
 int goto_xy(int x, int y)  // 좌표값
@@ -490,7 +518,6 @@ void big_box(int x, int y, int color, int xx, int yy, char* str) { // 체크박스 �
 	goto_xy(xx, yy);
 	printf("%s", str);
 }
-
 void box_clear() { //기본 UI 클리어 해주는 함수
 	int x = 62;
 	int y = 5;
@@ -500,7 +527,7 @@ void box_clear() { //기본 UI 클리어 해주는 함수
 	y = 8;
 	for (int i = 0; i < 35; i++) {
 		goto_xy(x, y);
-		printf("                                                            ");
+		printf("                                                                     ");
 		y += 1;
 	}
 	x = 32;
@@ -591,6 +618,26 @@ int buid(int num) {
 			break; // 반복문을 종료한다.
 		}
 	}
+}
+int delete_modify(int index) {
+	basic_UI(108, 3);
+	int xx, yy = 0;
+	char name[20] = " ";
+	int price = 0;
+	char str[240] = " ";// 문자열을 저장 총 100글자
+	int len = 0;
+	int x = 124;
+	int y = 36;
+	char ch = ' ';
+	small_box(116, 46, 6, 122, 47, "삭제", 6);
+	small_box(158, 46, 6, 164, 47, "수정", 6);
+	goto_xy(177, 4);
+	printf("[X]");
+	goto_xy(122, 13);
+	printf("종류      :");
+	printf("%s", STYLE[index].sort);
+
+	
 }
 int add_design(int index,char* string) {
 	basic_UI(108,3);
@@ -785,7 +832,6 @@ int style_management(int index) {
 		printf("▷");
 		small_box(38, 46, 6, 44, 47, "이전", 6);
 		small_box(80, 46, 6, 86, 47, "추가", 6);
-		//ExClick();
 		if (choice == 1) {
 			strcpy(str,"커트");
 			small_box(35, 8, 10, 41, 9, "커트", 6);
@@ -809,36 +855,14 @@ int style_management(int index) {
 				break;
 			}
 			else {
-				long_box_UI(x, y);
-				x = 39;
-				goto_xy(x, y + 1);
-				printf("%s", D_MENU[i].name);
-				goto_xy(x + 15, y + 1);
-				printf("%d", D_MENU[i].price);
-				goto_xy(x + 30, y + 1);
-				if (strcmp(D_MENU[i].account, " ") == 0) {
-					goto_xy(x + 39, y + 1);
-					printf("X");
-				}
-				else {
-					len = strlen(D_MENU[i].account);
-					for (int k = 0; k < len; k++) {
-						if (D_MENU[i].account[k] == ' ') {
-							printf("...");
-							break;
-						}
-						else {
-							printf("%c", D_MENU[i].account[k]);
-						}
-					}
-				}
+				long_box_UI(x, y,i,6);
 				y += 4;
 			}
 		}
 		if (i == (count * page_count) - 1) {
 			i++;
 		}
-
+		//ExClick();
 		while (1) {
 			xx = 0, yy = 0;
 			click(&xx, &yy);
@@ -847,6 +871,80 @@ int style_management(int index) {
 					small_box(38, 46, 10, 44, 47, "이전", 6);
 					Sleep(500);
 					return;
+				}
+			}
+			if (xx > 34 && xx < 99) {
+				if (yy > 11 && yy < 15) {
+					if (D_MENU[(page_count * count)-6].index != -1) {
+						long_box_UI(35, 12, (page_count * count) - 6,10);
+						long_box_UI(35, 16, (page_count * count) - 5, 6);
+						long_box_UI(35, 20, (page_count * count) - 4, 6);
+						long_box_UI(35, 24, (page_count * count) - 3, 6);
+						long_box_UI(35, 28, (page_count * count) - 2, 6);
+						long_box_UI(35, 32, (page_count * count) - 1, 6);
+						Sleep(200);
+						delete_modify(D_MENU[(page_count * count) - 6].index);
+					}
+				}
+				if (yy > 15 && yy < 19) {
+					if (D_MENU[(page_count * count) - 5].index != -1) {
+						long_box_UI(35, 12, (page_count * count) - 6, 6);
+						long_box_UI(35, 16, (page_count * count) - 5, 10);
+						long_box_UI(35, 20, (page_count * count) - 4, 6);
+						long_box_UI(35, 24, (page_count * count) - 3, 6);
+						long_box_UI(35, 28, (page_count * count) - 2, 6);
+						long_box_UI(35, 32, (page_count * count) - 1, 6);
+						Sleep(200);
+						delete_modify(D_MENU[(page_count * count) - 5].index);
+					}
+				}
+				if (yy > 19 && yy < 23) {
+					if (D_MENU[(page_count * count) - 4].index != -1) {
+						long_box_UI(35, 12, (page_count * count) - 6, 6);
+						long_box_UI(35, 16, (page_count * count) - 5, 6);
+						long_box_UI(35, 20, (page_count * count) - 4, 10);
+						long_box_UI(35, 24, (page_count * count) - 3, 6);
+						long_box_UI(35, 28, (page_count * count) - 2, 6);
+						long_box_UI(35, 32, (page_count * count) - 1, 6);
+						Sleep(200);
+						delete_modify(D_MENU[(page_count * count) - 4].index);
+					}
+				}
+				if (yy > 23 && yy < 27) {
+					if (D_MENU[(page_count * count) - 3].index != -1) {
+						long_box_UI(35, 12, (page_count * count) - 6, 6);
+						long_box_UI(35, 16, (page_count * count) - 5, 6);
+						long_box_UI(35, 20, (page_count * count) - 4, 6);
+						long_box_UI(35, 24, (page_count * count) - 3, 10);
+						long_box_UI(35, 28, (page_count * count) - 2, 6);
+						long_box_UI(35, 32, (page_count * count) - 1, 6);
+						Sleep(200);
+						delete_modify(D_MENU[(page_count * count) - 3].index);
+					}
+				}
+				if (yy > 27 && yy < 31) {
+					if (D_MENU[(page_count * count) - 2].index != -1) {
+						long_box_UI(35, 12, (page_count * count) - 6, 6);
+						long_box_UI(35, 16, (page_count * count) - 5, 6);
+						long_box_UI(35, 20, (page_count * count) - 4, 6);
+						long_box_UI(35, 24, (page_count * count) - 3, 6);
+						long_box_UI(35, 28, (page_count * count) - 2, 10);
+						long_box_UI(35, 32, (page_count * count) - 1, 6);
+						Sleep(200);
+						delete_modify(D_MENU[(page_count * count) - 2].index);
+					}
+				}
+				if (yy > 31 && yy < 35) {
+					if (D_MENU[(page_count * count) - 1].index != -1) {
+						long_box_UI(35, 12, (page_count * count) - 6, 6);
+						long_box_UI(35, 16, (page_count * count) - 5, 6);
+						long_box_UI(35, 20, (page_count * count) - 4, 6);
+						long_box_UI(35, 24, (page_count * count) - 3, 6);
+						long_box_UI(35, 28, (page_count * count) - 2, 6);
+						long_box_UI(35, 32, (page_count * count) - 1, 10);
+						Sleep(200);
+						delete_modify(D_MENU[(page_count* count) - 1].index);
+					}
 				}
 			}
 			if (xx > 59 && xx < 65 && yy > 37 && yy < 41) {
@@ -869,8 +967,8 @@ int style_management(int index) {
 					page_count++;
 					break;
 				}
-			}
-			if (xx > 80 && xx < 95) {
+			 }
+		    if (xx > 80 && xx < 95) {
 				if (yy > 45 && yy < 49) {
 					small_box(80, 46, 10, 86, 47, "추가", 6);
 					Sleep(500);
@@ -883,7 +981,7 @@ int style_management(int index) {
 					}
 				}
 			}
-			if (yy > 6 && yy < 11) {
+		    if (yy > 6 && yy < 11) {
 				if (xx > 34 && xx < 50) {
 					if (choice != 1) {
 						choice = 1;
@@ -892,7 +990,7 @@ int style_management(int index) {
 						break;
 					}
 				}
-				else if (xx > 50 && xx < 67) {
+				if (xx > 50 && xx < 67) {
 					if (choice != 2) {
 						choice = 2;
 						i = 0;
