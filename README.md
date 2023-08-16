@@ -24,7 +24,8 @@
 <br/>
 <br/>
 <br/>
-# 파일설계 #
+# **파일설계**
+
 <div style="display: flex; align-items: center;">
     <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/2dc2c777-326f-4fe8-b36e-e785e310b2c7" width="100%" style="max-width: 600px; border: 1px solid #ddd;">
 </div>
