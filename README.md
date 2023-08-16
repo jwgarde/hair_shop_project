@@ -32,13 +32,13 @@
 <hr/>
 
 <div style="display: flex; align-items: center;">
-    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/81762a9d-1410-46fd-ba84-2440b3e8e8ed" width="100%" style="max-width: 500px; border: 1px solid #ddd;">
+    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/81762a9d-1410-46fd-ba84-2440b3e8e8ed" width="100%" style="max-width: 400px; border: 1px solid #ddd;">
 </div>
 <br/>
 <hr/>
 
 <div style="display: flex; align-items: center;">
-    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/b083c420-d027-46a3-a2bc-c9812d17a40f" width="100%" style="max-width: 500px; border: 1px solid #ddd;">
+    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/b083c420-d027-46a3-a2bc-c9812d17a40f" width="100%" style="max-width: 400px; border: 1px solid #ddd;">
 </div>
 <br/>
 <br/>
