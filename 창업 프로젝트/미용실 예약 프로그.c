@@ -4,6 +4,7 @@
 #include<Windows.h>
 #include<conio.h>
 #include<stdlib.h>
+#include <time.h>
 #include<string.h>
 #include <stdbool.h>
 #include"resource.h"
@@ -18,6 +19,7 @@ int designer_count = 0;
 int design_count = 0;
 int take_menu_count = 0;
 int style_i = 0;
+int previous_choice = -1;
 typedef struct { //디자이너에 따른 메뉴 보여주기 위함
 	int index;
 	char name[20];
@@ -30,7 +32,6 @@ d_menu D_MENU[50];
 static HWND hWnd;
 // 프로그램의 인스턴스 핸들값
 static HINSTANCE hInst;
-
 typedef struct { // 회원 구조체
 	char name[20];
 	char phone[20];
@@ -116,7 +117,6 @@ void clearInputBuffer() {
 	int c;
 	while ((c = getchar()) != '\n' && c != EOF);
 }
-
 void file_read() { // 파일 읽어서 구조체에 저장하는 함수
 	member_count = 0;
 	char c;
@@ -682,10 +682,14 @@ void box_clear() { //기본 UI 클리어 해주는 함수
 	}
 
 }
-void Render(int x, int y, int num)
+void Render(int x, int y, int num, int check)
 {
-	const int pictureWidth = 130;
-	const int pictureHeight = 150;
+	int pictureWidth = 130;
+	int pictureHeight = 150;
+	if (check == 1) {
+		pictureWidth = 300;
+		pictureHeight = 400;
+	}
 	// DC의 핸들값을 받을 변수를 선언한다.(hDC : 실제화면DC, hMemDC : 이미지를 담을 DC)
 	// Device Context는 그래픽에 필요한 모든 옵션을 넣어둔 구조체라고 볼 수 있다.
 	// 그림그릴때 그림을 그릴 화폭이라 보면된다.
@@ -731,7 +735,7 @@ void Render(int x, int y, int num)
 	// hMemDC의 이미지를 hBackDC의 원하는 위치로 고속복사시킨다.(출력하려는 이미지를 후면버퍼에 복사시킨다.)
 	BitBlt(hBackDC, 0, 0, Bitmap.bmWidth, Bitmap.bmHeight, hMemDC, 0, 0, SRCCOPY);
 	// hBackDC(후면 버퍼)의 완성된 그림을 화면으로 고속복사시킨다.
-	BitBlt(hDC, x, y, x + Bitmap.bmWidth, y + Bitmap.bmHeight, hBackDC, 0, 0, SRCCOPY);
+	BitBlt(hDC, x, y, Bitmap.bmWidth, Bitmap.bmHeight, hBackDC, 0, 0, SRCCOPY);
 
 	// 메모리와 오브젝트를 해지한다.
 	DeleteObject(SelectObject(hBackDC, hBackBitmap));
@@ -741,7 +745,7 @@ void Render(int x, int y, int num)
 
 	ReleaseDC(hWnd, hDC);
 }
-int buid(int num) {
+int buid(int num, int x, int y, int check) {
 	// 테스트용으로 입력을 받을 버퍼
 	char buf[100] = { 0, };
 	int i = 0;
@@ -753,7 +757,7 @@ int buid(int num) {
 	bool isFinished = true;
 	while (1) {
 		// 그림을 그린다.
-		Render(10, 10, num);
+		Render(x, y, num,check);
 
 		// 그림 그리기 작업이 처음부터 완료되었다고 가정하고 isFinished를 true로 초기화한다.
 
@@ -1117,7 +1121,6 @@ int add_design(int index,char* string) {
 		}
 	}
 }
-//
 int style_management(int index) {
 	char str[15] = "펌";
 	int page_count = 1;
@@ -1463,8 +1466,415 @@ int isValidDate(int date) { //생년월일 유효한지 체크해주는 함수
 	// 모든 조건을 만족하는 경우 유효한 생년월일
 	return 1;
 }
+void designer_seeUI(int x, int y, int color) {
+	textcolor(color);
+	goto_xy(x, y);
+	printf("┏");
+	for (int i = 0; i < 33; i++)
+	{
+		printf("━");
+	}
+	printf("┓");
+
+	for (int i = 0; i < 9; i++) {
+		y += 1;
+		goto_xy(x, y);
+		printf("┃                                                                  ┃");
+	}
+	goto_xy(x, y + 1);
+	printf("┗");
+	for (int i = 0; i < 33; i++)
+	{
+		printf("━");
+	}
+	printf("┛");
+}
+void designer_print(int choice) {
+	int x = 62, y = 8;
+	int px = 900, py = 170;
+	int nx = 70, ny = 10;
+	int len;
+	int color = 6;
+	for (int i = 0; i < 3; i++) {
+		designer_seeUI(x, y, 6);
+		if (i < designer_count) {
+			if (choice == i) {
+				designer_seeUI(x, y, 10);
+				textcolor(6);
+			}
+			goto_xy(nx, ny);
+			printf("%s 디자이너", d_all[i].n_name);
+			len = strlen(d_all[i].introduce);
+			goto_xy(nx + 10, ny + 3);
+			textcolor(7);
+			for (int k = 0; k < len; k++) {
+				printf("%c", d_all[i].introduce[k]);
+				if (k == 20) {
+					goto_xy(nx + 10, ny + 4);
+				}
+			}
+			textcolor(6);
+			goto_xy(nx, ny + 7);
+			printf("★");
+			buid(i, px, py,0);
+			y += 12;
+			ny += 12;
+			py += 215;
+		}
+		else {
+			goto_xy(x + 31, y + 5);
+			textcolor(4);
+			printf("비어있음");
+			y += 12;
+		}
+	}
+	previous_choice = choice;
+}
 int designer_choice(int index) {
 	d_file_read();
+	int xx, yy, lr = 0;
+	int choice = -1;
+	while (1) {
+		box_clear();
+		xx, yy, lr = 0;
+		choice = -1;
+		previous_choice = -1;
+		basic_UI(60, 3);
+		goto_xy(92, 5);
+		printf("디자이너");
+		small_box(68, 46, 6, 74, 47, "이전", 6);
+		designer_print(choice);
+		//ExClick();
+		while (1) {
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (xx > 68 && xx < 83) {
+				if (yy > 45 && yy < 49) {
+					small_box(68, 46, 10, 74, 47, "이전", 6);
+					Sleep(500);
+					return;
+				}
+			}
+			if (xx > 62 && xx < 131) {
+				if (yy > 7 && yy < 19) {
+					choice = 0;
+				}
+				else if (yy > 19 && yy < 31) {
+					choice = 1;
+				}
+				else if (yy > 31 && yy < 43) {
+					choice = 2;
+				}
+			}
+			if (choice != previous_choice) {
+				if (choice < designer_count) {
+					designer_print(choice);
+					Sleep(1000);
+					date_choice(index,choice);
+					break;
+				}
+			}
+		}
+	}
+}
+int day_of_week(int year, int month) //총 일수를 구하는 함수(해당 월 1일이 무슨요일인지 알기위해)
+
+{
+
+	int temp = 0; //임시로 계산에 사용할 변수
+
+	int i; //for 문에서 사용할 변수
+
+
+
+	for (i = 1; i < year; i++) { //년도별 일수
+
+		if ((i % 4 == 0) && (i % 100 != 0) || (i % 400 == 0)) {
+
+			temp += 366;
+
+		}
+		else {
+
+			temp += 365;
+
+		}
+
+	}
+
+
+
+	for (i = 1; i < month; i++) { //매 달 일수
+
+		if (i == 2) { // 2월일경우 윤년 검사
+
+			if ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0))
+
+				temp += 29;
+
+			else
+
+				temp += 28;
+
+		}
+
+		switch (i) {
+
+		case 1:
+
+		case 3:
+
+		case 5:
+
+		case 7:
+
+		case 8:
+
+		case 10:
+
+		case 12:
+
+			temp += 31; //한달이 31일인 경우
+
+			break;
+
+		case 4:
+
+		case 6:
+
+		case 9:
+
+		case 11:
+
+			temp += 30; //한달이 30일인 경우
+
+			break;
+
+		}
+
+	}
+
+
+
+	temp = temp + 1; //마지막으로 일수를 더해 총 일 수를 구한다
+
+
+
+	return temp % 7; //1=월,2=화...6=토,0=일
+
+}
+void print_calendar(int sd, int year, int month, int x, int y,int d_day) {
+	
+	int i, j;
+	int temp;
+	goto_xy(x, y);
+	for (int i = 0; i < 17; i++) {
+		goto_xy(x, y+i);
+		printf("                                            ");
+	}
+	goto_xy(x, y);
+
+	switch (month) {
+	case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+		temp = 31;
+		break;
+	case 4: case 6: case 9: case 11:
+		temp = 30;
+		break;
+	case 2:
+		if ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0))
+			temp = 29;
+		else
+			temp = 28;
+	}
+
+	for (i = 1; i <= sd; i++)
+		printf("%c      ", "       \n"[i == sd]);
+
+	j = sd;
+
+	for (i = 1; i <= temp; i++) {
+		if (j == 6) {
+			textcolor(9);
+			if (i < d_day) {
+				textcolor(8);
+			}
+			else if (i == d_day) {
+				textcolor(10);
+			}
+			printf("%2d", i);
+			textcolor(15);
+			y += 3;
+			goto_xy(x, y);
+			j = -1;
+		}
+		else {
+			textcolor(15);
+			if (j == 0) {
+				textcolor(12);
+			}
+			if (i < d_day) {
+				textcolor(8);
+			}
+			else if (i == d_day) {
+				textcolor(10);
+			}
+			printf("%2d     ", i);
+		}
+		j++;
+	}
+}
+
+int date_choice(int index,int choice) {
+	time_t seconds = time(NULL);
+	struct tm* now = localtime(&seconds);
+	int xx, yy, lr = 0;
+	basic_UI_DELETE(60, 3);
+	big_designer_print();
+	textcolor(15);
+	goto_xy(55, 34);
+	printf("디자이너 : %s 디자이너", d_all[choice].n_name);
+	goto_xy(55, 36);
+	printf("날    짜 :");
+	buid(choice, 395, 180, 1);
+	goto_xy(118, 8);
+	textcolor(6);
+	printf("날짜 선택");
+	int year = 1900 + now->tm_year;
+	int mon = now->tm_mon + 1;
+	int day = day_of_week(year, mon);
+	int x = 100;
+	int y = 12;
+	int d_day = now->tm_mday;
+	textcolor(15);
+	goto_xy(x + 14, y);
+	printf("◀");
+	goto_xy(x + 17, y);
+	printf("%d년 %02d월", year, mon);
+	goto_xy(x + 29, y);
+	printf("▶");
+	goto_xy(x, y + 4);
+	printf("일     월     화     수     목     금     토");
+	goto_xy(132, 36);
+	textcolor(8);
+	printf("■");
+	textcolor(15);
+	goto_xy(135, 36);
+	printf("선택불가");
+	while (1) {
+		goto_xy(x + 17, y);
+		printf("%d년 %02d월", year, mon);
+		print_calendar(day, year, mon, x, y + 7, d_day);
+		//ExClick();
+		while (1) {
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (yy > 10 && yy < 13) {
+				if (xx > 127 && xx < 132) {
+					goto_xy(x + 29, y);
+					textcolor(10);
+					printf("▶");
+					mon += 1;
+					if (mon > 12) {
+						year += 1;
+						mon = 1;
+					}
+					day = day_of_week(year, mon);
+					Sleep(500);
+					goto_xy(x + 29, y);
+					textcolor(15);
+					d_day = 0;
+					printf("▶");
+					break;
+				}
+				else if (xx > 112 && xx < 117) {
+					if (year == 1900 + now->tm_year && mon == now->tm_mon + 1) {
+						continue;
+					}
+					textcolor(10);
+					goto_xy(x + 14, y);
+					printf("◀");
+					mon -= 1;
+					if (mon < 1) {
+						year -= 1;
+						mon = 12;
+					}
+					if (year == 1900 + now->tm_year && mon == now->tm_mon + 1) {
+						d_day = now->tm_mday;
+					}
+					day = day_of_week(year, mon);
+					Sleep(500);
+					textcolor(15);
+					goto_xy(x + 14, y);
+					printf("◀");
+					break;
+				}
+			}
+			if (yy > 5 && yy < 8) {
+				if (xx > 42 && xx < 48) {
+					textcolor(10);
+					goto_xy(44, 7);
+					printf("◁--");
+				}
+			}
+		}
+	}
+}
+int big_designer_print(){
+	textcolor(DarkYellow);
+	int x = 40, y = 6;
+	goto_xy(x, y);
+	printf("┏");
+	for (int i = 0; i < 54; i++)
+	{
+		printf("━");
+	}
+	printf("┓");
+	for (int i = 0; i < 35; i++) {
+		y += 1;
+		goto_xy(x, y);
+		printf("┃                                                                                                            ┃");
+	}
+	goto_xy(x, y + 1);
+	printf("┗");
+	for (int i = 0; i < 54; i++)
+	{
+		printf("━");
+	}
+	printf("┛");
+	x = 95;
+	y = 7;
+	goto_xy(x, y);
+	printf("┏");
+	for (int i = 0; i < 25; i++)
+	{
+		printf("━");
+	}
+	printf("┓");
+	for (int i = 0; i < 33; i++) {
+		y += 1;
+		if (i == 1) {
+			goto_xy(x, y);
+			printf("┣");
+			for (int i = 0; i < 25; i++) {
+				printf("━");
+			}
+			printf("┫");
+		}
+		else {
+			goto_xy(x, y);
+			printf("┃                                                  ┃");
+		}
+	}
+	goto_xy(x, y + 1);
+	printf("┗");
+	for (int i = 0; i < 25; i++)
+	{
+		printf("━");
+	}
+	printf("┛");
+	goto_xy(44, 7);
+	printf("◁--");
 }
 int designer_initial_screen(int index) { //디자이너 초기 화면
 	int xx, yy, lr = 0;
@@ -1637,15 +2047,15 @@ void modifying_membership(int index) { //회원정보 수정
 	printf("이름, 전화번호, 비밀번호만 수정 가능");
 	textcolor(6);
 	goto_xy(81, 17);
-	printf("이          름 :");
+	printf("이          름  :");
 	goto_xy(98, 17);
 	printf("%s", all[index].name);
 	goto_xy(81, 22);
-	printf("전  화  번  호 :");
+	printf("전  화  번  호  :");
 	goto_xy(98, 22);
 	printf("%s", all[index].phone);
 	goto_xy(81, 27);
-	printf("성          별 :");  
+	printf("성          별  :");  
 	goto_xy(98, 27);
 	if (strcmp(all[index].gender, "남") == 0) {\
 		printf("남자");
@@ -1674,22 +2084,11 @@ void modifying_membership(int index) { //회원정보 수정
 				return;
 			}
 		}
-		if (xx > 86 && xx < 117) {
-			if (yy > 15 && yy < 19) {
-				textcolor(6);
-				goto_xy(95, 17);
-				printf("                                    ");
-				goto_xy(98, 17);
-				EnableConsoleCursor();
-				scanf("%s", name);
-				HideCursor();
-			}
-		}
-		if (xx > 90 && xx < 117) {
+		if (xx > 97 && xx < 117) {
 			if (yy > 20 && yy < 24) {
 				textcolor(6);
-				goto_xy(95, 22);
-				printf("                                 ");
+				goto_xy(98, 22);
+				printf("                              ");
 				goto_xy(98, 22);
 				EnableConsoleCursor();
 				scanf("%s", phone);
@@ -1702,9 +2101,7 @@ void modifying_membership(int index) { //회원정보 수정
 				}
 
 			}
-		}
-		if (xx > 97 && xx < 117) {
-			if (yy > 35 && yy < 39) {
+			else if (yy > 35 && yy < 39) {
 				textcolor(6);
 				goto_xy(98, 37);
 				printf("                                 ");
@@ -1718,6 +2115,15 @@ void modifying_membership(int index) { //회원정보 수정
 					goto_xy(98, 37);
 					printf("형식이 올바르지 않습니다..");
 				}
+			}
+			else if (yy > 15 && yy < 19) {
+				textcolor(6);
+				goto_xy(98, 17);
+				printf("                                ");
+				goto_xy(98, 17);
+				EnableConsoleCursor();
+				scanf("%s", name);
+				HideCursor();
 			}
 		}
 		if (xx > 110 && xx < 125) {
