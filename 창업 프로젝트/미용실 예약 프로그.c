@@ -23,6 +23,7 @@ int take_menu_count = 0;
 int style_i = 0;
 int previous_choice = -1;
 int date_check = 0;
+int choice_index = -1;
 int date_index[37];
 typedef struct { //디자이너에 따른 메뉴 보여주기 위함
 	int index;
@@ -337,9 +338,15 @@ void add_box_UI(int x, int y, int color, int xx, int yy, char* str) {
 	goto_xy(xx, yy);
 	printf("%s", str);
 }
-void design_see_UI(int x, int y, int color, int i) {
-	if (D_MENU[i].index == -1) {
-		return;
+void design_see_UI(int x, int y, int color, int i,int design_choice,int num) {
+	if (num == 0) {
+		if (D_MENU[i].index == -1) {
+			return;
+		}
+		if (design_choice == i) {
+			choice_index = D_MENU[i].index;
+			color = 10;
+		}
 	}
 	textcolor(color);
 	goto_xy(x, y);
@@ -537,32 +544,6 @@ void delete_modify_finish(int x,int y, char* str) {
 	printf("%s", str);
 	Sleep(2000);
 	basic_UI_DELETE(30, 3);
-}
-void small2_box(int x, int y, int color, int xx, int yy, char* str, int color2) {
-	textcolor(color);
-	goto_xy(x, y);
-	printf("┏");
-	for (int i = 0; i < 8; i++)
-	{
-		printf("━");
-	}
-	printf("┓");
-
-	for (int i = 0; i < 1; i++) {
-		y += 1;
-		goto_xy(x, y);
-		printf("┃                ┃");
-	}
-	goto_xy(x, y + 1);
-	printf("┗");
-	for (int i = 0; i < 8; i++)
-	{
-		printf("━");
-	}
-	printf("┛");
-	textcolor(color2);
-	goto_xy(xx, yy);
-	printf("%s", str);
 }
 void small_box(int x, int y, int color, int xx, int yy, char* str, int color2) { // 체크 박스 UI
 	textcolor(color);
@@ -2075,7 +2056,7 @@ const char* m_design_print(int index, int design_column, int page_count, int cou
 			break;
 		}
 		else {
-			design_see_UI(x, y, 6, style_i);
+			design_see_UI(x, y, 6, style_i,design_choice,0);
 			goto_xy(x+2, y+1);
 			textcolor(7);
 			printf("%s", D_MENU[style_i].name);
@@ -2130,17 +2111,16 @@ int member_design_choice(int index, int choice, int year, int mon, int choice_da
 	char str[15] = "커트";
 	int page_count = 1;
 	int design_column = 1;
+	int design_choice = -1;
 	style_i = 0;
 	int count = 3;
 	int x = 98;
 	int y = 10;
 	int xx, yy = 0;
 	if (hour < 10) {
-		printf("%02d:%02d", hour + 12, min);
+		hour += 12;
 	}
-	else {
-		printf("%02d:%02d", hour, min);
-	}
+	printf("%02d:%02d", hour, min);
 	Sleep(700);
 	goto_xy(55, 40);
 	printf("디 자 인 :             ");
@@ -2150,7 +2130,7 @@ int member_design_choice(int index, int choice, int year, int mon, int choice_da
 	printf("디자인 선택");
 	strcpy(str, "커트");
 	while (1) {
-		const char* string = m_design_print(choice, design_column, page_count, count, str, 0);
+		const char* string = m_design_print(choice, design_column, page_count, count, str, design_choice);
 		//ExClick();
 		strcpy(str, string);
 		if (style_i == (count * page_count) - 1) {
@@ -2172,7 +2152,13 @@ int member_design_choice(int index, int choice, int year, int mon, int choice_da
 			}
 			if (xx > 98 && xx < 145) {
 				if (yy > 12 && yy < 21) {
-
+					design_choice = (count * page_count) - 3;
+				}
+				else if (yy > 20 && yy < 29) {
+					design_choice = (count * page_count) - 2;
+				}
+				else if (yy > 28 && yy < 37) {
+					design_choice = (count * page_count) - 1;
 				}
 			}
 			if (yy > 9 && yy < 13) {
@@ -2232,10 +2218,50 @@ int member_design_choice(int index, int choice, int year, int mon, int choice_da
 					}
 				}
 			}
-
+			if (design_choice != -1) {
+				style_i = (page_count * count) - count;
+				choice_index = -1;
+				m_design_print(choice, design_column, page_count, count, str, design_choice);
+				payment(choice,year,mon,choice_day,hour,min);
+			}
 		}
 	}
 }
+int payment(int choice, int year, int mon, int choice_day,int hour, int min) {
+	Sleep(700);
+	int x = 55, y = 34;
+	for (int i = 0; i < 4; i++) {
+		goto_xy(x, y);
+		printf("                               ");
+		y += 2;
+	}
+	textcolor(6);
+	date_and_time_choice_UI(95, 7);
+	goto_xy(121, 8);
+	printf("결제");
+	textcolor(7);
+	goto_xy(100, 12);
+	printf("디자이너:           %s", d_all[choice].n_name);
+	goto_xy(100, 15);
+	printf("날    짜:           %d.%d.%d", year,mon,choice_day);
+	goto_xy(100, 18);
+	printf("시    간:           %02d:%02d", hour, min);
+	goto_xy(100, 21);
+	printf("종    류:           %s", STYLE[choice_index].sort);
+	goto_xy(100, 24);
+	printf("디 자 인:           %s", STYLE[choice_index].name);
+	goto_xy(100, 27);  
+	printf("금    액:           %d원", STYLE[choice_index].price);
+	goto_xy(105, 31);
+	design_see_UI(98, 30, 8, 0, 0, 1);
+	goto_xy(110, 33);
+	textcolor(4);
+	printf("※요청사항(최대 50글자)");
+	design_column_UI(117,38,7, 121,39, "결제", 7);
+	Sleep(300000);
+
+}
+
 int design_column_UI(int x, int y, int color, int xx, int yy, char* str, int color2) {
 	textcolor(color);
 	goto_xy(x, y);
