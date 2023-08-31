@@ -1903,127 +1903,141 @@ int time_choice(int index, int choice,int year, int mon, int choice_day) {
 	int x = 98;
 	int y = 16;
 	int xx = 0, yy = 0, lr = 0;
+	int check = 0;
 	goto_xy(66, 36);
-	printf("%d.%02d.%02d",year,mon,choice_day);
-	goto_xy(55, 38);
-	printf("시    간 :");
-	textcolor(6);
+	printf("%d.%02d.%02d", year, mon, choice_day);
 	Sleep(700);
-	date_and_time_choice_UI(95,7);
-	goto_xy(118, 8);
-	printf("시간 선택");
-	textcolor(15);
-	goto_xy(121, 12);
-	printf("오전");
-	goto_xy(121, 22);
-	printf("오후");
-	goto_xy(132, 38);
-	textcolor(8);
-	printf("■");
-	textcolor(15);
-	goto_xy(135, 38);
-	printf("선택불가");
-	goto_xy(132, 39);
-	textcolor(15);
-	printf("■");
-	goto_xy(135, 39);
-	printf("선택가능");
-	textcolor(15);
-	//지금 선택한 날짜 랑 반복문 안에있는 시간이랑 분을 계속해서 함수로 던져서 이 헤어디자이너에 이 날짜에 이 시간 예약이 있는지 확인 해주는 함수 만들어야함
-	for(int i = 1; i<= 16;i++){
-		time_box(x, y, 15, x + 3, y + 1, hour, min, 15);
-		x += 12;
-		min += 30;
-		if (min == 60) {
-			hour += 1;
-			min = 0;
-			if (hour > 12) {
-				hour = 1;
-			}
-		}
-		if (i % 4 == 0) {
-			if (i == 4) {
-				y += 10;
-			}
-			else {
-					y += 4;
-			}
-			x = 98;
-		}
-	}
-	hour = 0;
-	min = 0;
-	int e_hour = 0;
 	while (1) {
-		xx = 0, yy = 0;
-		click(&xx, &yy);
-		if (yy > 5 && yy < 8) {
-			if (xx > 42 && xx < 48) {
-				textcolor(10);
-				goto_xy(44, 7);
-				printf("◁--");
-				Sleep(500);
-				goto_xy(55, 38);
-				printf("              ");
+		hour = 10;
+		min = 0;
+		x = 98;
+		y = 16;
+		textcolor(6);
+		goto_xy(44, 7);
+		printf("◁--");
+		textcolor(15);
+		goto_xy(55, 38);
+		printf("시    간 :             ");
+		textcolor(6);
+		date_and_time_choice_UI(95, 7);
+		goto_xy(118, 8);
+		printf("시간 선택");
+		textcolor(15);
+		goto_xy(121, 12);
+		printf("오전");
+		goto_xy(121, 22);
+		printf("오후");
+		goto_xy(132, 38);
+		textcolor(8);
+		printf("■");
+		textcolor(15);
+		goto_xy(135, 38);
+		printf("선택불가");
+		goto_xy(132, 39);
+		textcolor(15);
+		printf("■");
+		goto_xy(135, 39);
+		printf("선택가능");
+		textcolor(15);
+		//지금 선택한 날짜 랑 반복문 안에있는 시간이랑 분을 계속해서 함수로 던져서 이 헤어디자이너에 이 날짜에 이 시간 예약이 있는지 확인 해주는 함수 만들어야함 // 당일 예약 할 경우 지난 시간은 예약 못하게 막아야함
+		for (int i = 1; i <= 16; i++) {
+			time_box(x, y, 15, x + 3, y + 1, hour, min, 15);
+			x += 12;
+			min += 30;
+			if (min == 60) {
+				hour += 1;
+				min = 0;
+				if (hour > 12) {
+					hour = 1;
+				}
+			}
+			if (i % 4 == 0) {
+				if (i == 4) {
+					y += 10;
+				}
+				else {
+					y += 4;
+				}
+				x = 98;
+			}
+		}
+		hour = 0;
+		min = 0;
+		int e_hour = 0;
+		while (1) {
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (yy > 5 && yy < 8) {
+				if (xx > 42 && xx < 48) {
+					textcolor(10);
+					goto_xy(44, 7);
+					printf("◁--");
+					Sleep(500);
+					goto_xy(55, 38);
+					printf("              ");
+					return;
+				}
+			}
+			if (xx > 97 && xx < 146) {
+				if (yy > 15 && yy < 19) {
+					yy = 16;
+					e_hour = 10;
+				}
+				if (yy > 25 && yy < 29) {
+					yy = 26;
+					e_hour = 12;
+				}
+				if (yy > 29 && yy < 33) {
+					yy = 30;
+					e_hour = 2;
+				}
+				if (yy > 33 && yy < 37) {
+					yy = 34;
+					e_hour = 4;
+				}
+				if (e_hour != 0) {
+					if (xx > 98 && xx < 109) {
+						xx = 98;
+						hour = e_hour;
+						min = min;
+					}
+					else if (xx > 110 && xx < 121) {
+						xx = 110;
+						hour = e_hour;
+						min += 30;
+					}
+					else if (xx > 122 && xx < 133) {
+						xx = 122;
+						min = 0;
+						hour = e_hour + 1;
+						if (hour > 12) {
+							hour = 1;
+						}
+
+					}
+					else if (xx > 134 && xx < 146) {
+						xx = 134;
+						hour = e_hour + 1;
+						if (hour > 12) {
+							hour = 1;
+						}
+						min += 30;
+					}
+					else {
+						e_hour = 0;
+						continue;
+					}
+					break;
+				}
+			}
+		}
+		if (e_hour != 0 && xx != 0 && yy != 0) {
+			time_box(xx, yy, 10, xx + 3, yy + 1, hour, min, 15);
+			check = member_design_choice(index, choice, year, mon, choice_day, hour, min);
+			if (check == 1) {
 				return;
 			}
 		}
-		if (xx > 97 && xx < 146) {
-			if (yy > 15 && yy < 19) {
-				yy = 16;
-				e_hour = 10;
-			}
-			if (yy > 25 && yy < 29) {
-				yy = 26;
-				e_hour = 12;
-			}
-			if (yy > 29 && yy < 33) {
-				yy = 30;
-				e_hour = 2;
-			}
-			if (yy > 33 && yy < 37) {
-				yy = 34;
-				e_hour = 4;
-			}
-			if (e_hour != 0) {
-				if (xx > 98 && xx < 109) {
-					xx = 98;
-					hour = e_hour;
-					min = min;
-				}
-				else if (xx > 110 && xx < 121) {
-					xx = 110;
-					hour = e_hour;
-					min += 30;
-				}
-				else if (xx > 122 && xx < 133) {
-					xx = 122;
-					min = 0;
-					hour = e_hour + 1;
-					if (hour > 12) {
-						hour = 1;
-					}
-
-				}
-				else if (xx > 134 && xx > 146) {
-					xx = 134;
-					hour = e_hour + 1;
-					if (hour > 12) {
-						hour = 1;
-					}
-					min += 30;
-				}
-				else {
-					e_hour = 0;
-					continue;
-				}
-				break;
-			}
-		}
-	}
-	if (e_hour != 0 && xx != 0 && yy != 0) {
-		time_box(xx, yy, 10, xx + 3, yy + 1, hour, min, 15);
-		member_design_choice(index, choice, year, mon, choice_day,hour,min);
 	}
 }
 const char* m_design_print(int index, int design_column, int page_count, int count, char *str,int design_choice) {
@@ -2063,33 +2077,41 @@ const char* m_design_print(int index, int design_column, int page_count, int cou
 		else {
 			design_see_UI(x, y, 6, style_i);
 			goto_xy(x+2, y+1);
-			textcolor(14);
+			textcolor(7);
 			printf("%s", D_MENU[style_i].name);
 			int print_x = x + 7;
 			int print_y = y + 3;
 			int len = 0;
 			len = strlen(D_MENU[style_i].account);
-			//printf("%d", len);
 			int len_2 = 0;
+			textcolor(8);
 			goto_xy(print_x, print_y);
-			//printf("%s", D_MENU[style_i].account);
-			for (int i = 0; i < len; i++) {
-				if (len < sizeof(D_MENU[style_i].account) - 1) {
-					if (len_2 >= MAX_2_X - 103 && (len_2 % (MAX_2_X - 103)) == 0) {
-						if (print_y >= y + 6) {
-							break;
+			if (strcmp(D_MENU[style_i].account, " ") != 0) {
+				for (int i = 0; i < len; i++) {
+					if (len < sizeof(D_MENU[style_i].account) - 1) {
+						if (len_2 >= MAX_2_X - 103 && (len_2 % (MAX_2_X - 103)) == 0) {
+							if (print_y >= y + 6) {
+								break;
+							}
+							handleNewline_2(&print_x, &print_y);
+							len_2 = 0;
+							len_2++;
+							printf("%c", D_MENU[style_i].account[i]);
 						}
-						handleNewline_2(&print_x, &print_y);
-						len_2 = 0;
-						len_2++;
-						printf("%c", D_MENU[style_i].account[i]);
-					}
-					else {
-						len_2++;
-						printf("%c", D_MENU[style_i].account[i]);
+						else {
+							len_2++;
+							printf("%c", D_MENU[style_i].account[i]);
+						}
 					}
 				}
 			}
+			else {
+				goto_xy(x + 20, y + 3);
+				printf("설명없음");
+			}
+			goto_xy(x + 38,y + 6);
+			textcolor(7);
+			printf("%d원", D_MENU[style_i].price);
 			y += 8;
 		}
 	}
@@ -2119,8 +2141,10 @@ int member_design_choice(int index, int choice, int year, int mon, int choice_da
 	else {
 		printf("%02d:%02d", hour, min);
 	}
-	textcolor(6);
 	Sleep(700);
+	goto_xy(55, 40);
+	printf("디 자 인 :             ");
+	textcolor(6);
 	date_and_time_choice_UI(95, 7);
 	goto_xy(117, 8);
 	printf("디자인 선택");
@@ -2135,6 +2159,22 @@ int member_design_choice(int index, int choice, int year, int mon, int choice_da
 		while (1) {
 			xx = 0, yy = 0;
 			click(&xx, &yy);
+			if (yy > 5 && yy < 8) {
+				if (xx > 42 && xx < 48) {
+					textcolor(10);
+					goto_xy(44, 7);
+					printf("◁--");
+					Sleep(500);
+					goto_xy(55, 40);
+					printf("              ");
+					return;
+				}
+			}
+			if (xx > 98 && xx < 145) {
+				if (yy > 12 && yy < 21) {
+
+				}
+			}
 			if (yy > 9 && yy < 13) {
 				if (xx > 97 && xx < 109) {
 					if (design_column != 1) {
@@ -2192,6 +2232,7 @@ int member_design_choice(int index, int choice, int year, int mon, int choice_da
 					}
 				}
 			}
+
 		}
 	}
 }
