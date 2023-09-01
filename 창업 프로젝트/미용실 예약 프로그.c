@@ -1,13 +1,19 @@
 #define _CRT_SECURE_NO_WARNINGS
-#define MAX 200 //È¸¿ø ÃÖ´ë ÀÎ¿ø ¼ö
+#define MAX 200 //íšŒì› ìµœëŒ€ ì¸ì› ìˆ˜
+//ì¶”ê°€ í• ê²ƒ í•œ ë””ìì´ë„ˆë‹¹ ë””ìì¸ ë©”ë‰´ê°€ 50ê°œ ì œí•œ ê±¸ì–´ë‘˜ê²ƒ
 #include<stdio.h>
 #include<Windows.h>
 #include<conio.h>
 #include<stdlib.h>
+#include <time.h>
 #include<string.h>
 #include <stdbool.h>
 #include"resource.h"
+
+#include <wchar.h>
 #define MAX_X 174
+#define MAX_2_X 135
+
 #define MAX_Y 40
 INPUT_RECORD rec;
 DWORD dwNOER;
@@ -16,20 +22,28 @@ int member_count = 0;
 int designer_count = 0;
 int design_count = 0;
 int take_menu_count = 0;
-typedef struct { //µğÀÚÀÌ³Ê¿¡ µû¸¥ ¸Ş´º º¸¿©ÁÖ±â À§ÇÔ
+
+int style_i = 0;
+int previous_choice = -1;
+int date_check = 0;
+int choice_index = -1;
+int date_index[37];
+
+typedef struct { //ë””ìì´ë„ˆì— ë”°ë¥¸ ë©”ë‰´ ë³´ì—¬ì£¼ê¸° ìœ„í•¨
 	int index;
 	char name[20];
 	int price;
 	char account[240];
 }d_menu;
-d_menu D_MENU[20];
 
-// ÄÜ¼Ö À©µµ¿ì Ã¢ÀÇ ÇÚµé°ª    
+d_menu D_MENU[50];
+
+
+// ì½˜ì†” ìœˆë„ìš° ì°½ì˜ í•¸ë“¤ê°’    
 static HWND hWnd;
-// ÇÁ·Î±×·¥ÀÇ ÀÎ½ºÅÏ½º ÇÚµé°ª
+// í”„ë¡œê·¸ë¨ì˜ ì¸ìŠ¤í„´ìŠ¤ í•¸ë“¤ê°’
 static HINSTANCE hInst;
-
-typedef struct { // È¸¿ø ±¸Á¶Ã¼
+typedef struct { // íšŒì› êµ¬ì¡°ì²´
 	char name[20];
 	char phone[20];
 	char gender[5];
@@ -54,83 +68,27 @@ typedef struct {
 	char account[220];
 }style;
 style STYLE[100];
-<<<<<<< HEAD
-void long_box_UI(int x, int y, int i,int color) {
-	int len = 0;
-	if (D_MENU[i].index == -1) {
-		return;
-	}
-	textcolor(color);
-=======
-void long_box_UI(int x, int y) {
->>>>>>> 198d3e0779c487ef4316eb3d0a939fb6aa1911c7
-	goto_xy(x, y);
-	printf("¦®");
-	for (int i = 0; i < 30; i++)
-	{
-		printf("¦¬");
-	}
-	printf("¦¯");
 
-	for (int i = 0; i < 1; i++) {
-		y += 1;
-		goto_xy(x, y);
-		printf("¦­                                                            ¦­");
-	}
-	goto_xy(x, y + 1);
-	printf("¦±");
-	for (int i = 0; i < 30; i++)
-	{
-		printf("¦¬");
-	}
-	printf("¦°");
-<<<<<<< HEAD
-	textcolor(6);
-	x = 39;
-	goto_xy(x, y);
-	printf("%s", D_MENU[i].name);
-	goto_xy(x + 15, y);
-	printf("%d", D_MENU[i].price);
-	goto_xy(x + 30, y);
-	if (strcmp(D_MENU[i].account, " ") == 0 || strcmp(D_MENU[i].account, "") == 0) {
-		goto_xy(x + 39, y);
-		printf("X");
-	}
-	else {
-		len = strlen(D_MENU[i].account);
-		for (int k = 0; k < len; k++) {
-			if (D_MENU[i].account[k] == ' ') {
-				printf("...");
-				break;
-			}
-			else {
-				printf("%c", D_MENU[i].account[k]);
-			}
-		}
-	}
-=======
->>>>>>> 198d3e0779c487ef4316eb3d0a939fb6aa1911c7
-}
-int getMaskedInput() { //µğÀÚÀÌ³Ê ºñ¹Ğ¹øÈ£ »ıÀÏ ÀÔ·Â ÇÒ‹š *·Î Ãâ·Â ÇØÁÖ´Â ÇÔ¼ö
+int getMaskedInput() { //ë””ìì´ë„ˆ ë¹„ë°€ë²ˆí˜¸ ìƒì¼ ì…ë ¥ í• Â‹Âš *ë¡œ ì¶œë ¥ í•´ì£¼ëŠ” í•¨ìˆ˜
 	int birth = 0;
 	int ch;
 	int i = 0;
 
 	while (i < 8) {
 		ch = _getch();
-		if (ch == 13) { // ¿£ÅÍ¸¦ ´­·¶À» ¶§
-			break; // ÀÔ·Â Á¾·á
+		if (ch == 13) { // ì—”í„°ë¥¼ ëˆŒë €ì„ ë•Œ
+			break; // ì…ë ¥ ì¢…ë£Œ
 		}
 		if (ch >= '0' && ch <= '9') {
 			putchar('*');
 			birth = birth * 10 + (ch - '0');
 			i++;
 		}
-		else if (ch == 8 && i > 0) { // ¹é½ºÆäÀÌ½º°¡ ´­·ÈÀ» ¶§
-			putchar('\b'); // ¹é½ºÆäÀÌ½º ¹®ÀÚ Ãâ·Â
-			putchar(' ');  // °ø¹é ¹®ÀÚ·Î µ¤¾î¾¸
-			putchar('\b'); // ¹é½ºÆäÀÌ½º ¹®ÀÚ Ãâ·Â
-			birth = birth / 10; // °¡Àå ¸¶Áö¸· ÀÚ¸® Á¦°Å
+		else if (ch == 8 && i > 0) { // ë°±ìŠ¤í˜ì´ìŠ¤ê°€ ëˆŒë ¸ì„ ë•Œ
+			putchar('\b'); // ë°±ìŠ¤í˜ì´ìŠ¤ ë¬¸ì ì¶œë ¥
+			putchar(' ');  // ê³µë°± ë¬¸ìë¡œ ë®ì–´ì”€
+			putchar('\b'); // ë°±ìŠ¤í˜ì´ìŠ¤ ë¬¸ì ì¶œë ¥
+			birth = birth / 10; // ê°€ì¥ ë§ˆì§€ë§‰ ìë¦¬ ì œê±°
 			i--;
 		}
 	}
@@ -148,10 +106,15 @@ void handleNewline(int* x, int* y) {
 	goto_xy(*x, *y); // Move the cursor to the new position
 }
 
+void handleNewline_2(int* print_x, int* print_y) {
+	(*print_y)++;
+	goto_xy(*print_x, *print_y); // Move the cursor to the new position
+}
+
 void handleBackspace(char* str, int* len, int* x, int* y) {
 	if (*len > 0) {
 		(*len)--;
-		clearCurrentChar((*x) + (*len) % MAX_X, *y); //ÀÌºÎºĞ
+		clearCurrentChar((*x) + (*len) % MAX_X, *y); //ì´ë¶€ë¶„
 		str[(*x - 124) + (*len) + (MAX_X - 124) * (*y - 36)] = '\0'; // Remove the deleted character from the string
 		goto_xy(*x + (*len) % MAX_X, *y); // Move the cursor back to the original position
 	}
@@ -168,7 +131,13 @@ void handleBackspace(char* str, int* len, int* x, int* y) {
 	}
 }
 
-void file_read() { // ÆÄÀÏ ÀĞ¾î¼­ ±¸Á¶Ã¼¿¡ ÀúÀåÇÏ´Â ÇÔ¼ö
+void clearInputBuffer() {
+	int c;
+	while ((c = getchar()) != '\n' && c != EOF);
+}
+
+void file_read() { // íŒŒì¼ ì½ì–´ì„œ êµ¬ì¡°ì²´ì— ì €ì¥í•˜ëŠ” í•¨ìˆ˜
+	member_count = 0;
 	char c;
 	FILE* member = fopen("member.txt", "r");
 	if (member == NULL) {
@@ -186,13 +155,13 @@ void file_read() { // ÆÄÀÏ ÀĞ¾î¼­ ±¸Á¶Ã¼¿¡ ÀúÀåÇÏ´Â ÇÔ¼ö
 		}
 	}
 }
-void file_append() { //ÆÄÀÏ ÀÌ¾î¾²´Â ÇÔ¼ö
+void file_append() { //íŒŒì¼ ì´ì–´ì“°ëŠ” í•¨ìˆ˜
 	FILE* member;
 	member = fopen("member.txt", "a");
 	fprintf(member, "%s %s %s %d %s\n", all[member_count].name, all[member_count].phone, all[member_count].gender, all[member_count].brith, all[member_count].pw);
 	fclose(member);
 }
-void file_write() { // µğÀÚÀÌ³Ê ÆÄÀÏ ¾²±â
+void file_write() { // ë””ìì´ë„ˆ íŒŒì¼ ì“°ê¸°
 	FILE* member;
 	member = fopen("member.txt", "w");
 	for (int i = 0; i < member_count; i++) {
@@ -201,7 +170,8 @@ void file_write() { // µğÀÚÀÌ³Ê ÆÄÀÏ ¾²±â
 	}
 	fclose(member);
 }
-void d_file_read() { // µğÀÚÀÌ³Ê ÆÄÀÏ ÀĞ±â
+void d_file_read() { // ë””ìì´ë„ˆ íŒŒì¼ ì½ê¸°
+	designer_count = 0;
 	char c;
 	FILE* designer = fopen("designer.txt", "r");
 	if (designer == NULL) {
@@ -219,14 +189,15 @@ void d_file_read() { // µğÀÚÀÌ³Ê ÆÄÀÏ ÀĞ±â
 		}
 	}
 }
-void d_file_write() { // µğÀÚÀÌ³Ê ÆÄÀÏ ¾²±â
+void d_file_write() { // ë””ìì´ë„ˆ íŒŒì¼ ì“°ê¸°
 	FILE* designer = fopen("designer.txt", "w");
 	for (int i = 0; i < designer_count; i++) {
 		fprintf(designer, "%s %s %s %d %s %s\n", d_all[i].name, d_all[i].phone, d_all[i].gender, d_all[i].brith, d_all[i].n_name, d_all[i].introduce);
 	}
 	fclose(designer);
 }
-void design_file_read() { //µğÀÚÀÎ ÆÄÀÏ ÀĞ±â
+void design_file_read() { //ë””ìì¸ íŒŒì¼ ì½ê¸°
+	design_count = 0;
 	char c;
 	FILE* design = fopen("design.txt", "r");
 	if (design == NULL) {
@@ -251,22 +222,25 @@ void design_file_append() {
 	fprintf(design, "%s %s %s %d/%s\n", STYLE[design_count].designer_name, STYLE[design_count].sort, STYLE[design_count].name, STYLE[design_count].price, STYLE[design_count].account);
 	fclose(design);
 }
-void HideCursor() { //¸¶¿ì½º Ä¿¼­ ¼û±â´Â ÇÔ¼ö
+void design_file_write() {
+	FILE* design = fopen("design.txt", "w");
+	for (int i = 0; i < design_count; i++) {
+		fprintf(design, "%s %s %s %d/%s\n", STYLE[i].designer_name, STYLE[i].sort, STYLE[i].name, STYLE[i].price, STYLE[i].account);
+	}
+	fclose(design);
+}
+void HideCursor() { //ë§ˆìš°ìŠ¤ ì»¤ì„œ ìˆ¨ê¸°ëŠ” í•¨ìˆ˜
 	CONSOLE_CURSOR_INFO cursor_info = { 1, FALSE };
 	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);
 }
-void EnableConsoleCursor() { //¸¶¿ì½º Ä¿¼­ º¸ÀÌ°Ô ÇÏ´Â ÇÔ¼ö
+void EnableConsoleCursor() { //ë§ˆìš°ìŠ¤ ì»¤ì„œ ë³´ì´ê²Œ í•˜ëŠ” í•¨ìˆ˜
 	CONSOLE_CURSOR_INFO cursor_info = { 1, TRUE };
 	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);
 }
 void design_take_menu(int index, char *str) {
 	take_menu_count = 0;
-	for (int i = 0; i < 20; i++) {
-<<<<<<< HEAD
+	for (int i = 0; i < 50; i++) {
 		D_MENU[i].index = -1;
-=======
-		D_MENU[i].index = 0;
->>>>>>> 198d3e0779c487ef4316eb3d0a939fb6aa1911c7
 		strcpy(D_MENU[i].name, " ");
 		D_MENU[i].price = 0;
 		strcpy(D_MENU[i].account," ");
@@ -281,38 +255,34 @@ void design_take_menu(int index, char *str) {
 		}
 	}
 }
-<<<<<<< HEAD
-int textcolor(int colorNum) { // ±Û¾¾ ÄÃ·¯ ¹Ù²ãÁÖ´Â ÇÔ¼ö
-=======
-void textcolor(int colorNum) { // ±Û¾¾ ÄÃ·¯ ¹Ù²ãÁÖ´Â ÇÔ¼ö
->>>>>>> 198d3e0779c487ef4316eb3d0a939fb6aa1911c7
+int textcolor(int colorNum) { // ê¸€ì”¨ ì»¬ëŸ¬ ë°”ê¿”ì£¼ëŠ” í•¨ìˆ˜
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), colorNum);
 }
-int goto_xy(int x, int y)  // ÁÂÇ¥°ª
+int goto_xy(int x, int y)  // ì¢Œí‘œê°’
 {
 	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	COORD pos;
 	pos.X = x;
 	pos.Y = y;
-	SetConsoleCursorPosition(handle, pos); // x°ª y°ª ÀÔ·Â
+	SetConsoleCursorPosition(handle, pos); // xê°’ yê°’ ì…ë ¥
 }
-void click(int* xx, int* yy) { // ¸¶¿ì½º Å¬¸¯ ÀÌº¥Æ® 
+void click(int* xx, int* yy) { // ë§ˆìš°ìŠ¤ í´ë¦­ ì´ë²¤íŠ¸ 
 	while (1)
 	{
-		ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), &rec, 1, &dwNOER); // ÄÜ¼ÖÃ¢ ÀÔ·ÂÀ» ¹Ş¾ÆµéÀÓ.
-		if (rec.EventType == MOUSE_EVENT) {// ¸¶¿ì½º ÀÌº¥Æ®ÀÏ °æ¿ì
-			if (rec.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) { // ÁÂÃø ¹öÆ°ÀÌ Å¬¸¯µÇ¾úÀ» °æ¿ì
-				int mouse_x = rec.Event.MouseEvent.dwMousePosition.X; // X°ª ¹Ş¾Æ¿È
-				int mouse_y = rec.Event.MouseEvent.dwMousePosition.Y; // Y°ª ¹Ş¾Æ¿È
+		ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), &rec, 1, &dwNOER); // ì½˜ì†”ì°½ ì…ë ¥ì„ ë°›ì•„ë“¤ì„.
+		if (rec.EventType == MOUSE_EVENT) {// ë§ˆìš°ìŠ¤ ì´ë²¤íŠ¸ì¼ ê²½ìš°
+			if (rec.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) { // ì¢Œì¸¡ ë²„íŠ¼ì´ í´ë¦­ë˜ì—ˆì„ ê²½ìš°
+				int mouse_x = rec.Event.MouseEvent.dwMousePosition.X; // Xê°’ ë°›ì•„ì˜´
+				int mouse_y = rec.Event.MouseEvent.dwMousePosition.Y; // Yê°’ ë°›ì•„ì˜´
 
-				*xx = mouse_x; //x°ªÀ» ³Ñ±è
-				*yy = mouse_y; //y°ªÀ» ³Ñ±è
+				*xx = mouse_x; //xê°’ì„ ë„˜ê¹€
+				*yy = mouse_y; //yê°’ì„ ë„˜ê¹€
 				break;
 			}
 		}
 	}
 }
-enum ColorType {  // ±Û¾¾ ÄÃ·¯ 
+enum ColorType {  // ê¸€ì”¨ ì»¬ëŸ¬ 
 	BLACK,  	//0
 	darkBLUE,	//1
 	DarkGreen,	//2
@@ -330,22 +300,22 @@ enum ColorType {  // ±Û¾¾ ÄÃ·¯
 	YELLOW,		//14
 	WHITE		//15
 } COLOR;
-void clearconsole() { //ÄÜ¼ÖÃ¢ Å¬¸®¾î
+void clearconsole() { //ì½˜ì†”ì°½ í´ë¦¬ì–´
 	COORD Coor = { 0, 0 };
 	DWORD dw;
-	FillConsoleOutputCharacter(GetStdHandle(STD_OUTPUT_HANDLE), ' ', 100 * 100, Coor, &dw); // ÄÜ¼ÖÃ¢ È­¸éÀ» Áö¿î´Ù.
+	FillConsoleOutputCharacter(GetStdHandle(STD_OUTPUT_HANDLE), ' ', 100 * 100, Coor, &dw); // ì½˜ì†”ì°½ í™”ë©´ì„ ì§€ìš´ë‹¤.
 }
-void Mouse() { //¸¶¿ì½º È°¼ºÈ­ ÄÚµå
+void Mouse() { //ë§ˆìš°ìŠ¤ í™œì„±í™” ì½”ë“œ
 	SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), ENABLE_PROCESSED_INPUT | ENABLE_MOUSE_INPUT);
 
 	DWORD CIN;
 	DWORD mode;
-	CIN = GetStdHandle(STD_INPUT_HANDLE); //¸¶¿ì½º ÀçÈ°¼ºÈ­
+	CIN = GetStdHandle(STD_INPUT_HANDLE); //ë§ˆìš°ìŠ¤ ì¬í™œì„±í™”
 	GetConsoleMode(CIN, &mode);
 	SetConsoleMode(CIN, mode | ENABLE_MOUSE_INPUT);
-	//¸¶¿ì½º ÀÔ·Â¸ğµå·Î ¹Ù²Ş
+	//ë§ˆìš°ìŠ¤ ì…ë ¥ëª¨ë“œë¡œ ë°”ê¿ˆ
 }
-void ExClick() { // Å¬¸¯ ÁÂÇ¥ °ª È®ÀÎ UI
+void ExClick() { // í´ë¦­ ì¢Œí‘œ ê°’ í™•ì¸ UI
 	int xx = 0, yy = 0, lr = 0;
 	while (1) {
 		click(&xx, &yy);
@@ -355,198 +325,405 @@ void ExClick() { // Å¬¸¯ ÁÂÇ¥ °ª È®ÀÎ UI
 void add_box_UI(int x, int y, int color, int xx, int yy, char* str) {
 	textcolor(color);
 	goto_xy(x, y);
-	printf("¦®");
+	printf("â”");
 	for (int i = 0; i < 26; i++)
 	{
-		printf("¦¬");
+		printf("â”");
 	}
-	printf("¦¯");
+	printf("â”“");
 
 	for (int i = 0; i < 8; i++) {
 		y += 1;
 		goto_xy(x, y);
-		printf("¦­                                                    ¦­");
+		printf("â”ƒ                                                    â”ƒ");
 	}
 	goto_xy(x, y + 1);
-	printf("¦±");
+	printf("â”—");
 	for (int i = 0; i < 26; i++)
 	{
-		printf("¦¬");
+		printf("â”");
 	}
-	printf("¦°");
+	printf("â”›");
 	textcolor(4);
 	goto_xy(xx, yy);
 	printf("%s", str);
 }
+void design_see_UI(int x, int y, int color, int i,int design_choice,int num) {
+	if (num == 0) {
+		if (D_MENU[i].index == -1) {
+			return;
+		}
+		if (design_choice == i) {
+			choice_index = D_MENU[i].index;
+			color = 10;
+		}
+	}
+	textcolor(color);
+	goto_xy(x, y);
+	printf("â”");
+	for (int i = 0; i < 22; i++)
+	{
+		printf("â”");
+	}
+	printf("â”“");
+
+	for (int i = 0; i < 6; i++) {
+		y += 1;
+		goto_xy(x, y);
+		printf("â”ƒ                                            â”ƒ");
+	}
+	goto_xy(x, y + 1);
+	printf("â”—");
+	for (int i = 0; i < 22; i++)
+	{
+		printf("â”");
+	}
+	printf("â”›");
+}
 void basic_UI_DELETE(int x, int y) {
 	while(1) {
 		goto_xy(x, y);
-		printf("                                                                                                            ");
+		printf("                                                                                                                                                                        ");
 		y++;
 		if (y == 50) {
 			break;
 		}
 	}
 }
-void basic_UI(int x, int y) { // ±âº» UI
+void basic_UI(int x, int y) { // ê¸°ë³¸ UI
 	textcolor(DarkYellow);
 	goto_xy(x, y);
-	printf("¦®");
+	printf("â”");
 	for (int i = 0; i < 35; i++)
 	{
-		printf("¦¬");
+		printf("â”");
 	}
-	printf("¦¯");
+	printf("â”“");
 	for (int i = 0; i < 45; i++) {
 		y += 1;
 		if (i == 3 || i == 40) {
 			goto_xy(x, y);
-			printf("¦²");
+			printf("â”£");
 			for (int i = 0; i < 35; i++) {
-				printf("¦¬");
+				printf("â”");
 			}
-			printf("¦´");
+			printf("â”«");
 		}
 		else {
 			goto_xy(x, y);
-			printf("¦­                                                                      ¦­");
+			printf("â”ƒ                                                                      â”ƒ");
 		}
 	}
 	goto_xy(x, y + 1);
-	printf("¦±");
+	printf("â”—");
 	for (int i = 0; i < 35; i++)
 	{
-		printf("¦¬");
+		printf("â”");
 	}
-	printf("¦°");
+	printf("â”›");
 }
-void m_basic_UI() { // ·Î±×ÀÎ ÈÄ È¸¿ø ±âº» UI
-	int x = 30;
+void m_basic_UI() { // ë¡œê·¸ì¸ í›„ íšŒì› ê¸°ë³¸ UI
+	int x = 60;
 	int y = 3;
 	textcolor(DarkYellow);
 	goto_xy(x, y);
-	printf("¦®");
+	printf("â”");
 	for (int i = 0; i < 35; i++)
 	{
-		printf("¦¬");
+		printf("â”");
 	}
-	printf("¦¯");
+	printf("â”“");
 	for (int i = 0; i < 45; i++) {
 		y += 1;
 		if (i == 3 || i == 7 || i == 40) {
 			goto_xy(x, y);
-			printf("¦²");
+			printf("â”£");
 			for (int i = 0; i < 35; i++) {
-				printf("¦¬");
+				printf("â”");
 			}
-			printf("¦´");
+			printf("â”«");
 		}
 		else {
 			goto_xy(x, y);
-			printf("¦­                                                                      ¦­");
+			printf("â”ƒ                                                                      â”ƒ");
 		}
 	}
 	goto_xy(x, y + 1);
-	printf("¦±");
+	printf("â”—");
 	for (int i = 0; i < 35; i++)
 	{
-		printf("¦¬");
+		printf("â”");
 	}
-	printf("¦°");
+	printf("â”›");
 }
-void small2_box(int x, int y, int color, int xx, int yy, char* str, int color2) {
+void long_box_UI(int x, int y, int i, int color) {
+	int len = 0;
+	if (D_MENU[i].index == -1) {
+		return;
+	}
 	textcolor(color);
 	goto_xy(x, y);
-	printf("¦®");
-	for (int i = 0; i < 8; i++)
+	printf("â”");
+	for (int i = 0; i < 30; i++)
 	{
-		printf("¦¬");
+		printf("â”");
 	}
-	printf("¦¯");
+	printf("â”“");
 
 	for (int i = 0; i < 1; i++) {
 		y += 1;
 		goto_xy(x, y);
-		printf("¦­                ¦­");
+		printf("â”ƒ                                                            â”ƒ");
 	}
 	goto_xy(x, y + 1);
-	printf("¦±");
-	for (int i = 0; i < 8; i++)
+	printf("â”—");
+	for (int i = 0; i < 30; i++)
 	{
-		printf("¦¬");
+		printf("â”");
 	}
-	printf("¦°");
-	textcolor(color2);
-	goto_xy(xx, yy);
-	printf("%s", str);
+	printf("â”›");
+	textcolor(6);
+	x += 9;
+	goto_xy(x, y);
+	printf("%s", D_MENU[i].name);
+	goto_xy(x + 15, y);
+	printf("%d", D_MENU[i].price);
+	goto_xy(x + 30, y);
+	if (strcmp(D_MENU[i].account, " ") == 0 || strcmp(D_MENU[i].account, "") == 0) {
+		goto_xy(x + 39, y);
+		printf("X");
+	}
+	else {
+		len = strlen(D_MENU[i].account);
+		for (int k = 0; k < len; k++) {
+			if (D_MENU[i].account[k] == ' ') {
+				printf("...");
+				break;
+			}
+			else {
+				printf("%c", D_MENU[i].account[k]);
+			}
+		}
+	}
 }
-void small_box(int x, int y, int color, int xx, int yy, char* str, int color2) { // Ã¼Å© ¹Ú½º UI
+void delete_modify_finish(int x,int y, char* str) {
+	textcolor(DarkYellow);
+	goto_xy(x, y);
+	printf("â”");
+	for (int i = 0; i < 35; i++)
+	{
+		printf("â”");
+	}
+	printf("â”“");
+	for (int i = 0; i < 45; i++) {
+		y += 1;
+		goto_xy(x, y);
+		printf("â”ƒ                                                                      â”ƒ");
+	}
+	goto_xy(x, y + 1);
+	printf("â”—");
+	for (int i = 0; i < 35; i++)
+	{
+		printf("â”");
+	}
+	printf("â”›");
+	y = 14;
+	x = x + 5;
+	goto_xy(x, y);
+	printf("â”");
+	for (int i = 0; i < 30; i++)
+	{
+		printf("â”");
+	}
+	printf("â”“");
+	for (int i = 0; i < 15; i++) {
+		y += 1;
+		goto_xy(x, y);
+		printf("â”ƒ                                                            â”ƒ");
+	}
+	goto_xy(x, y + 1);
+	printf("â”—");
+	for (int i = 0; i < 30; i++)
+	{
+		printf("â”");
+	}
+	printf("â”›");
+	y = 22;
+	goto_xy(x + 20, y);
+	textcolor(4);
+	printf("%s", str);
+	Sleep(2000);
+	basic_UI_DELETE(30, 3);
+}
+void small_box(int x, int y, int color, int xx, int yy, char* str, int color2) { // ì²´í¬ ë°•ìŠ¤ UI
 	textcolor(color);
 	goto_xy(x, y);
-	printf("¦®");
+	printf("â”");
 	for (int i = 0; i < 6; i++)
 	{
-		printf("¦¬");
+		printf("â”");
 	}
-	printf("¦¯");
+	printf("â”“");
 
 	for (int i = 0; i < 1; i++) {
 		y += 1;
 		goto_xy(x, y);
-		printf("¦­            ¦­");
+		printf("â”ƒ            â”ƒ");
 	}
 	goto_xy(x, y + 1);
-	printf("¦±");
+	printf("â”—");
 	for (int i = 0; i < 6; i++)
 	{
-		printf("¦¬");
+		printf("â”");
 	}
-	printf("¦°");
+	printf("â”›");
 	textcolor(color2);
 	goto_xy(xx, yy);
 	printf("%s", str);
 
 }
-void big_box(int x, int y, int color, int xx, int yy, char* str) { // Ã¼Å©¹Ú½º Å«°Å UI
+void time_box(int x, int y, int color, int xx, int yy,int hour, int min, int color2) {
 	textcolor(color);
 	goto_xy(x, y);
-	printf("¦®");
+	printf("â”");
+	for (int i = 0; i < 4; i++)
+	{
+		printf("â”");
+	}
+	printf("â”“");
+
+	for (int i = 0; i < 1; i++) {
+		y += 1;
+		goto_xy(x, y);
+		printf("â”ƒ        â”ƒ");
+	}
+	goto_xy(x, y + 1);
+	printf("â”—");
+	for (int i = 0; i < 4; i++)
+	{
+		printf("â”");
+	}
+	printf("â”›");
+	textcolor(color2);
+	goto_xy(xx, yy);
+	printf("%2d:%02d",hour, min);
+}
+void big_box(int x, int y, int color, int xx, int yy, char* str) { // ì²´í¬ë°•ìŠ¤ í°ê±° UI
+	textcolor(color);
+	goto_xy(x, y);
+	printf("â”");
 	for (int i = 0; i < 9; i++)
 	{
-		printf("¦¬");
+		printf("â”");
 	}
-	printf("¦¯");
+	printf("â”“");
 
 	for (int i = 0; i < 3; i++) {
 		y += 1;
 		goto_xy(x, y);
-		printf("¦­                  ¦­");
+		printf("â”ƒ                  â”ƒ");
 	}
 	goto_xy(x, y + 1);
-	printf("¦±");
+	printf("â”—");
 	for (int i = 0; i < 9; i++)
 	{
-		printf("¦¬");
+		printf("â”");
 	}
-	printf("¦°");
+	printf("â”›");
 	textcolor(6);
 	goto_xy(xx, yy);
 	printf("%s", str);
 }
-
-void box_clear() { //±âº» UI Å¬¸®¾î ÇØÁÖ´Â ÇÔ¼ö
-	int x = 62;
+const char* style_management_print(int num, int page_count, int choice, int count, int index ,char*str,int design_choice) {
+	int x = 60, y = 3;
+	int style_i_copy = style_i;
+	if (num == 1) {
+		x = 30;
+		style_i = (page_count * count) - count;
+	}
+	basic_UI(x, y);
+	goto_xy(x+31, y+2);
+	textcolor(6);
+	printf("ë””ìì¸ ê´€ë¦¬");
+	small_box(x+5, 8, 6, x+11, 9, "ì»¤íŠ¸", 6);
+	small_box(x+21, 8, 6, x+28, 9, "íŒ", 6);
+	small_box(x+37, 8, 6, x+43, 9, "ì»¬ëŸ¬", 6);
+	small_box(x+53, 8, 6, x+59, 9, "ê¸°íƒ€", 6);
+	goto_xy(x+31, 39);
+	printf("â—");
+	goto_xy(x+36, 39);
+	printf("%d", page_count);
+	goto_xy(x+41, 39);
+	printf("â–·");
+	small_box(x+8, 46, 6, x+14, 47, "ì´ì „", 6);
+	small_box(x+50, 46, 6, x+56, 47, "ì¶”ê°€", 6);
+	if (choice == 1) {
+		strcpy(str, "ì»¤íŠ¸");
+		small_box(x+5, 8, 10, x+11, 9, "ì»¤íŠ¸", 6);
+	}
+	else if (choice == 2) {
+		strcpy(str, "íŒ");
+		small_box(x+21, 8, 10, x+28, 9, "íŒ", 6);
+	}
+	else if (choice == 3) {
+		strcpy(str, "ì»¬ëŸ¬");
+		small_box(x+37, 8, 10, x+43, 9, "ì»¬ëŸ¬", 6);
+	}
+	else if (choice == 4) {
+		strcpy(str, "ê¸°íƒ€");
+		small_box(x+53, 8, 10, x+59, 9, "ê¸°íƒ€", 6);
+	}
+	design_take_menu(index, str);
+	x = x+5;
+	y = 12;
+	for (style_i; style_i < count * page_count; style_i++) {
+		goto_xy(x, y);
+		if (strcmp(D_MENU[style_i].name, " ") == 0) {
+			break;
+		}
+		else {
+			long_box_UI(x, y, style_i, 6);
+			y += 4;
+		}
+	}
+	if (design_choice != 0) {
+		if (design_choice == 1) {
+			long_box_UI(x, 12, (page_count * count) - 6, 10);
+		}
+		else if (design_choice == 2) {
+			long_box_UI(x, 16, (page_count * count) - 5, 10);
+		}
+		else if (design_choice == 3) {
+			long_box_UI(x, 20, (page_count * count) - 4, 10);
+		}
+		else if (design_choice == 4) {
+			long_box_UI(x, 24, (page_count * count) - 3, 10);
+		}
+		else if (design_choice == 5) {
+			long_box_UI(x, 28, (page_count * count) - 2, 10);
+		}
+		else if (design_choice == 6) {
+			long_box_UI(x, 32, (page_count * count) - 1, 10);
+		}
+	}
+	if (num == 1) {
+		style_i = style_i_copy;
+	}
+	return str;
+}
+void box_clear() { //ê¸°ë³¸ UI í´ë¦¬ì–´ í•´ì£¼ëŠ” í•¨ìˆ˜
+	int x = 92;
 	int y = 5;
-	goto_xy(60, 5);
+	goto_xy(90, 5);
 	printf("                   ");
-	x = 32;
+	x = 62;
 	y = 8;
 	for (int i = 0; i < 35; i++) {
 		goto_xy(x, y);
 		printf("                                                                     ");
 		y += 1;
 	}
-	x = 32;
+	x = 62;
 	y = 45;
 	for (int i = 0; i < 4; i++) {
 		goto_xy(x, y);
@@ -555,35 +732,39 @@ void box_clear() { //±âº» UI Å¬¸®¾î ÇØÁÖ´Â ÇÔ¼ö
 	}
 
 }
-void Render(int x, int y, int num)
+void Render(int x, int y, int num, int check)
 {
-	const int pictureWidth = 130;
-	const int pictureHeight = 150;
-	// DCÀÇ ÇÚµé°ªÀ» ¹ŞÀ» º¯¼ö¸¦ ¼±¾ğÇÑ´Ù.(hDC : ½ÇÁ¦È­¸éDC, hMemDC : ÀÌ¹ÌÁö¸¦ ´ãÀ» DC)
-	// Device Context´Â ±×·¡ÇÈ¿¡ ÇÊ¿äÇÑ ¸ğµç ¿É¼ÇÀ» ³Ö¾îµĞ ±¸Á¶Ã¼¶ó°í º¼ ¼ö ÀÖ´Ù.
-	// ±×¸²±×¸±¶§ ±×¸²À» ±×¸± È­ÆøÀÌ¶ó º¸¸éµÈ´Ù.
+	int pictureWidth = 130;
+	int pictureHeight = 150;
+	if (check == 1) {
+		pictureWidth = 300;
+		pictureHeight = 400;
+	}
+	// DCì˜ í•¸ë“¤ê°’ì„ ë°›ì„ ë³€ìˆ˜ë¥¼ ì„ ì–¸í•œë‹¤.(hDC : ì‹¤ì œí™”ë©´DC, hMemDC : ì´ë¯¸ì§€ë¥¼ ë‹´ì„ DC)
+	// Device ContextëŠ” ê·¸ë˜í”½ì— í•„ìš”í•œ ëª¨ë“  ì˜µì…˜ì„ ë„£ì–´ë‘” êµ¬ì¡°ì²´ë¼ê³  ë³¼ ìˆ˜ ìˆë‹¤.
+	// ê·¸ë¦¼ê·¸ë¦´ë•Œ ê·¸ë¦¼ì„ ê·¸ë¦´ í™”í­ì´ë¼ ë³´ë©´ëœë‹¤.
 	HDC hDC, hMemDC;
-	// ÈÄ¸é¹öÆÛÀÌ´Ù. static º¯¼ö´Â Á¤Àûº¯¼ö·Î¼­, ¸Ş¸ğ¸®ÀÇ Data¿µ¿ª¿¡ ÀúÀåµÇ´Â ÇÔ¼ö°¡ ³¡³ªµµ »ç¶óÁöÁö ¾Ê°í ¸Ş¸ğ¸®¿¡ ³²¾ÆÀÖ´Â º¯¼öÀÌ´Ù.
+	// í›„ë©´ë²„í¼ì´ë‹¤. static ë³€ìˆ˜ëŠ” ì •ì ë³€ìˆ˜ë¡œì„œ, ë©”ëª¨ë¦¬ì˜ Dataì˜ì—­ì— ì €ì¥ë˜ëŠ” í•¨ìˆ˜ê°€ ëë‚˜ë„ ì‚¬ë¼ì§€ì§€ ì•Šê³  ë©”ëª¨ë¦¬ì— ë‚¨ì•„ìˆëŠ” ë³€ìˆ˜ì´ë‹¤.
 	static HDC hBackDC;
-	// ÀÌ¹ÌÁö ºñÆ®¸ÊÀÇ ÇÚµé°ªÀ» ÀúÀåÇÒ º¯¼öÀÌ´Ù.
+	// ì´ë¯¸ì§€ ë¹„íŠ¸ë§µì˜ í•¸ë“¤ê°’ì„ ì €ì¥í•  ë³€ìˆ˜ì´ë‹¤.
 	HBITMAP hBitmap = NULL, hOldBitmap, hBackBitmap;
-	// ÇÚµé°ªÀ¸·ÎºÎÅÍ ¾ò¾î¿Ã ½ÇÁ¦ ºñÆ®¸Ê ±¸Á¶Ã¼.
+	// í•¸ë“¤ê°’ìœ¼ë¡œë¶€í„° ì–»ì–´ì˜¬ ì‹¤ì œ ë¹„íŠ¸ë§µ êµ¬ì¡°ì²´.
 	BITMAP Bitmap;
-	// ÇöÀç À©µµ¿ìÀÇ Rect°ª(Å©±â)¸¦ ¾ò¾î¿Â´Ù. Rect´Â ¿ŞÂÊÀ§, ¿À¸¥ÂÊ ¾Æ·¡ÀÇ °ªÀ» °¡Áö´Â Á¤»ç°¢ÇüÀ» ³ªÅ¸³»´Â ±¸Á¶Ã¼ÀÌ´Ù.
+	// í˜„ì¬ ìœˆë„ìš°ì˜ Rectê°’(í¬ê¸°)ë¥¼ ì–»ì–´ì˜¨ë‹¤. RectëŠ” ì™¼ìª½ìœ„, ì˜¤ë¥¸ìª½ ì•„ë˜ì˜ ê°’ì„ ê°€ì§€ëŠ” ì •ì‚¬ê°í˜•ì„ ë‚˜íƒ€ë‚´ëŠ” êµ¬ì¡°ì²´ì´ë‹¤.
 	RECT WindowRect;
 	GetWindowRect(hWnd, &WindowRect);
 
-	// ÇöÀç À©µµ¿ìÀÇ DC ÇÚµé°ªÀ» ¾ò¾î¿Â´Ù. GetWindowDC(hWnd)µµ °¡´ÉÇÏ´Ù.
+	// í˜„ì¬ ìœˆë„ìš°ì˜ DC í•¸ë“¤ê°’ì„ ì–»ì–´ì˜¨ë‹¤. GetWindowDC(hWnd)ë„ ê°€ëŠ¥í•˜ë‹¤.
 	hDC = GetDC(hWnd);
-	// hDC¿Í È£È¯µÇ´Â DC¸¦ ¸Ş¸ğ¸®¿¡ ¸¸µé¾î ÇÚµé°ªÀ» ¹İÈ¯ÇÑ´Ù.
+	// hDCì™€ í˜¸í™˜ë˜ëŠ” DCë¥¼ ë©”ëª¨ë¦¬ì— ë§Œë“¤ì–´ í•¸ë“¤ê°’ì„ ë°˜í™˜í•œë‹¤.
 	hBackDC = CreateCompatibleDC(hDC);
 	hMemDC = CreateCompatibleDC(hDC);
 
-	// ºñÆ®¸Ê ¸Ş¸ğ¸®¸¦ ÇÒ´çÇÏ°í ÇÚµéÀ» ¹İÈ¯ÇÑ´Ù.
+	// ë¹„íŠ¸ë§µ ë©”ëª¨ë¦¬ë¥¼ í• ë‹¹í•˜ê³  í•¸ë“¤ì„ ë°˜í™˜í•œë‹¤.
 	hBackBitmap = CreateCompatibleBitmap(hDC, WindowRect.right, WindowRect.bottom);
-	// ±×¸± µµÈ­Áö¸¦ ÁØºñÇÑ´Ù.
+	// ê·¸ë¦´ ë„í™”ì§€ë¥¼ ì¤€ë¹„í•œë‹¤.
 	hOldBitmap = (HBITMAP)SelectObject(hBackDC, hBackBitmap);
-	// ºñÆ®¸ÊÀ» ·ÎµåÇÏ¿© ÇÚµéÀ» ¹İÈ¯ÇÑ´Ù. resource.h¿¡ Á¤¼ö·Î defineµÇ¾îÀÖ´Â ºÒ·¯¿Â ¸®¼Ò½º¸¦ ·ÎµåÇÑ´Ù.
+	// ë¹„íŠ¸ë§µì„ ë¡œë“œí•˜ì—¬ í•¸ë“¤ì„ ë°˜í™˜í•œë‹¤. resource.hì— ì •ìˆ˜ë¡œ defineë˜ì–´ìˆëŠ” ë¶ˆëŸ¬ì˜¨ ë¦¬ì†ŒìŠ¤ë¥¼ ë¡œë“œí•œë‹¤.
 	if (num == 0) {
 		hBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP1));
 	}
@@ -593,20 +774,20 @@ void Render(int x, int y, int num)
 	else if (num == 2) {
 		hBitmap = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP3));
 	}
-	// Å©±â¸¦ ¹Ş±âÀ§ÇØ ºñÆ®¸Ê ±¸Á¶Ã¼¸¦ ºñÆ®¸Ê ÇÚµé·ÎºÎÅÍ »ı¼ºÇÑ´Ù.
+	// í¬ê¸°ë¥¼ ë°›ê¸°ìœ„í•´ ë¹„íŠ¸ë§µ êµ¬ì¡°ì²´ë¥¼ ë¹„íŠ¸ë§µ í•¸ë“¤ë¡œë¶€í„° ìƒì„±í•œë‹¤.
 	GetObject(hBitmap, sizeof(BITMAP), &Bitmap);
 
 	HBITMAP hResizedBitmap = (HBITMAP)CopyImage(hBitmap, IMAGE_BITMAP, pictureWidth, pictureHeight, LR_COPYDELETEORG);
 	GetObject(hResizedBitmap, sizeof(BITMAP), &Bitmap);
-	// ÀĞ¾î¿Â ºñÆ®¸Ê ¸®¼Ò½º¸¦ ¸Ş¸ğ¸® DC¿¡ ¼±ÅÃÇÑ´Ù.
+	// ì½ì–´ì˜¨ ë¹„íŠ¸ë§µ ë¦¬ì†ŒìŠ¤ë¥¼ ë©”ëª¨ë¦¬ DCì— ì„ íƒí•œë‹¤.
 	SelectObject(hMemDC, hResizedBitmap);
 
-	// hMemDCÀÇ ÀÌ¹ÌÁö¸¦ hBackDCÀÇ ¿øÇÏ´Â À§Ä¡·Î °í¼Óº¹»ç½ÃÅ²´Ù.(Ãâ·ÂÇÏ·Á´Â ÀÌ¹ÌÁö¸¦ ÈÄ¸é¹öÆÛ¿¡ º¹»ç½ÃÅ²´Ù.)
+	// hMemDCì˜ ì´ë¯¸ì§€ë¥¼ hBackDCì˜ ì›í•˜ëŠ” ìœ„ì¹˜ë¡œ ê³ ì†ë³µì‚¬ì‹œí‚¨ë‹¤.(ì¶œë ¥í•˜ë ¤ëŠ” ì´ë¯¸ì§€ë¥¼ í›„ë©´ë²„í¼ì— ë³µì‚¬ì‹œí‚¨ë‹¤.)
 	BitBlt(hBackDC, 0, 0, Bitmap.bmWidth, Bitmap.bmHeight, hMemDC, 0, 0, SRCCOPY);
-	// hBackDC(ÈÄ¸é ¹öÆÛ)ÀÇ ¿Ï¼ºµÈ ±×¸²À» È­¸éÀ¸·Î °í¼Óº¹»ç½ÃÅ²´Ù.
-	BitBlt(hDC, x, y, x + Bitmap.bmWidth, y + Bitmap.bmHeight, hBackDC, 0, 0, SRCCOPY);
+	// hBackDC(í›„ë©´ ë²„í¼)ì˜ ì™„ì„±ëœ ê·¸ë¦¼ì„ í™”ë©´ìœ¼ë¡œ ê³ ì†ë³µì‚¬ì‹œí‚¨ë‹¤.
+	BitBlt(hDC, x, y, Bitmap.bmWidth, Bitmap.bmHeight, hBackDC, 0, 0, SRCCOPY);
 
-	// ¸Ş¸ğ¸®¿Í ¿ÀºêÁ§Æ®¸¦ ÇØÁöÇÑ´Ù.
+	// ë©”ëª¨ë¦¬ì™€ ì˜¤ë¸Œì íŠ¸ë¥¼ í•´ì§€í•œë‹¤.
 	DeleteObject(SelectObject(hBackDC, hBackBitmap));
 	DeleteObject(hResizedBitmap);
 	DeleteDC(hBackDC);
@@ -614,82 +795,249 @@ void Render(int x, int y, int num)
 
 	ReleaseDC(hWnd, hDC);
 }
-int buid(int num) {
-	// Å×½ºÆ®¿ëÀ¸·Î ÀÔ·ÂÀ» ¹ŞÀ» ¹öÆÛ
+int buid(int num, int x, int y, int check) {
+	// í…ŒìŠ¤íŠ¸ìš©ìœ¼ë¡œ ì…ë ¥ì„ ë°›ì„ ë²„í¼
 	char buf[100] = { 0, };
 	int i = 0;
-	// ÄÜ¼Ö À©µµ¿ì Ã¢ÀÇ ÇÚµé°ªÀ» ¾ò¾î¿Â´Ù.
+	// ì½˜ì†” ìœˆë„ìš° ì°½ì˜ í•¸ë“¤ê°’ì„ ì–»ì–´ì˜¨ë‹¤.
 	hWnd = GetConsoleWindow();
-	// ÇÁ·Î±×·¥ÀÇ ÀÎ½ºÅÏ½º ÇÚµé°ªÀ» ¾ò¾î¿Â´Ù.
+	// í”„ë¡œê·¸ë¨ì˜ ì¸ìŠ¤í„´ìŠ¤ í•¸ë“¤ê°’ì„ ì–»ì–´ì˜¨ë‹¤.
 	hInst = GetModuleHandle(NULL);
-	// ·çÇÁ¸¦ µ·´Ù.
+	// ë£¨í”„ë¥¼ ëˆë‹¤.
 	bool isFinished = true;
 	while (1) {
-		// ±×¸²À» ±×¸°´Ù.
-		Render(10, 10, num);
+		// ê·¸ë¦¼ì„ ê·¸ë¦°ë‹¤.
+		Render(x, y, num,check);
 
-		// ±×¸² ±×¸®±â ÀÛ¾÷ÀÌ Ã³À½ºÎÅÍ ¿Ï·áµÇ¾ú´Ù°í °¡Á¤ÇÏ°í isFinished¸¦ true·Î ÃÊ±âÈ­ÇÑ´Ù.
+		// ê·¸ë¦¼ ê·¸ë¦¬ê¸° ì‘ì—…ì´ ì²˜ìŒë¶€í„° ì™„ë£Œë˜ì—ˆë‹¤ê³  ê°€ì •í•˜ê³  isFinishedë¥¼ trueë¡œ ì´ˆê¸°í™”í•œë‹¤.
 
 		if (isFinished) {
-			break; // ¹İº¹¹®À» Á¾·áÇÑ´Ù.
+			break; // ë°˜ë³µë¬¸ì„ ì¢…ë£Œí•œë‹¤.
 		}
 	}
 }
-<<<<<<< HEAD
 int delete_modify(int index) {
 	basic_UI(108, 3);
 	int xx, yy = 0;
 	char name[20] = " ";
 	int price = 0;
-	char str[240] = " ";// ¹®ÀÚ¿­À» ÀúÀå ÃÑ 100±ÛÀÚ
+	char str[240] = " ";// ë¬¸ìì—´ì„ ì €ì¥ ì´ 100ê¸€ì
 	int len = 0;
 	int x = 124;
 	int y = 36;
 	char ch = ' ';
-	small_box(116, 46, 6, 122, 47, "»èÁ¦", 6);
-	small_box(158, 46, 6, 164, 47, "¼öÁ¤", 6);
+	goto_xy(139, 5);
+	printf("ìˆ˜ì • ë° ì‚­ì œ");
+	goto_xy(124, 9);
+	textcolor(4);
+	printf("ê°€ê²© ë° ì„¤ëª…ë§Œ ìˆ˜ì • ê°€ëŠ¥(ì¢…ë¥˜, ì´ë¦„ ìˆ˜ì • X)");
+	small_box(116, 46, 6, 122, 47, "ì‚­ì œ", 6);
+	small_box(158, 46, 6, 164, 47, "ìˆ˜ì •", 6);
 	goto_xy(177, 4);
 	printf("[X]");
 	goto_xy(122, 13);
-	printf("Á¾·ù      :");
+	printf("ì¢…ë¥˜      :");
+	goto_xy(143, 13);
 	printf("%s", STYLE[index].sort);
+	goto_xy(122, 19);
+	printf("ì´ë¦„      :");
+	goto_xy(143, 19);
+	printf("%s", STYLE[index].name);
+	goto_xy(122, 25);
+	printf("ê°€ê²©      :");
+	goto_xy(143, 25);
+	printf("%d", STYLE[index].price);
+	goto_xy(122, 31);
+	printf("ì„¤ëª… (ì…ë ¥ í›„ ENTER) ");
+	add_box_UI(122, 33, 6, 143, 37, "");
+	textcolor(6);
+	strcpy(str, STYLE[index].account);
+	price = STYLE[index].price;
+	x = 124;
+	y = 36;
+	goto_xy(x, y);
+	len = strlen(STYLE[index].account);
+	int len_2 = 0;
+	for (int i = 0; i < len; i++) {
+		if (len < sizeof(str) - 2) {
+			if (len_2 >= MAX_X - 124 && (len_2 % (MAX_X - 124)) == 0) {
+				if (y >= MAX_Y - 1) {
+					break;
+				}
+				else {
+					handleNewline(&x, &y);
+					len_2 = 0;
+					len_2++;
+					printf("%c", STYLE[index].account[i]);
+				}
+			}
+			else {
+				len_2++;
+				printf("%c", STYLE[index].account[i]);
+			}
+		}
+	}
+	//ExClick();
+	while (1) {
+		xx = 0, yy = 0;
+		click(&xx, &yy);
+		if (xx > 174 && xx < 182) {
+			if (yy > 2 && yy < 6) {
+				textcolor(4);
+				goto_xy(177, 4);
+				printf("[X]");
+				Sleep(500);
+				basic_UI_DELETE(30, 3);
+				return 1;
+			}
+		}
+		if (xx > 132 && xx < 171) {
+			if (yy > 23 && yy < 27) {
+				price = 0;
+				char input[30] = "";
+				strcpy(input, "");
+				goto_xy(140, 25);
+				printf("                                   ");
+				goto_xy(143, 25);
+				EnableConsoleCursor();
+				fgets(input, sizeof(input), stdin);
+				HideCursor();
+			  if (input[0] == '\n') {
+					price = 0;
+				}
+				else {
+					price = atoi(input);
+				}
 
-	
+				if (price == 0) {
+					goto_xy(143, 25);
+					printf("í˜•ì‹ì´ ì˜¬ë°”ë¥´ì§€ ì•ŠìŠµë‹ˆë‹¤.");
+				}
+			}
+		}
+		if (xx > 122 && xx < 175) {
+			if (yy > 32 && yy < 43) {
+				strcpy(str, " ");
+				add_box_UI(122, 33, 6, 143, 37, " ");// ì§„í–‰ì‹œì¼œ ì„¤ëª… ì ëŠ”ê±° í•´ì•¼ì§€
+				len = 0;
+				x = 124;
+				y = 36;
+				EnableConsoleCursor();
+				goto_xy(x, y);
+				textcolor(6);
+				while (1) {
+					ch = ' ';
+					ch = _getch();
+					if (ch == '\r') { // Enter key
+						ch = ' ';
+						break;
+					}
+					else if (ch == '\b') { // Backspace key
+						if (str[(x - 124) + (len)+(MAX_X - 124) * (y - 36) - 1] & 0x80) {
+							if (str[(x - 124) + (len)+(MAX_X - 124) * (y - 36) - 2] & 0x80) {
+								handleBackspace(str, &len, &x, &y);
+								handleBackspace(str, &len, &x, &y);
+							}
+							else {
+								handleBackspace(str, &len, &x, &y);
+							}
+						}
+						else {
+							handleBackspace(str, &len, &x, &y);
+						}
+					}
+					else if (len < sizeof(str) - 2) {
+						if (len >= MAX_X - 124 && (len % (MAX_X - 124)) == 0) { // Check if the line length is multiple of MAX_X
+							if (y >= MAX_Y - 1) {
+								continue;
+							}
+							else {
+
+								handleNewline(&x, &y);
+								len = 0;
+								str[(x - 124) + (len)+((MAX_X - 124) * (y - 36))] = ch;
+								len++;
+								str[(x - 124) + (len)+((MAX_X - 124) * (y - 36))] = '\0';
+								printf("%c", ch);
+							}
+						}
+						else {
+							str[(x - 124) + (len)+((MAX_X - 124) * (y - 36))] = ch;
+							len++;
+							str[(x - 124) + (len)+((MAX_X - 124) * (y - 36))] = '\0';
+							printf("%c", ch);
+						}
+					}
+				}
+				HideCursor();
+			}
+		}
+		if (yy > 45 && yy < 49) {
+			if (xx > 158 && xx < 174) {
+				if (strcmp(str, STYLE[index].account) != 0 || price != STYLE[index].price) {
+					if (price != 0) {
+						strcpy(STYLE[index].account, str);
+						STYLE[index].price = price;
+						small_box(158, 46, 10, 164, 47, "ìˆ˜ì •", 6);
+						Sleep(500);
+						delete_modify_finish(108,3,"â€»ìˆ˜ì •ì´ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.â€»");
+						design_file_write();
+						return 1;
+					}	
+				}
+			}
+			else if (xx > 116 && xx < 132) {
+				small_box(116, 46, 10, 122, 47, "ì‚­ì œ", 6);
+				Sleep(500);
+				for (int i = index; i < design_count; i++) {
+					strcpy(STYLE[i].designer_name, STYLE[i + 1].designer_name);
+					strcpy(STYLE[i].sort, STYLE[i + 1].sort);
+					strcpy(STYLE[i].name, STYLE[i + 1].name);
+					STYLE[i].price = STYLE[i + 1].price;
+					strcpy(STYLE[i].account, STYLE[i + 1].account);
+				}
+				design_count--;
+				delete_modify_finish(108, 3, "â€»ì‚­ì œê°€ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.â€»");
+				design_file_write();
+				clearconsole();
+				Sleep(1000);
+				return 2;
+			}
+		}
+	}
 }
-=======
->>>>>>> 198d3e0779c487ef4316eb3d0a939fb6aa1911c7
 int add_design(int index,char* string) {
 	basic_UI(108,3);
 	int xx, yy = 0;
 	char sort[15] = " ";
 	char name[20] = " ";
 	int price = 0;
-	char str[240] = " ";// ¹®ÀÚ¿­À» ÀúÀå ÃÑ 100±ÛÀÚ
+	char str[240] = " ";// ë¬¸ìì—´ì„ ì €ì¥ ì´ 100ê¸€ì
 	int len = 0;
 	int x = 124;
 	int y = 36; 
 	char ch = ' ';
-	small_box(158, 46, 6, 164, 47, "µî·Ï", 6);
+	small_box(158, 46, 6, 164, 47, "ë“±ë¡", 6);
 	textcolor(6);
 	goto_xy(177, 4);
 	printf("[X]");
 	goto_xy(140, 5);
 	textcolor(6);
-	printf("µğÀÚÀÎ Ãß°¡");
+	printf("ë””ìì¸ ì¶”ê°€");
 	goto_xy(122, 13);
-	printf("Á¾·ù      :");
+	printf("ì¢…ë¥˜      :");
 	strcpy(sort, string);
 	goto_xy(143, 13);
 	EnableConsoleCursor();
 	printf("%s", sort);
 	HideCursor();
 	goto_xy(122, 19);
-	printf("ÀÌ¸§      :");
+	printf("ì´ë¦„      :");
 	goto_xy(122, 25);
-	printf("°¡°İ      :");
+	printf("ê°€ê²©      :");
 	goto_xy(122, 31);
-	printf("¼³¸í (ÀÔ·Â ÈÄ ENTER) ");
-	add_box_UI(122,33,6,143,37,"¡ØÃÖ´ë 100±ÛÀÚ");
+	printf("ì„¤ëª… (ì…ë ¥ í›„ ENTER) ");
+	add_box_UI(122,33,6,143,37,"â€»ìµœëŒ€ 100ê¸€ì");
 	textcolor(6);
 	//ExClick();
 	while (1) {
@@ -701,7 +1049,7 @@ int add_design(int index,char* string) {
 				goto_xy(177, 4);
 				printf("[X]");
 				Sleep(500);
-				basic_UI_DELETE(108, 3);
+				basic_UI_DELETE(30, 3);
 				return;
 			}
 		}
@@ -716,7 +1064,7 @@ int add_design(int index,char* string) {
 				HideCursor();
 				if (strcmp(name, "") == 0) {
 					goto_xy(143, 19);
-					printf("Çü½ÄÀÌ ¿Ã¹Ù¸£Áö ¾Ê½À´Ï´Ù.");
+					printf("í˜•ì‹ì´ ì˜¬ë°”ë¥´ì§€ ì•ŠìŠµë‹ˆë‹¤.");
 				}
 			}
 			else if (yy > 23 && yy < 27) {
@@ -739,7 +1087,7 @@ int add_design(int index,char* string) {
 
 				if (price == 0) {
 					goto_xy(143, 25);
-					printf("Çü½ÄÀÌ ¿Ã¹Ù¸£Áö ¾Ê½À´Ï´Ù.");
+					printf("í˜•ì‹ì´ ì˜¬ë°”ë¥´ì§€ ì•ŠìŠµë‹ˆë‹¤.");
 				}
 			}
 		
@@ -747,7 +1095,7 @@ int add_design(int index,char* string) {
 		if (xx > 122 && xx < 175) {
 			if (yy > 32 && yy < 43) {
 				strcpy(str," ");
-				add_box_UI(122, 33, 6, 143, 37, " ");// ÁøÇà½ÃÄÑ ¼³¸í Àû´Â°Å ÇØ¾ßÁö
+				add_box_UI(122, 33, 6, 143, 37, " ");// ì§„í–‰ì‹œì¼œ ì„¤ëª… ì ëŠ”ê±° í•´ì•¼ì§€
 				len = 0;
 				x = 124;
 				y = 36;
@@ -804,9 +1152,9 @@ int add_design(int index,char* string) {
 		if (xx > 158 && xx < 174) {
 			if (yy > 45 && yy < 49) {
 				if (strcmp(name, " ") != 0 && strcmp(sort, " ") != 0 && price != 0) {
-					small_box(158, 46, 10, 164, 47, "µî·Ï", 6);
+					small_box(158, 46, 10, 164, 47, "ë“±ë¡", 6);
 					Sleep(500);
-					small_box(158, 46, 6, 164, 47, "µî·Ï", 6);
+					small_box(158, 46, 6, 164, 47, "ë“±ë¡", 6);
 					strcpy(STYLE[design_count].designer_name, d_all[index].name);
 					strcpy(STYLE[design_count].name, name);
 					strcpy(STYLE[design_count].sort,sort);
@@ -815,7 +1163,7 @@ int add_design(int index,char* string) {
 					design_file_append();
 					design_count++;
 					clearconsole();
-					Sleep(1500);
+					Sleep(1000);
 					return 1;
 				}
 			}
@@ -823,265 +1171,199 @@ int add_design(int index,char* string) {
 	}
 }
 int style_management(int index) {
-	char str[15] = "Æß";
+	char str[15] = "ì»¤íŠ¸";
 	int page_count = 1;
 	int choice = 1;
-	int x = 35, y = 12;
+	int x = 95, y = 12;
+	int xx, yy = 0;
+	int check = 0;
 	box_clear();
-	int i = 0;
+	style_i = 0;
 	int count = 6;
 	int len = 0;
 	while (1) {
-		x = 35, y = 12;
-		basic_UI(30, 3);
-		int xx, yy = 0;
-		int check = 0;
-		goto_xy(61, 5);
-		textcolor(6);
-		printf("µğÀÚÀÎ °ü¸®");
-		small_box(35, 8, 6, 41, 9, "Ä¿Æ®", 6);
-		small_box(51, 8, 6, 58, 9, "Æß", 6);
-		small_box(67, 8, 6, 73, 9, "ÄÃ·¯", 6);
-		small_box(83, 8, 6, 89, 9, "±âÅ¸", 6);
-		goto_xy(61, 39);
-		printf("¢·");
-		goto_xy(66, 39);
-		printf("%d", page_count);
-		goto_xy(71, 39);
-		printf("¢¹");
-		small_box(38, 46, 6, 44, 47, "ÀÌÀü", 6);
-		small_box(80, 46, 6, 86, 47, "Ãß°¡", 6);
-<<<<<<< HEAD
-=======
+		x = 65, y = 12;
+		xx = 0, yy = 0;
+		check = 0;
+		const char* string = style_management_print(2,page_count,choice,count,index ,str,0);
+		strcpy(str, string);
+		if (style_i == (count * page_count) - 1) {
+			style_i++;
+		}
 		//ExClick();
->>>>>>> 198d3e0779c487ef4316eb3d0a939fb6aa1911c7
-		if (choice == 1) {
-			strcpy(str,"Ä¿Æ®");
-			small_box(35, 8, 10, 41, 9, "Ä¿Æ®", 6);
-		}
-		else if (choice == 2) {
-			strcpy(str, "Æß");
-			small_box(51, 8, 10, 58, 9, "Æß", 6);
-		}
-		else if (choice == 3) {
-			strcpy(str, "ÄÃ·¯");
-			small_box(67, 8,10, 73, 9, "ÄÃ·¯", 6);
-		}
-		else if (choice == 4) {
-			strcpy(str, "±âÅ¸");
-			small_box(83, 8, 10, 89, 9, "±âÅ¸", 6);
-		}
-		design_take_menu(index,str);
-		for (i; i < count*page_count; i++) {
-			x = 35;
-			if (strcmp(D_MENU[i].name, " ") == 0) {
-				break;
-			}
-			else {
-<<<<<<< HEAD
-				long_box_UI(x, y,i,6);
-=======
-				long_box_UI(x, y);
-				x = 39;
-				goto_xy(x, y+1);
-				printf("%s", D_MENU[i].name);
-				goto_xy(x+15, y+1);
-				printf("%d", D_MENU[i].price);
-				goto_xy(x + 30, y+1);
-				if (strcmp(D_MENU[i].account," ")==0) {
-					goto_xy(x + 39, y + 1);
-					printf("X");
-				}
-				else {
-					len = strlen(D_MENU[i].account);
-					for (int k = 0; k < len; k++) {
-						if (k > 19) {
-							if (D_MENU[i].account[k] & 0x80) {
-								printf("%c", D_MENU[i].account[k]);
-							}
-							printf("...");
-							break;
-						}
-						else {
-							printf("%c", D_MENU[i].account[k]);
-						}
-					}
-				}
->>>>>>> 198d3e0779c487ef4316eb3d0a939fb6aa1911c7
-				y += 4;
-			}
-		}
-		if (i == (count * page_count) - 1) {
-			i++;
-		}
-<<<<<<< HEAD
-		//ExClick();
-=======
-
->>>>>>> 198d3e0779c487ef4316eb3d0a939fb6aa1911c7
 		while (1) {
 			xx = 0, yy = 0;
 			click(&xx, &yy);
-			if (xx > 38 && xx < 53) {
+			if (xx > 68 && xx < 83) {
 				if (yy > 45 && yy < 49) {
-					small_box(38, 46, 10, 44, 47, "ÀÌÀü", 6);
+					small_box(68, 46, 10, 74, 47, "ì´ì „", 6);
 					Sleep(500);
 					return;
 				}
 			}
-<<<<<<< HEAD
-			if (xx > 34 && xx < 99) {
+			if (xx > 64 && xx < 129) {
 				if (yy > 11 && yy < 15) {
 					if (D_MENU[(page_count * count)-6].index != -1) {
-						long_box_UI(35, 12, (page_count * count) - 6,10);
-						long_box_UI(35, 16, (page_count * count) - 5, 6);
-						long_box_UI(35, 20, (page_count * count) - 4, 6);
-						long_box_UI(35, 24, (page_count * count) - 3, 6);
-						long_box_UI(35, 28, (page_count * count) - 2, 6);
-						long_box_UI(35, 32, (page_count * count) - 1, 6);
+						long_box_UI(65, 12, (page_count * count) - 6,10);
+						long_box_UI(65, 16, (page_count * count) - 5, 6);
+						long_box_UI(65, 20, (page_count * count) - 4, 6);
+						long_box_UI(65, 24, (page_count * count) - 3, 6);
+						long_box_UI(65, 28, (page_count * count) - 2, 6);
+						long_box_UI(65, 32, (page_count * count) - 1, 6);
 						Sleep(200);
-						delete_modify(D_MENU[(page_count * count) - 6].index);
+						basic_UI_DELETE(30, 3);
+						style_management_print(1, page_count, choice, count, index, str,1);
+						check = delete_modify(D_MENU[(page_count * count) - 6].index);
 					}
 				}
 				if (yy > 15 && yy < 19) {
 					if (D_MENU[(page_count * count) - 5].index != -1) {
-						long_box_UI(35, 12, (page_count * count) - 6, 6);
-						long_box_UI(35, 16, (page_count * count) - 5, 10);
-						long_box_UI(35, 20, (page_count * count) - 4, 6);
-						long_box_UI(35, 24, (page_count * count) - 3, 6);
-						long_box_UI(35, 28, (page_count * count) - 2, 6);
-						long_box_UI(35, 32, (page_count * count) - 1, 6);
+						long_box_UI(65, 12, (page_count * count) - 6, 6);
+						long_box_UI(65, 16, (page_count * count) - 5, 10);
+						long_box_UI(65, 20, (page_count * count) - 4, 6);
+						long_box_UI(65, 24, (page_count * count) - 3, 6);
+						long_box_UI(65, 28, (page_count * count) - 2, 6);
+						long_box_UI(65, 32, (page_count * count) - 1, 6);
 						Sleep(200);
-						delete_modify(D_MENU[(page_count * count) - 5].index);
+						basic_UI_DELETE(30, 3);
+						style_management_print(1, page_count, choice, count, index, str,2);
+						check = delete_modify(D_MENU[(page_count * count) - 5].index);
 					}
 				}
 				if (yy > 19 && yy < 23) {
 					if (D_MENU[(page_count * count) - 4].index != -1) {
-						long_box_UI(35, 12, (page_count * count) - 6, 6);
-						long_box_UI(35, 16, (page_count * count) - 5, 6);
-						long_box_UI(35, 20, (page_count * count) - 4, 10);
-						long_box_UI(35, 24, (page_count * count) - 3, 6);
-						long_box_UI(35, 28, (page_count * count) - 2, 6);
-						long_box_UI(35, 32, (page_count * count) - 1, 6);
+						long_box_UI(65, 12, (page_count * count) - 6, 6);
+						long_box_UI(65, 16, (page_count * count) - 5, 6);
+						long_box_UI(65, 20, (page_count * count) - 4, 10);
+						long_box_UI(65, 24, (page_count * count) - 3, 6);
+						long_box_UI(65, 28, (page_count * count) - 2, 6);
+						long_box_UI(65, 32, (page_count * count) - 1, 6);
 						Sleep(200);
-						delete_modify(D_MENU[(page_count * count) - 4].index);
+						basic_UI_DELETE(30, 3);
+						style_management_print(1, page_count, choice, count, index, str, 3);
+						check = delete_modify(D_MENU[(page_count * count) - 4].index);
 					}
 				}
 				if (yy > 23 && yy < 27) {
 					if (D_MENU[(page_count * count) - 3].index != -1) {
-						long_box_UI(35, 12, (page_count * count) - 6, 6);
-						long_box_UI(35, 16, (page_count * count) - 5, 6);
-						long_box_UI(35, 20, (page_count * count) - 4, 6);
-						long_box_UI(35, 24, (page_count * count) - 3, 10);
-						long_box_UI(35, 28, (page_count * count) - 2, 6);
-						long_box_UI(35, 32, (page_count * count) - 1, 6);
+						long_box_UI(65, 12, (page_count * count) - 6, 6);
+						long_box_UI(65, 16, (page_count * count) - 5, 6);
+						long_box_UI(65, 20, (page_count * count) - 4, 6);
+						long_box_UI(65, 24, (page_count * count) - 3, 10);
+						long_box_UI(65, 28, (page_count * count) - 2, 6);
+						long_box_UI(65, 32, (page_count * count) - 1, 6);
 						Sleep(200);
-						delete_modify(D_MENU[(page_count * count) - 3].index);
+						basic_UI_DELETE(30, 3);
+						style_management_print(1, page_count, choice, count, index, str, 4);
+						check = delete_modify(D_MENU[(page_count * count) - 3].index);
 					}
 				}
 				if (yy > 27 && yy < 31) {
 					if (D_MENU[(page_count * count) - 2].index != -1) {
-						long_box_UI(35, 12, (page_count * count) - 6, 6);
-						long_box_UI(35, 16, (page_count * count) - 5, 6);
-						long_box_UI(35, 20, (page_count * count) - 4, 6);
-						long_box_UI(35, 24, (page_count * count) - 3, 6);
-						long_box_UI(35, 28, (page_count * count) - 2, 10);
-						long_box_UI(35, 32, (page_count * count) - 1, 6);
+						long_box_UI(65, 12, (page_count * count) - 6, 6);
+						long_box_UI(65, 16, (page_count * count) - 5, 6);
+						long_box_UI(65, 20, (page_count * count) - 4, 6);
+						long_box_UI(65, 24, (page_count * count) - 3, 6);
+						long_box_UI(65, 28, (page_count * count) - 2, 10);
+						long_box_UI(65, 32, (page_count * count) - 1, 6);
 						Sleep(200);
-						delete_modify(D_MENU[(page_count * count) - 2].index);
+						basic_UI_DELETE(30, 3);
+						style_management_print(1, page_count, choice, count, index, str,5);
+						check = delete_modify(D_MENU[(page_count * count) - 2].index);
 					}
 				}
 				if (yy > 31 && yy < 35) {
 					if (D_MENU[(page_count * count) - 1].index != -1) {
-						long_box_UI(35, 12, (page_count * count) - 6, 6);
-						long_box_UI(35, 16, (page_count * count) - 5, 6);
-						long_box_UI(35, 20, (page_count * count) - 4, 6);
-						long_box_UI(35, 24, (page_count * count) - 3, 6);
-						long_box_UI(35, 28, (page_count * count) - 2, 6);
-						long_box_UI(35, 32, (page_count * count) - 1, 10);
+						long_box_UI(65, 12, (page_count * count) - 6, 6);
+						long_box_UI(65, 16, (page_count * count) - 5, 6);
+						long_box_UI(65, 20, (page_count * count) - 4, 6);
+						long_box_UI(65, 24, (page_count * count) - 3, 6);
+						long_box_UI(65, 28, (page_count * count) - 2, 6);
+						long_box_UI(65, 32, (page_count * count) - 1, 10);
 						Sleep(200);
-						delete_modify(D_MENU[(page_count* count) - 1].index);
+						basic_UI_DELETE(30, 3);
+						style_management_print(1, page_count, choice, count, index, str,6);
+						check = delete_modify(D_MENU[(page_count* count) - 1].index);
 					}
 				}
+				if (check == 1) {
+					style_i = (page_count * count) - count;
+					break;
+				}
+				else if (check == 2) {
+					page_count = 1;
+					style_i = 0;
+					break;
+				}
 			}
-=======
->>>>>>> 198d3e0779c487ef4316eb3d0a939fb6aa1911c7
-			if (xx > 59 && xx < 65 && yy > 37 && yy < 41) {
+			if (xx > 89 && xx < 95 && yy > 37 && yy < 41) {
 				if (page_count != 1) {
 					textcolor(10);
-					goto_xy(61, 39);
-					printf("¢·");
+					goto_xy(91, 39);
+					printf("â—");
 					Sleep(500);
-					i = (page_count - 2) * count;
+					style_i = (page_count - 2) * count;
 					page_count--;
 					break;
 				}
 			}
-			if (xx > 67 && xx < 74 && yy > 37 && yy < 41) {
-				if (strcmp(D_MENU[i].name, " ") != 0) {
+			if (xx > 97 && xx < 104 && yy > 37 && yy < 41) {
+				if (strcmp(D_MENU[style_i].name, " ") != 0) {
 					textcolor(10);
-					goto_xy(71, 39);
-					printf("¢¹");
+					goto_xy(101, 39);
+					printf("â–·");
 					Sleep(500);
 					page_count++;
 					break;
 				}
-<<<<<<< HEAD
 			 }
-		    if (xx > 80 && xx < 95) {
-=======
-			}
-			if (xx > 80 && xx < 95) {
->>>>>>> 198d3e0779c487ef4316eb3d0a939fb6aa1911c7
+		    if (xx > 110 && xx < 125) {
 				if (yy > 45 && yy < 49) {
-					small_box(80, 46, 10, 86, 47, "Ãß°¡", 6);
+					small_box(110, 46, 10, 116, 47, "ì¶”ê°€", 6);
 					Sleep(500);
-					small_box(80, 46, 6, 86, 47, "Ãß°¡", 6);
+					small_box(110, 46, 6, 116, 47, "ì¶”ê°€", 6);
+					basic_UI_DELETE(30,3);
+					style_management_print(1, page_count, choice, count, index, str,0);
 					check = add_design(index,str);
 					if (check == 1) {
-						i = 0;
+						style_i = 0;
 						page_count = 1;
-						break;
 					}
+					else {
+						style_i = (page_count * count) - count;
+					}
+					break;
 				}
 			}
-<<<<<<< HEAD
 		    if (yy > 6 && yy < 11) {
-=======
-			if (yy > 6 && yy < 11) {
->>>>>>> 198d3e0779c487ef4316eb3d0a939fb6aa1911c7
-				if (xx > 34 && xx < 50) {
+				if (xx > 64 && xx < 80) {
 					if (choice != 1) {
 						choice = 1;
-						i = 0;
+						style_i = 0;
 						page_count = 1;
 						break;
 					}
 				}
-<<<<<<< HEAD
-				if (xx > 50 && xx < 67) {
-=======
-				else if (xx > 50 && xx < 67) {
->>>>>>> 198d3e0779c487ef4316eb3d0a939fb6aa1911c7
+				if (xx > 80 && xx < 97) {
 					if (choice != 2) {
 						choice = 2;
-						i = 0;
+						style_i = 0;
 						page_count = 1;
 						break;
 					}
 				}
-				else if (xx > 67 && xx < 82) {
+				else if (xx > 97 && xx < 112) {
 					if (choice != 3) {
 						choice = 3;
-						i = 0;
+						style_i = 0;
 						page_count = 1;
 						break;
 					}
 				}
-				else if (xx > 83 && xx < 98) {
+				else if (xx > 113 && xx < 128) {
 					if (choice != 4) {
 						choice = 4;
-						i = 0;
+						style_i = 0;
 						page_count = 1;
 						break;
 					}
@@ -1092,33 +1374,33 @@ int style_management(int index) {
 	}
 }
 void copy() {
-	char sourcePath[100];  // ÀÔ·Â ¹ŞÀº °æ·Î¸¦ ÀúÀåÇÒ º¯¼ö
-	char destinationPath[] = "C:\\Users\\chlwj\\source\\repos\\±×¸¸\\±×¸¸\\bitmap2.bmp";
+	char sourcePath[100];  // ì…ë ¥ ë°›ì€ ê²½ë¡œë¥¼ ì €ì¥í•  ë³€ìˆ˜
+	char destinationPath[] = "C:\\Users\\chlwj\\source\\repos\\ê·¸ë§Œ\\ê·¸ë§Œ\\bitmap2.bmp";
 	goto_xy(5, 40);
-	printf("ÆÄÀÏ °æ·Î¸¦ ÀÔ·ÂÇÏ¼¼¿ä: ");
+	printf("íŒŒì¼ ê²½ë¡œë¥¼ ì…ë ¥í•˜ì„¸ìš”: ");
 	fgets(sourcePath, sizeof(sourcePath), stdin);
-	sourcePath[strcspn(sourcePath, "\n")] = '\0';  // °³Çà ¹®ÀÚ Á¦°Å
+	sourcePath[strcspn(sourcePath, "\n")] = '\0';  // ê°œí–‰ ë¬¸ì ì œê±°
 
-	// ÆÄÀÏ º¹»ç ¼öÇà
+	// íŒŒì¼ ë³µì‚¬ ìˆ˜í–‰
 	FILE* sourceFile = fopen(sourcePath, "rb");
 	FILE* destinationFile = fopen(destinationPath, "wb");
 
 	if (sourceFile == NULL) {
-		printf("ÀÔ·ÂÇÑ °æ·Î¿¡ ÆÄÀÏÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù.\n");
+		printf("ì…ë ¥í•œ ê²½ë¡œì— íŒŒì¼ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.\n");
 		return 1;
 	}
 
 	if (destinationFile == NULL) {
-		printf("¸ñÀûÁö °æ·Î¿¡ ÆÄÀÏÀ» »ı¼ºÇÒ ¼ö ¾ø½À´Ï´Ù.\n");
+		printf("ëª©ì ì§€ ê²½ë¡œì— íŒŒì¼ì„ ìƒì„±í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.\n");
 		fclose(sourceFile);
 		return 1;
 	}
 
-	int bufferSize = 1024;  // º¹»çÇÒ ¶§ »ç¿ëÇÒ ¹öÆÛ Å©±â
+	int bufferSize = 1024;  // ë³µì‚¬í•  ë•Œ ì‚¬ìš©í•  ë²„í¼ í¬ê¸°
 	char* buffer = (char*)malloc(bufferSize);
 
 	if (buffer == NULL) {
-		printf("¸Ş¸ğ¸® ÇÒ´ç¿¡ ½ÇÆĞÇß½À´Ï´Ù.\n");
+		printf("ë©”ëª¨ë¦¬ í• ë‹¹ì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤.\n");
 		fclose(sourceFile);
 		fclose(destinationFile);
 		return 1;
@@ -1129,32 +1411,32 @@ void copy() {
 		fwrite(buffer, 1, bytesRead, destinationFile);
 	}
 
-	printf("ÆÄÀÏÀÌ ¼º°øÀûÀ¸·Î º¹»çµÇ¾ú½À´Ï´Ù.\n");
+	printf("íŒŒì¼ì´ ì„±ê³µì ìœ¼ë¡œ ë³µì‚¬ë˜ì—ˆìŠµë‹ˆë‹¤.\n");
 
 	fclose(sourceFile);
 	fclose(destinationFile);
 	free(buffer);
 
 }
-int isValidPhone_or_pw_Number(char* str, int check) { // ÀüÈ­¹øÈ£ ºñ¹Ğ¹øÈ£ À¯È¿ÇÑÁö Ã¼Å©ÇØÁÖ´Â ÇÔ¼ö
+int isValidPhone_or_pw_Number(char* str, int check) { // ì „í™”ë²ˆí˜¸ ë¹„ë°€ë²ˆí˜¸ ìœ íš¨í•œì§€ ì²´í¬í•´ì£¼ëŠ” í•¨ìˆ˜
 	if (check == 1) {
 		int length = strlen(str);
 
-		// ÀüÈ­¹øÈ£´Â 11ÀÚ¸®¿©¾ß ÇÔ
+		// ì „í™”ë²ˆí˜¸ëŠ” 11ìë¦¬ì—¬ì•¼ í•¨
 		if (length != 11)
 			return 0;
 
-		// ÀüÈ­¹øÈ£´Â "010xxxxxxxx" Çü½ÄÀÌ¾î¾ß ÇÔ
+		// ì „í™”ë²ˆí˜¸ëŠ” "010xxxxxxxx" í˜•ì‹ì´ì–´ì•¼ í•¨
 		if (str[0] != '0' || str[1] != '1' || str[2] != '0')
 			return 0;
 
-		// ³ª¸ÓÁö ÀÚ¸®´Â ¼ıÀÚ¿©¾ß ÇÔ
+		// ë‚˜ë¨¸ì§€ ìë¦¬ëŠ” ìˆ«ìì—¬ì•¼ í•¨
 		for (int i = 3; i < length; i++) {
 			if (str[i] < '0' || str[i] > '9')
 				return 0;
 		}
 
-		// ¸ğµç Á¶°ÇÀ» ¸¸Á·ÇÏ´Â °æ¿ì À¯È¿ÇÑ ÀüÈ­¹øÈ£
+		// ëª¨ë“  ì¡°ê±´ì„ ë§Œì¡±í•˜ëŠ” ê²½ìš° ìœ íš¨í•œ ì „í™”ë²ˆí˜¸
 		return 1;
 	}
 	else if(check == 2) {
@@ -1175,66 +1457,942 @@ int isValidPhone_or_pw_Number(char* str, int check) { // ÀüÈ­¹øÈ£ ºñ¹Ğ¹øÈ£ À¯È¿Ç
 		
 	}
 }
-int isValidDate(int date) { //»ı³â¿ùÀÏ À¯È¿ÇÑÁö Ã¼Å©ÇØÁÖ´Â ÇÔ¼ö
+int isValidDate(int date) { //ìƒë…„ì›”ì¼ ìœ íš¨í•œì§€ ì²´í¬í•´ì£¼ëŠ” í•¨ìˆ˜
 	int year = date / 10000;
 	int month = (date % 10000) / 100;
 	int day = date % 100;
 
-	// »ı³â¿ùÀÏÀº 8ÀÚ¸®¿©¾ß ÇÔ
+	// ìƒë…„ì›”ì¼ì€ 8ìë¦¬ì—¬ì•¼ í•¨
 	if (date < 10000000 || date > 99999999)
 		return 0;
 
-	// ¿¬µµ, ¿ù, ÀÏÀÇ ¹üÀ§¸¦ È®ÀÎ
+	// ì—°ë„, ì›”, ì¼ì˜ ë²”ìœ„ë¥¼ í™•ì¸
 	if (year < 1900 || month < 1 || month > 12 || day < 1 || day > 31)
 		return 0;
 
-	// ¸ğµç Á¶°ÇÀ» ¸¸Á·ÇÏ´Â °æ¿ì À¯È¿ÇÑ »ı³â¿ùÀÏ
+	// ëª¨ë“  ì¡°ê±´ì„ ë§Œì¡±í•˜ëŠ” ê²½ìš° ìœ íš¨í•œ ìƒë…„ì›”ì¼
 	return 1;
+}
+void designer_seeUI(int x, int y, int color) {
+	textcolor(color);
+	goto_xy(x, y);
+	printf("â”");
+	for (int i = 0; i < 33; i++)
+	{
+		printf("â”");
+	}
+	printf("â”“");
+
+	for (int i = 0; i < 9; i++) {
+		y += 1;
+		goto_xy(x, y);
+		printf("â”ƒ                                                                  â”ƒ");
+	}
+	goto_xy(x, y + 1);
+	printf("â”—");
+	for (int i = 0; i < 33; i++)
+	{
+		printf("â”");
+	}
+	printf("â”›");
+}
+void designer_print(int choice) {
+	int x = 62, y = 8;
+	int px = 900, py = 170;
+	int nx = 70, ny = 10;
+	int len;
+	int color = 6;
+	for (int i = 0; i < 3; i++) {
+		designer_seeUI(x, y, 6);
+		if (i < designer_count) {
+			if (choice == i) {
+				designer_seeUI(x, y, 10);
+				textcolor(6);
+			}
+			goto_xy(nx, ny);
+			printf("%s ë””ìì´ë„ˆ", d_all[i].n_name);
+			len = strlen(d_all[i].introduce);
+			goto_xy(nx + 10, ny + 3);
+			textcolor(7);
+			for (int k = 0; k < len; k++) {
+				printf("%c", d_all[i].introduce[k]);
+				if (k == 20) {
+					goto_xy(nx + 10, ny + 4);
+				}
+			}
+			textcolor(6);
+			goto_xy(nx, ny + 7);
+			printf("â˜…");
+			buid(i, px, py,0);
+			y += 12;
+			ny += 12;
+			py += 215;
+		}
+		else {
+			goto_xy(x + 31, y + 5);
+			textcolor(4);
+			printf("ë¹„ì–´ìˆìŒ");
+			y += 12;
+		}
+	}
+	previous_choice = choice;
 }
 int designer_choice(int index) {
 	d_file_read();
-}
-int designer_initial_screen(int index) { //µğÀÚÀÌ³Ê ÃÊ±â È­¸é
 	int xx, yy, lr = 0;
-	int choice = 0;
+	int choice = -1;
 	while (1) {
 		box_clear();
-		m_basic_UI();
-		xx = 0, yy = 0;
-		goto_xy(63, 5);
-		textcolor(6);
-		printf("%s´Ô",d_all[index].name);
-		big_box(57, 14, 6, 64, 16, "¿¹¾à °ü¸®");
-		big_box(57, 22, 6, 63, 24, "µğÀÚÀÎ °ü¸®");
-		big_box(57, 30, 6, 63, 32, "ÇÁ·ÎÇÊ °ü¸®");
-		big_box(57, 38, 6, 64, 40, "¸®ºä °ü¸®");
-		small_box(38, 46, 6, 42, 47, "·Î±×¾Æ¿ô", 6);
-		small_box(80, 46, 6, 86, 47, "´ÙÀ½", 6);
+		xx, yy, lr = 0;
+		choice = -1;
+		previous_choice = -1;
+		basic_UI(60, 3);
+		goto_xy(92, 5);
+		printf("ë””ìì´ë„ˆ");
+		small_box(68, 46, 6, 74, 47, "ì´ì „", 6);
+		designer_print(choice);
 		//ExClick();
 		while (1) {
 			xx = 0, yy = 0;
 			click(&xx, &yy);
-			if (xx > 38 && xx < 53) {
+			if (xx > 68 && xx < 83) {
 				if (yy > 45 && yy < 49) {
-					small_box(38, 46, 10, 42, 47, "·Î±×¾Æ¿ô", 6);
+					small_box(68, 46, 10, 74, 47, "ì´ì „", 6);
 					Sleep(500);
 					return;
 				}
 			}
-			if (xx > 57 && xx < 78) {
+			if (xx > 62 && xx < 131) {
+				if (yy > 7 && yy < 19) {
+					choice = 0;
+				}
+				else if (yy > 19 && yy < 31) {
+					choice = 1;
+				}
+				else if (yy > 31 && yy < 43) {
+					choice = 2;
+				}
+			}
+			if (choice != previous_choice) {
+				if (choice < designer_count) {
+					designer_print(choice);
+					Sleep(700);
+					date_choice(index,choice);
+					break;
+				}
+			}
+		}
+	}
+}
+int day_of_week(int year, int month) //ì´ ì¼ìˆ˜ë¥¼ êµ¬í•˜ëŠ” í•¨ìˆ˜(í•´ë‹¹ ì›” 1ì¼ì´ ë¬´ìŠ¨ìš”ì¼ì¸ì§€ ì•Œê¸°ìœ„í•´)
+
+{
+
+	int temp = 0; //ì„ì‹œë¡œ ê³„ì‚°ì— ì‚¬ìš©í•  ë³€ìˆ˜
+
+	int i; //for ë¬¸ì—ì„œ ì‚¬ìš©í•  ë³€ìˆ˜
+
+
+
+	for (i = 1; i < year; i++) { //ë…„ë„ë³„ ì¼ìˆ˜
+
+		if ((i % 4 == 0) && (i % 100 != 0) || (i % 400 == 0)) {
+
+			temp += 366;
+
+		}
+		else {
+
+			temp += 365;
+
+		}
+
+	}
+
+
+
+	for (i = 1; i < month; i++) { //ë§¤ ë‹¬ ì¼ìˆ˜
+
+		if (i == 2) { // 2ì›”ì¼ê²½ìš° ìœ¤ë…„ ê²€ì‚¬
+
+			if ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0))
+
+				temp += 29;
+
+			else
+
+				temp += 28;
+
+		}
+
+		switch (i) {
+
+		case 1:
+
+		case 3:
+
+		case 5:
+
+		case 7:
+
+		case 8:
+
+		case 10:
+
+		case 12:
+
+			temp += 31; //í•œë‹¬ì´ 31ì¼ì¸ ê²½ìš°
+
+			break;
+
+		case 4:
+
+		case 6:
+
+		case 9:
+
+		case 11:
+
+			temp += 30; //í•œë‹¬ì´ 30ì¼ì¸ ê²½ìš°
+
+			break;
+
+		}
+
+	}
+
+
+
+	temp = temp + 1; //ë§ˆì§€ë§‰ìœ¼ë¡œ ì¼ìˆ˜ë¥¼ ë”í•´ ì´ ì¼ ìˆ˜ë¥¼ êµ¬í•œë‹¤
+
+
+
+	return temp % 7; //1=ì›”,2=í™”...6=í† ,0=ì¼
+
+}
+void print_calendar(int sd, int year, int month, int x, int y,int d_day) {
+	date_check = 0;
+	int i, j;
+	int temp;
+	goto_xy(x, y);
+	for (int i = 0; i < 17; i++) {
+		goto_xy(x, y+i);
+		printf("                                            ");
+	}
+	goto_xy(x, y);
+
+	switch (month) {
+	case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+		temp = 31;
+		break;
+	case 4: case 6: case 9: case 11:
+		temp = 30;
+		break;
+	case 2:
+		if ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0))
+			temp = 29;
+		else
+			temp = 28;
+	}
+	for (i = 0; i < sd; i++) {
+		printf("%c      ", "       \n"[i == sd]);
+		date_index[i] = 0;
+	}
+	j = sd;
+	date_check = sd;
+	int check = 0;
+
+	for (i = 1; i <= temp; i++) {
+		if (j == 6) {
+			textcolor(9);
+			if (i < d_day) {
+				check = 1;
+				textcolor(8);
+			}
+			else if (i == d_day) {
+				textcolor(10);
+			}
+			printf("%2d", i);
+			textcolor(15);
+			y += 3;
+			goto_xy(x, y);
+			j = -1;
+		}
+		else {
+			textcolor(15);
+			if (j == 0) {
+				textcolor(12);
+			}
+			if (i < d_day) {
+				check = 1;
+				textcolor(8);
+			}
+			else if (i == d_day) {
+				textcolor(10);
+			}
+			printf("%2d     ", i);
+		}
+		j++;
+		if (check == 1) {
+			date_index[date_check] = 0;
+			check = 0;
+		}
+		else {
+			date_index[date_check] = i;
+		}
+		date_check++;
+	}
+}
+int xx_yy_date_find(int xx, int yy) {
+	int index = -1;
+	int date_x = 101;
+	int date_y = 19;
+	if ((xx - date_x) % 7 == 0 && (yy - date_y) % 3 == 0) {
+		index = (((yy - date_y) / 3) * 7) + ((xx - date_x) / 7);
+		if (index >= date_check || date_index[index] == 0) {
+			return 0;
+		}
+		else {
+			return date_index[index];
+		}
+		
+	}
+	else {
+		return 0;
+	}
+}
+int date_choice(int index,int choice) {
+	time_t seconds = time(NULL);
+	struct tm* now = localtime(&seconds);
+	int xx, yy, lr = 0;
+	basic_UI_DELETE(60, 3);
+	textcolor(6);
+	big_designer_print();
+	buid(choice, 395, 180, 1);
+	while (1) {
+		textcolor(6);
+		goto_xy(44, 7);
+		printf("â—--");
+		textcolor(15);
+		goto_xy(55, 34);
+		printf("ë””ìì´ë„ˆ : %s ë””ìì´ë„ˆ", d_all[choice].n_name);
+		goto_xy(55, 36);
+		printf("ë‚     ì§œ :                 ");
+		textcolor(6);
+		date_and_time_choice_UI(95, 7);
+		goto_xy(118, 8);
+		textcolor(6);
+		printf("ë‚ ì§œ ì„ íƒ");
+		int year = 1900 + now->tm_year;
+		int mon = now->tm_mon + 1;
+		int day = day_of_week(year, mon);
+		int x = 100;
+		int y = 12;
+		int d_day = now->tm_mday;
+		int choice_day = 0;
+		int check = 0;
+		textcolor(15);
+		goto_xy(x + 14, y);
+		printf("â—€");
+		goto_xy(x + 17, y);
+		printf("%dë…„ %02dì›”", year, mon);
+		goto_xy(x + 29, y);
+		printf("â–¶");
+		goto_xy(x, y + 4);
+		printf("ì¼     ì›”     í™”     ìˆ˜     ëª©     ê¸ˆ     í† ");
+		goto_xy(132, 36);
+		textcolor(8);
+		printf("â– ");
+		textcolor(15);
+		goto_xy(135, 36);
+		printf("ì„ íƒë¶ˆê°€");
+		while (1) {
+			goto_xy(x + 17, y);
+			printf("%dë…„ %02dì›”", year, mon);
+			print_calendar(day, year, mon, x, y + 7, d_day);
+			//ExClick();
+			while (1) {
+				xx = 0, yy = 0;
+				click(&xx, &yy);
+				if (yy > 10 && yy < 13) {
+					if (xx > 127 && xx < 132) {
+						goto_xy(x + 29, y);
+						textcolor(10);
+						printf("â–¶");
+						mon += 1;
+						if (mon > 12) {
+							year += 1;
+							mon = 1;
+						}
+						day = day_of_week(year, mon);
+						Sleep(500);
+						goto_xy(x + 29, y);
+						textcolor(15);
+						d_day = 0;
+						printf("â–¶");
+						break;
+					}
+					else if (xx > 112 && xx < 117) {
+						if (year == 1900 + now->tm_year && mon == now->tm_mon + 1) {
+							continue;
+						}
+						textcolor(10);
+						goto_xy(x + 14, y);
+						printf("â—€");
+						mon -= 1;
+						if (mon < 1) {
+							year -= 1;
+							mon = 12;
+						}
+						if (year == 1900 + now->tm_year && mon == now->tm_mon + 1) {
+							d_day = now->tm_mday;
+						}
+						day = day_of_week(year, mon);
+						Sleep(500);
+						textcolor(15);
+						goto_xy(x + 14, y);
+						printf("â—€");
+						break;
+					}
+				}
+				if (yy > 5 && yy < 8) {
+					if (xx > 42 && xx < 48) {
+						textcolor(10);
+						goto_xy(44, 7);
+						printf("â—--");
+						Sleep(500);
+						clearconsole();
+						return;
+					}
+				}
+				if (xx > 100 && xx < 145) {
+					if (yy > 18 && yy < 35) {
+						choice_day = xx_yy_date_find(xx, yy);
+						if (choice_day != 0) {
+							goto_xy(xx - 1, yy);
+							textcolor(10);
+							printf("%2d", choice_day);
+							textcolor(15);
+							time_choice(index, choice, year, mon, choice_day);
+							check = 1;
+							break;
+						}
+					}
+				}
+			}
+			if (check == 1) {
+				check = 0;
+				break;
+			}
+		}
+	}
+}
+int time_choice(int index, int choice,int year, int mon, int choice_day) {
+	int hour = 10; 
+	int min = 0;
+	int x = 98;
+	int y = 16;
+	int xx = 0, yy = 0, lr = 0;
+	int check = 0;
+	goto_xy(66, 36);
+	printf("%d.%02d.%02d", year, mon, choice_day);
+	Sleep(700);
+	while (1) {
+		hour = 10;
+		min = 0;
+		x = 98;
+		y = 16;
+		textcolor(6);
+		goto_xy(44, 7);
+		printf("â—--");
+		textcolor(15);
+		goto_xy(55, 38);
+		printf("ì‹œ    ê°„ :             ");
+		textcolor(6);
+		date_and_time_choice_UI(95, 7);
+		goto_xy(118, 8);
+		printf("ì‹œê°„ ì„ íƒ");
+		textcolor(15);
+		goto_xy(121, 12);
+		printf("ì˜¤ì „");
+		goto_xy(121, 22);
+		printf("ì˜¤í›„");
+		goto_xy(132, 38);
+		textcolor(8);
+		printf("â– ");
+		textcolor(15);
+		goto_xy(135, 38);
+		printf("ì„ íƒë¶ˆê°€");
+		goto_xy(132, 39);
+		textcolor(15);
+		printf("â– ");
+		goto_xy(135, 39);
+		printf("ì„ íƒê°€ëŠ¥");
+		textcolor(15);
+		//ì§€ê¸ˆ ì„ íƒí•œ ë‚ ì§œ ë‘ ë°˜ë³µë¬¸ ì•ˆì—ìˆëŠ” ì‹œê°„ì´ë‘ ë¶„ì„ ê³„ì†í•´ì„œ í•¨ìˆ˜ë¡œ ë˜ì ¸ì„œ ì´ í—¤ì–´ë””ìì´ë„ˆì— ì´ ë‚ ì§œì— ì´ ì‹œê°„ ì˜ˆì•½ì´ ìˆëŠ”ì§€ í™•ì¸ í•´ì£¼ëŠ” í•¨ìˆ˜ ë§Œë“¤ì–´ì•¼í•¨ // ë‹¹ì¼ ì˜ˆì•½ í•  ê²½ìš° ì§€ë‚œ ì‹œê°„ì€ ì˜ˆì•½ ëª»í•˜ê²Œ ë§‰ì•„ì•¼í•¨
+		for (int i = 1; i <= 16; i++) {
+			time_box(x, y, 15, x + 3, y + 1, hour, min, 15);
+			x += 12;
+			min += 30;
+			if (min == 60) {
+				hour += 1;
+				min = 0;
+				if (hour > 12) {
+					hour = 1;
+				}
+			}
+			if (i % 4 == 0) {
+				if (i == 4) {
+					y += 10;
+				}
+				else {
+					y += 4;
+				}
+				x = 98;
+			}
+		}
+		hour = 0;
+		min = 0;
+		int e_hour = 0;
+		while (1) {
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (yy > 5 && yy < 8) {
+				if (xx > 42 && xx < 48) {
+					textcolor(10);
+					goto_xy(44, 7);
+					printf("â—--");
+					Sleep(500);
+					goto_xy(55, 38);
+					printf("              ");
+					return;
+				}
+			}
+			if (xx > 97 && xx < 146) {
+				if (yy > 15 && yy < 19) {
+					yy = 16;
+					e_hour = 10;
+				}
+				if (yy > 25 && yy < 29) {
+					yy = 26;
+					e_hour = 12;
+				}
+				if (yy > 29 && yy < 33) {
+					yy = 30;
+					e_hour = 2;
+				}
+				if (yy > 33 && yy < 37) {
+					yy = 34;
+					e_hour = 4;
+				}
+				if (e_hour != 0) {
+					if (xx > 98 && xx < 109) {
+						xx = 98;
+						hour = e_hour;
+						min = min;
+					}
+					else if (xx > 110 && xx < 121) {
+						xx = 110;
+						hour = e_hour;
+						min += 30;
+					}
+					else if (xx > 122 && xx < 133) {
+						xx = 122;
+						min = 0;
+						hour = e_hour + 1;
+						if (hour > 12) {
+							hour = 1;
+						}
+
+					}
+					else if (xx > 134 && xx < 146) {
+						xx = 134;
+						hour = e_hour + 1;
+						if (hour > 12) {
+							hour = 1;
+						}
+						min += 30;
+					}
+					else {
+						e_hour = 0;
+						continue;
+					}
+					break;
+				}
+			}
+		}
+		if (e_hour != 0 && xx != 0 && yy != 0) {
+			time_box(xx, yy, 10, xx + 3, yy + 1, hour, min, 15);
+			check = member_design_choice(index, choice, year, mon, choice_day, hour, min);
+			if (check == 1) {
+				return;
+			}
+		}
+	}
+}
+const char* m_design_print(int index, int design_column, int page_count, int count, char *str,int design_choice) {
+	int x = 98;
+	int y = 10;
+	design_column_UI(x, y, 6, x + 4, y + 1, "ì»¤íŠ¸", 6);
+	design_column_UI(x + 12, y, 6, x + 17, y + 1, "íŒ", 6);
+	design_column_UI(x + 24, y, 6, x + 28, y + 1, "ì»¬ëŸ¬", 6);
+	design_column_UI(x + 36, y, 6, x + 40, y + 1, "ê¸°íƒ€", 6);
+
+	if (design_column == 1) {
+		strcpy(str, "ì»¤íŠ¸");
+		design_column_UI(x, y, 10, x + 4, y + 1, "ì»¤íŠ¸", 6);
+	}
+	else if (design_column == 2) {
+		strcpy(str, "íŒ");
+		design_column_UI(x + 12, y, 10, x + 17, y + 1, "íŒ", 6);
+	}
+	else if (design_column == 3) {
+		strcpy(str, "ì»¬ëŸ¬");
+		design_column_UI(x + 24, y, 10, x + 28, y + 1, "ì»¬ëŸ¬", 6);
+	}
+	else if (design_column == 4) {
+		strcpy(str, "ê¸°íƒ€");
+		design_column_UI(x + 36, y, 10, x + 40, y + 1, "ê¸°íƒ€", 6);
+	}
+	design_take_menu(index, str);
+	y = 13;
+	for (int i = 0; i < 25; i++) {
+		goto_xy(x, y + i);
+		printf("                                                 ");
+	}
+	for (style_i; style_i < count * page_count; style_i++) {
+		if (strcmp(D_MENU[style_i].name, " ") == 0) {
+			break;
+		}
+		else {
+			design_see_UI(x, y, 6, style_i,design_choice,0);
+			goto_xy(x+2, y+1);
+			textcolor(7);
+			printf("%s", D_MENU[style_i].name);
+			int print_x = x + 7;
+			int print_y = y + 3;
+			int len = 0;
+			len = strlen(D_MENU[style_i].account);
+			int len_2 = 0;
+			textcolor(8);
+			goto_xy(print_x, print_y);
+			if (strcmp(D_MENU[style_i].account, " ") != 0) {
+				for (int i = 0; i < len; i++) {
+					if (len < sizeof(D_MENU[style_i].account) - 1) {
+						if (len_2 >= MAX_2_X - 103 && (len_2 % (MAX_2_X - 103)) == 0) {
+							if (print_y >= y + 6) {
+								break;
+							}
+							handleNewline_2(&print_x, &print_y);
+							len_2 = 0;
+							len_2++;
+							printf("%c", D_MENU[style_i].account[i]);
+						}
+						else {
+							len_2++;
+							printf("%c", D_MENU[style_i].account[i]);
+						}
+					}
+				}
+			}
+			else {
+				goto_xy(x + 20, y + 3);
+				printf("ì„¤ëª…ì—†ìŒ");
+			}
+			goto_xy(x + 38,y + 6);
+			textcolor(7);
+			printf("%dì›", D_MENU[style_i].price);
+			y += 8;
+		}
+	}
+	textcolor(6);
+	goto_xy(117, 38);
+	printf("â—");
+	goto_xy(122, 38);
+	printf("%d", page_count);
+	goto_xy(126, 38);
+	printf("â–·");
+	return str;
+}
+int member_design_choice(int index, int choice, int year, int mon, int choice_day, int hour, int min) {
+	design_file_read();
+	goto_xy(66, 38);
+	char str[15] = "ì»¤íŠ¸";
+	int page_count = 1;
+	int design_column = 1;
+	int design_choice = -1;
+	style_i = 0;
+	int count = 3;
+	int x = 98;
+	int y = 10;
+	int xx, yy = 0;
+	if (hour < 10) {
+		hour += 12;
+	}
+	printf("%02d:%02d", hour, min);
+	Sleep(700);
+	goto_xy(55, 40);
+	printf("ë”” ì ì¸ :             ");
+	textcolor(6);
+	date_and_time_choice_UI(95, 7);
+	goto_xy(117, 8);
+	printf("ë””ìì¸ ì„ íƒ");
+	strcpy(str, "ì»¤íŠ¸");
+	while (1) {
+		const char* string = m_design_print(choice, design_column, page_count, count, str, design_choice);
+		//ExClick();
+		strcpy(str, string);
+		if (style_i == (count * page_count) - 1) {
+			style_i++;
+		}
+		while (1) {
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (yy > 5 && yy < 8) {
+				if (xx > 42 && xx < 48) {
+					textcolor(10);
+					goto_xy(44, 7);
+					printf("â—--");
+					Sleep(500);
+					goto_xy(55, 40);
+					printf("              ");
+					return;
+				}
+			}
+			if (xx > 98 && xx < 145) {
+				if (yy > 12 && yy < 21) {
+					design_choice = (count * page_count) - 3;
+				}
+				else if (yy > 20 && yy < 29) {
+					design_choice = (count * page_count) - 2;
+				}
+				else if (yy > 28 && yy < 37) {
+					design_choice = (count * page_count) - 1;
+				}
+			}
+			if (yy > 9 && yy < 13) {
+				if (xx > 97 && xx < 109) {
+					if (design_column != 1) {
+						design_column = 1;
+						style_i = 0;
+						page_count = 1;
+						break;
+					}
+				}
+				if (xx > 109 && xx < 121) {
+					if (design_column != 2) {
+						design_column = 2;
+						style_i = 0;
+						page_count = 1;
+						break;
+					}
+				}
+				if (xx > 122 && xx < 133) {
+					if (design_column != 3) {
+						design_column = 3;
+						style_i = 0;
+						page_count = 1;
+						break;
+					}
+				}
+				if (xx > 135 && xx < 145) {
+					if (design_column != 4) {
+						design_column = 4;
+						style_i = 0;
+						page_count = 1;
+						break;
+					}
+				}
+			}
+			if (yy > 36 && yy < 39) {
+				if (xx > 116 && xx < 120) {
+					if (page_count != 1) {
+						textcolor(10);
+						goto_xy(117, 38);
+						printf("â—");
+						Sleep(500);
+						style_i = (page_count - 2) * count;
+						page_count--;
+						break;
+					}
+				}
+				if (xx > 125 && xx < 129) {
+					if (strcmp(D_MENU[style_i].name, " ") != 0) {
+						textcolor(10);
+						goto_xy(126, 38);
+						printf("â–·");
+						Sleep(500);
+						page_count++;
+						break;
+					}
+				}
+			}
+			if (design_choice != -1) {
+				style_i = (page_count * count) - count;
+				choice_index = -1;
+				m_design_print(choice, design_column, page_count, count, str, design_choice);
+				payment(choice,year,mon,choice_day,hour,min);
+			}
+		}
+	}
+}
+int payment(int choice, int year, int mon, int choice_day,int hour, int min) {
+	Sleep(700);
+	int x = 55, y = 34;
+	for (int i = 0; i < 4; i++) {
+		goto_xy(x, y);
+		printf("                               ");
+		y += 2;
+	}
+	textcolor(6);
+	date_and_time_choice_UI(95, 7);
+	goto_xy(121, 8);
+	printf("ê²°ì œ");
+	textcolor(7);
+	goto_xy(100, 12);
+	printf("ë””ìì´ë„ˆ:           %s", d_all[choice].n_name);
+	goto_xy(100, 15);
+	printf("ë‚     ì§œ:           %d.%d.%d", year,mon,choice_day);
+	goto_xy(100, 18);
+	printf("ì‹œ    ê°„:           %02d:%02d", hour, min);
+	goto_xy(100, 21);
+	printf("ì¢…    ë¥˜:           %s", STYLE[choice_index].sort);
+	goto_xy(100, 24);
+	printf("ë”” ì ì¸:           %s", STYLE[choice_index].name);
+	goto_xy(100, 27);  
+	printf("ê¸ˆ    ì•¡:           %dì›", STYLE[choice_index].price);
+	goto_xy(105, 31);
+	design_see_UI(98, 30, 8, 0, 0, 1);
+	goto_xy(110, 33);
+	textcolor(4);
+	printf("â€»ìš”ì²­ì‚¬í•­(ìµœëŒ€ 50ê¸€ì)");
+	design_column_UI(117,38,7, 121,39, "ê²°ì œ", 7);
+	Sleep(300000);
+
+}
+
+int design_column_UI(int x, int y, int color, int xx, int yy, char* str, int color2) {
+	textcolor(color);
+	goto_xy(x, y);
+	printf("â”");
+	for (int i = 0; i < 4; i++)
+	{
+		printf("â”");
+	}
+	printf("â”“");
+
+	for (int i = 0; i < 1; i++) {
+		y += 1;
+		goto_xy(x, y);
+		printf("â”ƒ        â”ƒ");
+	}
+	goto_xy(x, y + 1);
+	printf("â”—");
+	for (int i = 0; i < 4; i++)
+	{
+		printf("â”");
+	}
+	printf("â”›");
+	textcolor(color2);
+	goto_xy(xx, yy);
+	printf("%s", str);
+}
+int big_designer_print(){
+	textcolor(DarkYellow);
+	int x = 40, y = 6;
+	goto_xy(x, y);
+	printf("â”");
+	for (int i = 0; i < 54; i++)
+	{
+		printf("â”");
+	}
+	printf("â”“");
+	for (int i = 0; i < 35; i++) {
+		y += 1;
+		goto_xy(x, y);
+		printf("â”ƒ                                                                                                            â”ƒ");
+	}
+	goto_xy(x, y + 1);
+	printf("â”—");
+	for (int i = 0; i < 54; i++)
+	{
+		printf("â”");
+	}
+	printf("â”›");
+}
+int date_and_time_choice_UI(int x,int y) {
+	goto_xy(x, y);
+	printf("â”");
+	for (int i = 0; i < 25; i++)
+	{
+		printf("â”");
+	}
+	printf("â”“");
+	for (int i = 0; i < 33; i++) {
+		y += 1;
+		if (i == 1) {
+			goto_xy(x, y);
+			printf("â”£");
+			for (int i = 0; i < 25; i++) {
+				printf("â”");
+			}
+			printf("â”«");
+		}
+		else {
+			goto_xy(x, y);
+			printf("â”ƒ                                                  â”ƒ");
+		}
+	}
+	goto_xy(x, y + 1);
+	printf("â”—");
+	for (int i = 0; i < 25; i++)
+	{
+		printf("â”");
+	}
+	printf("â”›");
+}
+int designer_initial_screen(int index) { //ë””ìì´ë„ˆ ì´ˆê¸° í™”ë©´
+	int xx, yy, lr = 0;
+	int choice = 0;
+	design_file_read();
+	while (1) {
+		box_clear();
+		m_basic_UI();
+		xx = 0, yy = 0;
+		goto_xy(93, 5);
+		textcolor(6);
+		printf("%së‹˜",d_all[index].name);
+		big_box(87, 14, 6, 94, 16, "ì˜ˆì•½ ê´€ë¦¬");
+		big_box(87, 22, 6, 93, 24, "ë””ìì¸ ê´€ë¦¬");
+		big_box(87, 30, 6, 93, 32, "í”„ë¡œí•„ ê´€ë¦¬");
+		big_box(87, 38, 6, 94, 40, "ë¦¬ë·° ê´€ë¦¬");
+		small_box(68, 46, 6, 72, 47, "ë¡œê·¸ì•„ì›ƒ", 6);
+		small_box(110, 46, 6, 116, 47, "ë‹¤ìŒ", 6);
+		//ExClick();
+		while (1) {
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (xx > 68 && xx < 83) {
+				if (yy > 45 && yy < 49) {
+					small_box(68, 46, 10, 72, 47, "ë¡œê·¸ì•„ì›ƒ", 6);
+					Sleep(500);
+					return;
+				}
+			}
+			if (xx > 87 && xx < 108) {
 				if (yy > 21 && yy < 27) {
-					big_box(57, 22, 10, 63, 24, "µğÀÚÀÎ °ü¸®");
-					big_box(57, 14, 6, 64, 16, "¿¹¾à °ü¸®");
-					big_box(57, 30, 6, 63, 32, "ÇÁ·ÎÇÊ °ü¸®");
-					big_box(57, 38, 6, 64, 40, "¸®ºä °ü¸®");
+					big_box(87, 22, 10, 93, 24, "ë””ìì¸ ê´€ë¦¬");
+					big_box(87, 14, 6, 94, 16, "ì˜ˆì•½ ê´€ë¦¬");
+					big_box(87, 30, 6, 93, 32, "í”„ë¡œí•„ ê´€ë¦¬");
+					big_box(87, 38, 6, 94, 40, "ë¦¬ë·° ê´€ë¦¬");
 					choice = 2;
 					xx, yy = 0;
 				}
 			}
-			if (xx > 80 && xx < 95) {
+			if (xx > 110 && xx < 125) {
 				if (yy > 45 && yy < 49) {
 					if (choice != 0) {
-						small_box(80, 46, 10, 86, 47, "´ÙÀ½", 6);
+						small_box(110, 46, 10, 116, 47, "ë‹¤ìŒ", 6);
 						Sleep(500);
 						if (choice == 2) {
 							style_management(index);
@@ -1248,75 +2406,77 @@ int designer_initial_screen(int index) { //µğÀÚÀÌ³Ê ÃÊ±â È­¸é
 		xx = 0, yy = 0;
 	}
 }
-int designer_login() { //µğÀÚÀÌ³Ê ·Î±×ÀÎ 
+int designer_login() { //ë””ìì´ë„ˆ ë¡œê·¸ì¸ 
 	d_file_read();
 	box_clear();
-	goto_xy(60, 5);
+	goto_xy(90, 5);
 	textcolor(6);
-	printf("µğÀÚÀÌ³Ê ·Î±×ÀÎ");
-	small_box(38, 46, 6, 44, 47, "ÀÌÀü", 6);
-	small_box(80, 46, 6, 85, 47, "·Î±×ÀÎ", 6);
+	printf("ë””ìì´ë„ˆ ë¡œê·¸ì¸");
+	small_box(68, 46, 6, 74, 47, "ì´ì „", 6);
+	small_box(110, 46, 6, 115, 47, "ë¡œê·¸ì¸", 6);
 	char phone[20] = " ";
 	int brith = 0;
 	int xx = 0, yy = 0, lr = 0;
 	int check = 0;
-	goto_xy(53, 19);
-	printf("ÀüÈ­¹øÈ£ (11ÀÚ¸®) ex) 010xxxxxxxx ");
-	goto_xy(53, 21);
+	goto_xy(83, 19);
+	printf("ì „í™”ë²ˆí˜¸ (11ìë¦¬) ex) 010xxxxxxxx ");
+	goto_xy(83, 21);
 	printf(":");
-	goto_xy(53, 28);
-	printf("»ı³â¿ùÀÏ (8ÀÚ¸®) ex) xxxxxxxx");
-	goto_xy(53, 30);
+	goto_xy(83, 28);
+	printf("ìƒë…„ì›”ì¼ (8ìë¦¬) ex) xxxxxxxx");
+	goto_xy(83, 30);
 	printf(":");
 	while (1) {
 		xx = 0, yy = 0;
 		click(&xx, &yy);
-		if (xx > 38 && xx < 53) {
+		if (xx > 68 && xx < 83) {
 			if (yy > 45 && yy < 49) {
-				small_box(38, 46, 10, 44, 47, "ÀÌÀü", 6);
+				small_box(68, 46, 10, 74, 47, "ì´ì „", 6);
 				Sleep(500);
 				return;
 			}
 		}
-		if (xx > 53 && xx < 85) {
+		if (xx > 83 && xx < 115) {
 			if (yy > 19 && yy < 23) {
 				textcolor(6);
-				goto_xy(55, 21);
+				goto_xy(85, 21);
 				printf("                                 ");
-				goto_xy(55, 21);
+				goto_xy(85, 21);
 				EnableConsoleCursor();
+				fflush(stdin);
 				gets(phone);
+				fflush(stdin);
 				HideCursor();
 				check = isValidPhone_or_pw_Number(phone, 1);
 				if (check == 0) {
 					strcpy(phone, " ");
-					goto_xy(55, 21);
-					printf("Çü½ÄÀÌ ¿Ã¹Ù¸£Áö ¾Ê½À´Ï´Ù..");
+					goto_xy(85, 21);
+					printf("í˜•ì‹ì´ ì˜¬ë°”ë¥´ì§€ ì•ŠìŠµë‹ˆë‹¤..");
 				}
 
 			}
 		}
-		if (xx > 53 && xx < 85) {
+		if (xx > 83 && xx < 115) {
 			if (yy > 28 && yy < 32) {
 				textcolor(6);
-				goto_xy(55, 30);
+				goto_xy(85, 30);
 				printf("                                 ");
-				goto_xy(55, 30);
+				goto_xy(85, 30);
 				EnableConsoleCursor();
 				brith = getMaskedInput();
 				HideCursor();
 				check = isValidDate(brith);
 				if (check == 0) {
 					brith = 0;
-					goto_xy(55, 30);
-					printf("Çü½ÄÀÌ ¿Ã¹Ù¸£Áö ¾Ê½À´Ï´Ù..");
+					goto_xy(85, 30);
+					printf("í˜•ì‹ì´ ì˜¬ë°”ë¥´ì§€ ì•ŠìŠµë‹ˆë‹¤..");
 				}
 			}
 		}
-		if (xx > 80 && xx < 95) {
+		if (xx > 110 && xx < 125) {
 			if (yy > 45 && yy < 49) {
 				if (brith != 0 && strcmp(phone, " ") != 0) {
-					small_box(80, 46, 10, 85, 47, "·Î±×ÀÎ", 6);
+					small_box(110, 46, 10, 115, 47, "ë¡œê·¸ì¸", 6);
 					check = -1;
 					for (int i = 0; i < designer_count; i++) {
 						if (strcmp(d_all[i].phone, phone) == 0 && d_all[i].brith == brith) {
@@ -1330,10 +2490,10 @@ int designer_login() { //µğÀÚÀÌ³Ê ·Î±×ÀÎ
 						return 1;
 					}
 					else {
-						small_box(80, 46, 6, 85, 47, "·Î±×ÀÎ", 6);
-						goto_xy(48, 40);
+						small_box(110, 46, 6, 115, 47, "ë¡œê·¸ì¸", 6);
+						goto_xy(78, 40);
 						textcolor(4);
-						printf("ÀüÈ­¹øÈ£ È¤Àº ºñ¹Ğ¹øÈ£¸¦ ´Ù½Ã ÀÔ·Â ÇØÁÖ¼¼¿ä.");
+						printf("ì „í™”ë²ˆí˜¸ í˜¹ì€ ë¹„ë°€ë²ˆí˜¸ë¥¼ ë‹¤ì‹œ ì…ë ¥ í•´ì£¼ì„¸ìš”.");
 					}
 				}
 
@@ -1343,7 +2503,7 @@ int designer_login() { //µğÀÚÀÌ³Ê ·Î±×ÀÎ
 		xx = 0, yy = 0;
 	}
 }
-void modifying_membership(int index) { //È¸¿øÁ¤º¸ ¼öÁ¤
+void modifying_membership(int index) { //íšŒì›ì •ë³´ ìˆ˜ì •
 	int n_len = 0;
 	int pw_check = 1;
 	int ph_check = 1;
@@ -1351,40 +2511,40 @@ void modifying_membership(int index) { //È¸¿øÁ¤º¸ ¼öÁ¤
 	char name[20] = " ";
 	char phone[15] = " ";
 	char pw[15] = " ";
-	basic_UI(30,3);
-	goto_xy(62, 5);
+	basic_UI(60,3);
+	goto_xy(92, 5);
 	textcolor(6);
-	printf("È¸¿øÁ¤º¸");
-	small_box(38, 46, 6, 44, 47, "ÀÌÀü", 6);
-	small_box(80, 46, 6, 86, 47, "ÀúÀå", 6);
-	goto_xy(51, 11);
+	printf("íšŒì›ì •ë³´");
+	small_box(68, 46, 6, 74, 47, "ì´ì „", 6);
+	small_box(110, 46, 6, 116, 47, "ì €ì¥", 6);
+	goto_xy(81, 11);
 	textcolor(4);
-	printf("ÀÌ¸§, ÀüÈ­¹øÈ£, ºñ¹Ğ¹øÈ£¸¸ ¼öÁ¤ °¡´É");
+	printf("ì´ë¦„, ì „í™”ë²ˆí˜¸, ë¹„ë°€ë²ˆí˜¸ë§Œ ìˆ˜ì • ê°€ëŠ¥");
 	textcolor(6);
-	goto_xy(51, 17);
-	printf("ÀÌ¸§ :");
-	goto_xy(68, 17);
+	goto_xy(81, 17);
+	printf("ì´          ë¦„  :");
+	goto_xy(98, 17);
 	printf("%s", all[index].name);
-	goto_xy(51, 22);
-	printf("ÀüÈ­¹øÈ£ :");
-	goto_xy(68, 22);
+	goto_xy(81, 22);
+	printf("ì „  í™”  ë²ˆ  í˜¸  :");
+	goto_xy(98, 22);
 	printf("%s", all[index].phone);
-	goto_xy(51, 27);
-	printf("¼ºº° :");  
-	goto_xy(68, 27);
-	if (strcmp(all[index].gender, "³²") == 0) {\
-		printf("³²ÀÚ");
+	goto_xy(81, 27);
+	printf("ì„±          ë³„  :");  
+	goto_xy(98, 27);
+	if (strcmp(all[index].gender, "ë‚¨") == 0) {\
+		printf("ë‚¨ì");
 	}
 	else {
-		printf("¿©ÀÚ");
+		printf("ì—¬ì");
 	}
-	goto_xy(51, 32);
-	printf("»ı³â¿ùÀÏ(8ÀÚ¸®) :");
-	goto_xy(68, 32);
+	goto_xy(81, 32);
+	printf("ìƒë…„ì›”ì¼(8ìë¦¬) :");
+	goto_xy(98, 32);
 	printf("%d", all[index].brith);
-	goto_xy(51, 37);
-	printf("ºñ¹Ğ¹øÈ£(4ÀÚ¸®) :");
-	goto_xy(68, 37);
+	goto_xy(81, 37);
+	printf("ë¹„ë°€ë²ˆí˜¸(4ìë¦¬) :");
+	goto_xy(98, 37);
 	printf("%s", all[index].pw);
 	strcpy(name, all[index].name);
 	strcpy(pw,all[index].pw);
@@ -1392,63 +2552,59 @@ void modifying_membership(int index) { //È¸¿øÁ¤º¸ ¼öÁ¤
 	while (1) {
 		xx = 0, yy = 0;
 		click(&xx, &yy);
-		if (xx > 38 && xx < 53) {
+		if (xx > 68 && xx < 83) {
 			if (yy > 45 && yy < 49) {
-				small_box(38, 46, 10, 44, 47, "ÀÌÀü", 6);
+				small_box(68, 46, 10, 74, 47, "ì´ì „", 6);
 				Sleep(500);
 				return;
 			}
 		}
-		if (xx > 56 && xx < 87) {
-			if (yy > 15 && yy < 19) {
-				textcolor(6);
-				goto_xy(58, 17);
-				printf("                                    ");
-				goto_xy(68, 17);
-				EnableConsoleCursor();
-				scanf("%s", name);
-				HideCursor();
-			}
-		}
-		if (xx > 60 && xx < 87) {
+		if (xx > 97 && xx < 117) {
 			if (yy > 20 && yy < 24) {
 				textcolor(6);
-				goto_xy(65, 22);
-				printf("                                 ");
-				goto_xy(68, 22);
+				goto_xy(98, 22);
+				printf("                              ");
+				goto_xy(98, 22);
 				EnableConsoleCursor();
 				scanf("%s", phone);
 				HideCursor();
 				ph_check = isValidPhone_or_pw_Number(phone, 1);
 				if (ph_check == 0) {
 					strcpy(phone, all[index].phone);
-					goto_xy(68, 22);
-					printf("Çü½ÄÀÌ ¿Ã¹Ù¸£Áö ¾Ê½À´Ï´Ù..");
+					goto_xy(98, 22);
+					printf("í˜•ì‹ì´ ì˜¬ë°”ë¥´ì§€ ì•ŠìŠµë‹ˆë‹¤..");
 				}
 
 			}
-		}
-		if (xx > 67 && xx < 87) {
-			if (yy > 35 && yy < 39) {
+			else if (yy > 35 && yy < 39) {
 				textcolor(6);
-				goto_xy(68, 37);
+				goto_xy(98, 37);
 				printf("                                 ");
-				goto_xy(68, 37);
+				goto_xy(98, 37);
 				EnableConsoleCursor();
 				scanf("%s", pw);
 				HideCursor();
 				pw_check = isValidPhone_or_pw_Number(pw, 2);
 				if (pw_check == 0) {
 					strcpy(pw, all[index].pw);
-					goto_xy(68, 37);
-					printf("Çü½ÄÀÌ ¿Ã¹Ù¸£Áö ¾Ê½À´Ï´Ù..");
+					goto_xy(98, 37);
+					printf("í˜•ì‹ì´ ì˜¬ë°”ë¥´ì§€ ì•ŠìŠµë‹ˆë‹¤..");
 				}
 			}
+			else if (yy > 15 && yy < 19) {
+				textcolor(6);
+				goto_xy(98, 17);
+				printf("                                ");
+				goto_xy(98, 17);
+				EnableConsoleCursor();
+				scanf("%s", name);
+				HideCursor();
+			}
 		}
-		if (xx > 80 && xx < 95) {
+		if (xx > 110 && xx < 125) {
 			if (yy > 45 && yy < 49) {
 				if (pw_check != 0 && ph_check != 0) {
-					small_box(80, 46, 10, 86, 47, "ÀúÀå", 6);
+					small_box(110, 46, 10, 116, 47, "ì €ì¥", 6);
 					strcpy(all[index].name, name);
 					strcpy(all[index].pw, pw);
 					strcpy(all[index].phone, phone);
@@ -1462,57 +2618,61 @@ void modifying_membership(int index) { //È¸¿øÁ¤º¸ ¼öÁ¤
 	}
 	//ExClick();
 }
-int member_initial_screen(int index) { //·Î±×ÀÎ ¼º°ø½Ã È¸¿ø ÃÊ±âÈ­¸é
+int member_initial_screen(int index) { //ë¡œê·¸ì¸ ì„±ê³µì‹œ íšŒì› ì´ˆê¸°í™”ë©´
 	int xx, yy, lr = 0;
 	int choice = 0;
 	while (1) {
 		box_clear();
 		m_basic_UI();
 		xx = 0, yy = 0;
-		goto_xy(63, 5);
+		goto_xy(93, 5);
 		textcolor(6);
-		printf("%s´Ô", all[index].name);
-		big_box(57, 18, 6, 66, 20, "¿¹¾à");
-		big_box(57, 25, 6, 61, 27, "¿¹¾à ³»¿ª Á¶È¸");
-		big_box(57, 32, 6, 63, 34, "Á¤º¸ ¼öÁ¤");
-		small_box(38, 46, 6, 42, 47, "·Î±×¾Æ¿ô", 6);
-		small_box(80, 46, 6, 86, 47, "´ÙÀ½", 6);
+		printf("%së‹˜", all[index].name);
+		big_box(87, 18, 6, 96, 20, "ì˜ˆì•½");
+		big_box(87, 25, 6, 91, 27, "ì˜ˆì•½ ë‚´ì—­ ì¡°íšŒ");
+		big_box(87, 32, 6, 93, 34, "ì •ë³´ ìˆ˜ì •");
+		small_box(68, 46, 6, 72, 47, "ë¡œê·¸ì•„ì›ƒ", 6);
+		small_box(110, 46, 6, 116, 47, "ë‹¤ìŒ", 6);
 		//ExClick();
 		while (1) {
 			xx = 0, yy = 0;
 			click(&xx, &yy);
-			if (xx > 38 && xx < 53) {
+			if (xx > 68 && xx < 83) {
 				if (yy > 45 && yy < 49) {
-					small_box(38, 46, 10, 42, 47, "·Î±×¾Æ¿ô", 6);
+					small_box(68, 46, 10, 72, 47, "ë¡œê·¸ì•„ì›ƒ", 6);
 					Sleep(500);
 					return;
 				}
 			}
-			if (xx > 57 && xx < 78) {
+			if (xx > 87 && xx < 108) {
 				if (yy > 31 && yy < 37) {
-					big_box(57, 18, 6, 66, 20, "¿¹¾à", 6);
-					big_box(57, 25, 6, 61, 27, "¿¹¾à ³»¿ª Á¶È¸", 6);
-					big_box(57, 32, 10, 63, 34, "Á¤º¸ ¼öÁ¤", 6);
+					big_box(87, 18, 6, 96, 20, "ì˜ˆì•½", 6);
+					big_box(87, 25, 6, 91, 27, "ì˜ˆì•½ ë‚´ì—­ ì¡°íšŒ", 6);
+					big_box(87, 32, 10, 93, 34, "ì •ë³´ ìˆ˜ì •", 6);
 					choice = 3;
 					xx, yy = 0;
 				}
-			}
-			if (xx > 57 && xx < 78) {
-				if (yy > 17 && yy < 22) {
-					big_box(57, 18, 10, 66, 20, "¿¹¾à", 6);
-					big_box(57, 25, 6, 61, 27, "¿¹¾à ³»¿ª Á¶È¸", 6);
-					big_box(57, 32, 6, 63, 34, "Á¤º¸ ¼öÁ¤", 6);
+			    else if (yy > 17 && yy < 22) {
+					big_box(87, 18, 10, 96, 20, "ì˜ˆì•½", 6);
+					big_box(87, 25, 6, 91, 27, "ì˜ˆì•½ ë‚´ì—­ ì¡°íšŒ", 6);
+					big_box(87, 32, 6, 93, 34, "ì •ë³´ ìˆ˜ì •", 6);
 					choice = 1;
 					xx, yy = 0;
 				}
 			}
-			if (xx > 80 && xx < 95) {
+			if (xx > 110 && xx < 125) {
 				if (yy > 45 && yy < 49) {
 					if (choice != 0) {
-						small_box(80, 46, 10, 86, 47, "´ÙÀ½", 6);
+						small_box(110, 46, 10, 116, 47, "ë‹¤ìŒ", 6);
 						Sleep(500);
 						if (choice == 3) {
 							modifying_membership(index);
+							choice = 0;
+							break;
+						}
+						else if (choice == 1) {
+							designer_choice(index);
+							choice = 0;
 							break;
 						}
 						else if (choice == 1) {
@@ -1528,66 +2688,69 @@ int member_initial_screen(int index) { //·Î±×ÀÎ ¼º°ø½Ã È¸¿ø ÃÊ±âÈ­¸é
 	}
 
 }
-int member_login() { //È¸¿ø ·Î±×ÀÎ ÇÏ´Â ºÎºĞ
+int member_login() { //íšŒì› ë¡œê·¸ì¸ í•˜ëŠ” ë¶€ë¶„
+	file_read();
 	box_clear();
-	goto_xy(62, 5);
+	goto_xy(92, 5);
 	textcolor(6);
-	printf("È¸¿ø ·Î±×ÀÎ");
-	small_box(38, 46, 6,44,47,"ÀÌÀü",6);
-	small_box(80, 46, 6,85,47,"·Î±×ÀÎ",6);
+	printf("íšŒì› ë¡œê·¸ì¸");
+	small_box(68, 46, 6,74,47,"ì´ì „",6);
+	small_box(110, 46, 6,115,47,"ë¡œê·¸ì¸",6);
 	char phone[20] = " ";
 	char pw[15] = " ";
 	int xx = 0, yy = 0, lr = 0;
 	int check = 0;
-	goto_xy(53, 19);
-	printf("ÀüÈ­¹øÈ£(11ÀÚ¸® ex) 010xxxxxxxx ");
-	goto_xy(53, 21);
+	goto_xy(83, 19);
+	printf("ì „í™”ë²ˆí˜¸(11ìë¦¬ ex) 010xxxxxxxx ");
+	goto_xy(83, 21);
 	printf(":");
-	goto_xy(53, 28);
-	printf("ºñ¹Ğ¹øÈ£(¼ıÀÚ 4ÀÚ¸®) ex) 0000");
-	goto_xy(53, 30);
+	goto_xy(83, 28);
+	printf("ë¹„ë°€ë²ˆí˜¸(ìˆ«ì 4ìë¦¬) ex) 0000");
+	goto_xy(83, 30);
 	printf(":");
 	//ExClick();
 	while (1) {
 		xx = 0, yy = 0;
 		click(&xx, &yy);
-		if (xx > 38 && xx < 53) {
+		if (xx > 68 && xx < 83) {
 			if (yy > 45 && yy < 49) {
-				small_box(38, 46, 10,44,47,"ÀÌÀü",6);
+				small_box(68, 46, 10,74,47,"ì´ì „",6);
 				Sleep(500);
 				return;
 			}
 		}
-		if (xx > 53 && xx < 85) {
+		if (xx > 83 && xx < 115) {
 			if (yy > 19 && yy < 23) {
 				textcolor(6);
-				goto_xy(55, 21);
+				goto_xy(85, 21);
 				printf("                                 ");
-				goto_xy(55, 21);
+				goto_xy(85, 21);
 				EnableConsoleCursor();
-				gets(phone);
+				fflush(stdin);
+				scanf("%s",phone);
+				fflush(stdin);
 				HideCursor();
 				check = isValidPhone_or_pw_Number(phone, 1);
 				if (check == 0) {
 					strcpy(phone, " ");
-					goto_xy(55, 21);
-					printf("Çü½ÄÀÌ ¿Ã¹Ù¸£Áö ¾Ê½À´Ï´Ù..");
+					goto_xy(85, 21);
+					printf("í˜•ì‹ì´ ì˜¬ë°”ë¥´ì§€ ì•ŠìŠµë‹ˆë‹¤..");
 				}
 
 			}
 		}
-		if (xx > 53 && xx < 85) {
+		if (xx > 83 && xx < 115) {
 			if (yy > 28 && yy < 32) {
 				textcolor(6);
-				goto_xy(55, 30);
+				goto_xy(85, 30);
 				printf("                                 ");
-				goto_xy(55, 30);
+				goto_xy(85, 30);
 				EnableConsoleCursor();
 				char ch;
 				int i = 0;
 				while (1) {
 					ch = _getch();
-
+					fflush(stdin);
 					// Check if Enter key is pressed (ASCII value 13)
 					if (ch == 13) {
 						pw[i] = '\0'; // Null-terminate the password string
@@ -1609,15 +2772,15 @@ int member_login() { //È¸¿ø ·Î±×ÀÎ ÇÏ´Â ºÎºĞ
 				check = isValidPhone_or_pw_Number(pw, 2);
 				if (check == 0) {
 					strcpy(pw, " ");
-					goto_xy(55, 30);
-					printf("Çü½ÄÀÌ ¿Ã¹Ù¸£Áö ¾Ê½À´Ï´Ù..");
+					goto_xy(85, 30);
+					printf("í˜•ì‹ì´ ì˜¬ë°”ë¥´ì§€ ì•ŠìŠµë‹ˆë‹¤..");
 				}
 			}
 		}
-		if (xx > 80 && xx < 95) {
+		if (xx > 110 && xx < 125) {
 			if (yy > 45 && yy < 49) {
 				if (strcmp(pw, " ") != 0 && strcmp(phone, " ") != 0) {
-					small_box(80, 46, 10,85,47,"·Î±×ÀÎ",6);
+					small_box(110, 46, 10,115,47,"ë¡œê·¸ì¸",6);
 					check = -1;
 					for (int i = 0; i < member_count; i++) {
 						if (strcmp(all[i].phone, phone) == 0 && strcmp(all[i].pw, pw) == 0) {
@@ -1631,10 +2794,10 @@ int member_login() { //È¸¿ø ·Î±×ÀÎ ÇÏ´Â ºÎºĞ
 						return 1;
 					}
 					else {
-						small_box(80, 46, 6,85,47,"·Î±×ÀÎ",6);
-						goto_xy(48, 40);
+						small_box(110, 46, 6,115,47,"ë¡œê·¸ì¸",6);
+						goto_xy(78, 40);
 						textcolor(4);
-						printf("ÀüÈ­¹øÈ£ È¤Àº ºñ¹Ğ¹øÈ£¸¦ ´Ù½Ã ÀÔ·Â ÇØÁÖ¼¼¿ä.");
+						printf("ì „í™”ë²ˆí˜¸ í˜¹ì€ ë¹„ë°€ë²ˆí˜¸ë¥¼ ë‹¤ì‹œ ì…ë ¥ í•´ì£¼ì„¸ìš”.");
 					}
 				}
 
@@ -1644,51 +2807,51 @@ int member_login() { //È¸¿ø ·Î±×ÀÎ ÇÏ´Â ºÎºĞ
 	}
 
 }
-void login_menu_choice() { // ·Î±×ÀÎ ¼±ÅÃ ÇÏ´Â ºÎºĞ (È¸¿ø °ü¸®ÀÚ µğÀÚÀÌ³Ê)
+void login_menu_choice() { // ë¡œê·¸ì¸ ì„ íƒ í•˜ëŠ” ë¶€ë¶„ (íšŒì› ê´€ë¦¬ì ë””ìì´ë„ˆ)
 	int xx = 0, yy = 0, lr = 0;
 	int choice = 0;
 	int check = 0;
 	while (1) {
 		xx = 0, yy = 0;
 		box_clear();
-		goto_xy(64, 5);
+		goto_xy(94, 5);
 		textcolor(6);
-		printf("·Î±×ÀÎ");
-		big_box(57, 15, 6,66,17,"È¸¿ø",6);
-		big_box(57, 23, 6,64,25,"µğÀÚÀÌ³Ê",6);
-		big_box(57, 31, 6,65,33,"°ü¸®ÀÚ",6);
-		small_box(38, 46, 6,44,47,"ÀÌÀü",6);
-		small_box(80, 46, 6,86,47,"´ÙÀ½",6);
+		printf("ë¡œê·¸ì¸");
+		big_box(87, 15, 6,96,17,"íšŒì›",6);
+		big_box(87, 23, 6,94,25,"ë””ìì´ë„ˆ",6);
+		big_box(87, 31, 6,95,33,"ê´€ë¦¬ì",6);
+		small_box(68, 46, 6,74,47,"ì´ì „",6);
+		small_box(110, 46, 6,116,47,"ë‹¤ìŒ",6);
 		//ExClick();
 		while (1) {
 			check = 0;
 			xx = 0, yy = 0;
 			click(&xx, &yy);
-			if (xx > 38 && xx < 53) {
+			if (xx > 68 && xx < 83) {
 				if (yy > 45 && yy < 49) {
-					small_box(38, 46, 10,44,47,"ÀÌÀü",6);
+					small_box(68, 46, 10,74,47,"ì´ì „",6);
 					Sleep(500);
 					return;
 				}
 			}
-			if (xx > 57 && xx < 78) {
+			if (xx > 87 && xx < 108) {
 				if (yy > 14 && yy < 19) {
-					big_box(57, 15, 10,66,17,"È¸¿ø", 6);
-					big_box(57, 23, 6,64,25,"µğÀÚÀÌ³Ê",6);
-					big_box(57, 31, 6,65,33,"°ü¸®ÀÚ",6);
+					big_box(87, 15, 10,96,17,"íšŒì›", 6);
+					big_box(87, 23, 6,94,25,"ë””ìì´ë„ˆ",6);
+					big_box(87, 31, 6,95,33,"ê´€ë¦¬ì",6);
 					choice = 1;
 				}
 				else if (yy > 22 && yy < 28) {
-					big_box(57, 15, 6, 66, 17, "È¸¿ø", 6);
-					big_box(57, 23, 10, 64, 25, "µğÀÚÀÌ³Ê", 6);
-					big_box(57, 31, 6, 65, 33, "°ü¸®ÀÚ", 6);
+					big_box(87, 15, 6, 96, 17, "íšŒì›", 6);
+					big_box(87, 23, 10, 94, 25, "ë””ìì´ë„ˆ", 6);
+					big_box(87, 31, 6, 95, 33, "ê´€ë¦¬ì", 6);
 					choice = 2;
 				}
 			}
-			if (xx > 80 && xx < 95) {
+			if (xx > 110 && xx < 125) {
 				if (yy > 45 && yy < 49) {
 					if (choice != 0) {
-						small_box(80, 46, 10,86,47,"´ÙÀ½", 6);
+						small_box(110, 46, 10,116,47,"ë‹¤ìŒ", 6);
 						Sleep(500);
 						if (choice == 1) {
 							check = member_login();
@@ -1711,91 +2874,92 @@ void login_menu_choice() { // ·Î±×ÀÎ ¼±ÅÃ ÇÏ´Â ºÎºĞ (È¸¿ø °ü¸®ÀÚ µğÀÚÀÌ³Ê)
 		xx = 0, yy = 0;
 	}
 
-} // ºñ¹Ğ¹øÈ£ Ã£´Â ÇÔ¼ö
-void pw_find() { //ºñ¹Ğ¹øÈ£ Ã£±â 
+} // ë¹„ë°€ë²ˆí˜¸ ì°¾ëŠ” í•¨ìˆ˜
+void pw_find() { //ë¹„ë°€ë²ˆí˜¸ ì°¾ê¸° ;
+	file_read();
 	box_clear();
 	int xx, yy, lr = 0;
 	char name[20] = " ";
 	char phone[15] = " ";
 	int brith = 0;
 	int check = 0;
-	basic_UI(30,3);
-	goto_xy(61, 5);
-	printf("ºñ¹Ğ¹øÈ£ Ã£±â");
-	small_box(38, 46, 6,44,47,"ÀÌÀü",6);
-	small_box(80, 46, 6,86,47,"Ã£±â",6);
-	goto_xy(53, 17);
-	printf("ÀÌ¸§ ex) È«±æµ¿");
-	goto_xy(53, 19);
+	basic_UI(60,3);
+	goto_xy(91, 5);
+	printf("ë¹„ë°€ë²ˆí˜¸ ì°¾ê¸°");
+	small_box(68, 46, 6,74,47,"ì´ì „",6);
+	small_box(110, 46, 6,116,47,"ì°¾ê¸°",6);
+	goto_xy(83, 17);
+	printf("ì´ë¦„ ex) í™ê¸¸ë™");
+	goto_xy(83, 19);
 	printf(":");
-	goto_xy(53, 26);
-	printf("ÀüÈ­¹øÈ£ 11ÀÚ¸® ex) 010xxxxxxxx ");
-	goto_xy(53, 28);
+	goto_xy(83, 26);
+	printf("ì „í™”ë²ˆí˜¸ 11ìë¦¬ ex) 010xxxxxxxx ");
+	goto_xy(83, 28);
 	printf(":");
-	goto_xy(53, 34);
-	printf("»ı³â¿ùÀÏ(8ÀÚ¸®) ex) 20030728 ");
-	goto_xy(53, 36);
+	goto_xy(83, 34);
+	printf("ìƒë…„ì›”ì¼(8ìë¦¬) ex) 20030728 ");
+	goto_xy(83, 36);
 	printf(":");
 	//ExClick();
 	while (1) {
 		xx = 0, yy = 0;
 		click(&xx, &yy);
-		if (xx > 38 && xx < 53) {
+		if (xx > 68 && xx < 83) {
 			if (yy > 45 && yy < 49) {
-				small_box(38, 46, 10,44,47,"ÀÌÀü",6);
+				small_box(68, 46, 10,74,47,"ì´ì „",6);
 				Sleep(500);
 				return;
 			}
 		}
 
-		if (xx > 53 && xx < 87) {
+		if (xx > 83 && xx < 117) {
 			if (yy > 18 && yy < 21) {
 				strcpy(name, " ");
 				textcolor(6);
-				goto_xy(58, 19);
+				goto_xy(88, 19);
 				printf("                                 ");
-				goto_xy(58, 19);
+				goto_xy(88, 19);
 				EnableConsoleCursor();
 				gets(name);
 				HideCursor();
 			}
 		}
-		if (xx > 53 && xx < 87) {
+		if (xx > 83 && xx < 117) {
 			if (yy > 27 && yy < 30) {
 				textcolor(6);
-				goto_xy(58, 28);
+				goto_xy(88, 28);
 				printf("                                 ");
-				goto_xy(58, 28);
+				goto_xy(88, 28);
 				EnableConsoleCursor();
 				scanf("%s", phone);
 				HideCursor();
 				check = isValidPhone_or_pw_Number(phone, 1);
 				if (check == 0) {
 					strcpy(phone, " ");
-					goto_xy(58, 28);
-					printf("Çü½ÄÀÌ ¿Ã¹Ù¸£Áö ¾Ê½À´Ï´Ù..");
+					goto_xy(88, 28);
+					printf("í˜•ì‹ì´ ì˜¬ë°”ë¥´ì§€ ì•ŠìŠµë‹ˆë‹¤..");
 				}
 
 			}
 		}
-		if (xx > 53 && xx < 87) {
+		if (xx > 83 && xx < 117) {
 			if (yy > 34 && yy < 38) {
 				textcolor(6);
-				goto_xy(58, 36);
+				goto_xy(88, 36);
 				printf("                                 ");
-				goto_xy(58, 36);
+				goto_xy(88, 36);
 				EnableConsoleCursor();
 				scanf("%d", &brith);
 				HideCursor();
 				check = isValidDate(brith);
 				if (check == 0) {
 					brith = 0;
-					goto_xy(58, 36);
-					printf("Çü½ÄÀÌ ¿Ã¹Ù¸£Áö ¾Ê½À´Ï´Ù..");
+					goto_xy(88, 36);
+					printf("í˜•ì‹ì´ ì˜¬ë°”ë¥´ì§€ ì•ŠìŠµë‹ˆë‹¤..");
 				}
 			}
 		}
-		if (xx > 80 && xx < 95) {
+		if (xx > 110 && xx < 125) {
 			if (yy > 45 && yy < 49) {
 				if (strcmp(name, " ") != 0 &&  strcmp(phone, " ") != 0 && brith != 0) {
 					check = -1;
@@ -1805,29 +2969,29 @@ void pw_find() { //ºñ¹Ğ¹øÈ£ Ã£±â
 						}
 					}
 					if (check >= 0) {
-						small_box(80, 46, 10,86,47,"Ã£±â",6);
+						small_box(110, 46, 10,116,47,"ì°¾ê¸°",6);
 						Sleep(500);
 						box_clear();
-						goto_xy(61, 5);
-						printf("ºñ¹Ğ¹øÈ£ Ã£±â");
-						small_box(38, 46, 6,44,47,"ÀÌÀü",6);
-						small_box(80, 46, 6,85,47,"·Î±×ÀÎ",6);
-						goto_xy(54, 24);
-						printf("%s´ÔÀÇ ºñ¹Ğ¹øÈ£´Â %sÀÔ´Ï´Ù.", all[check].name,all[check].pw);
+						goto_xy(91, 5);
+						printf("ë¹„ë°€ë²ˆí˜¸ ì°¾ê¸°");
+						small_box(68, 46, 6,74,47,"ì´ì „",6);
+						small_box(110, 46, 6,115,47,"ë¡œê·¸ì¸",6);
+						goto_xy(84, 24);
+						printf("%së‹˜ì˜ ë¹„ë°€ë²ˆí˜¸ëŠ” %sì…ë‹ˆë‹¤.", all[check].name,all[check].pw);
 						xx = 0;
 						yy = 0;
 						click(&xx, &yy);
 						while (1) {
-							if (xx > 38 && xx < 53) {
+							if (xx > 68 && xx < 83) {
 								if (yy > 45 && yy < 49) {
-									small_box(38, 46, 10,44,47,"ÀÌÀü",6);
+									small_box(68, 46, 10,74,47,"ì´ì „",6);
 									Sleep(500);
 									break;
 								}
 							}
-							else if (xx > 80 && xx < 95) {
+							else if (xx > 110 && xx < 125) {
 								if (yy > 45 && yy < 49) {
-									small_box(80, 46, 10,85,47,"·Î±×ÀÎ",6);
+									small_box(110, 46, 10,115,47,"ë¡œê·¸ì¸",6);
 									Sleep(500);
 									member_login();
 									break;
@@ -1837,8 +3001,8 @@ void pw_find() { //ºñ¹Ğ¹øÈ£ Ã£±â
 					}
 					else {
 						textcolor(4);
-						goto_xy(49, 40);
-						printf("ÀÏÄ¡ÇÏ´Â È¸¿øÁ¤º¸¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù");
+						goto_xy(79, 40);
+						printf("ì¼ì¹˜í•˜ëŠ” íšŒì›ì •ë³´ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤");
 						continue;
 					}
 					break;
@@ -1849,7 +3013,7 @@ void pw_find() { //ºñ¹Ğ¹øÈ£ Ã£±â
 
 	}
 }
-void membership() { // È¸¿ø°¡ÀÔ ÇÔ¼ö 
+void membership() { // íšŒì›ê°€ì… í•¨ìˆ˜ 
 	HideCursor();
 	int xx, yy, lr = 0;
 	char name[20] = " ";
@@ -1858,120 +3022,120 @@ void membership() { // È¸¿ø°¡ÀÔ ÇÔ¼ö
 	int brith = 0;
 	char pw[15] = " ";
 	int check = 0;
-	goto_xy(62, 5);
+	goto_xy(92, 5);
 	textcolor(6);
-	printf("È¸¿ø°¡ÀÔ");
-	small_box(50, 10, 6,56,11,"³²ÀÚ",9);
-	small_box(67, 10, 6,73,11,"¿©ÀÚ",12);
-	small_box(38, 46, 6,44,47,"ÀÌÀü",6);
-	small_box(80, 46, 6,86,47,"°¡ÀÔ",6);
-	goto_xy(50, 18);
-	printf("ÀÌ¸§ ex) È«±æµ¿");
-	goto_xy(50, 20);
+	printf("íšŒì›ê°€ì…");
+	small_box(80, 10, 6,86,11,"ë‚¨ì",9);
+	small_box(97, 10, 6,103,11,"ì—¬ì",12);
+	small_box(68, 46, 6,74,47,"ì´ì „",6);
+	small_box(110, 46, 6,116,47,"ê°€ì…",6);
+	goto_xy(80, 18);
+	printf("ì´ë¦„ ex) í™ê¸¸ë™");
+	goto_xy(80, 20);
 	printf(":");
-	goto_xy(50, 24);
-	printf("ÀüÈ­¹øÈ£ 11ÀÚ¸® ex) 010xxxxxxxx ");
-	goto_xy(50, 26);
+	goto_xy(80, 24);
+	printf("ì „í™”ë²ˆí˜¸ 11ìë¦¬ ex) 010xxxxxxxx ");
+	goto_xy(80, 26);
 	printf(":");
-	goto_xy(50, 30);
-	printf("»ı³â¿ùÀÏ(8ÀÚ¸®) ex) 20030728 ");
-	goto_xy(50, 32);
+	goto_xy(80, 30);
+	printf("ìƒë…„ì›”ì¼(8ìë¦¬) ex) 20030728 ");
+	goto_xy(80, 32);
 	printf(":");
-	goto_xy(50, 36);
-	printf("ºñ¹Ğ¹øÈ£(¼ıÀÚ 4ÀÚ¸®) ex) 0000");
-	goto_xy(50, 38);
+	goto_xy(80, 36);
+	printf("ë¹„ë°€ë²ˆí˜¸(ìˆ«ì 4ìë¦¬) ex) 0000");
+	goto_xy(80, 38);
 	printf(":");
 	//Mouse();
 	//ExClick();
 	while (1) {
 		xx = 0, yy = 0;
 		click(&xx, &yy);
-		if (xx > 38 && xx < 53) {
+		if (xx > 68 && xx < 88) {
 			if (yy > 45 && yy < 49) {
-				small_box(38, 46, 10,44,47,"ÀÌÀü",6);
+				small_box(68, 46, 10,74,47,"ì´ì „",6);
 				Sleep(500);
 				return;
 			}
 		}
-		if (xx > 50 && xx < 64) {
+		if (xx > 80 && xx < 94) {
 			if (yy > 9 && yy < 13) {
-				strcpy(gender, "³²");
-				small_box(67, 10, 6,73,11,"¿©ÀÚ",12);
-				small_box(50, 10, 10,56,11,"³²ÀÚ",9);
+				strcpy(gender, "ë‚¨");
+				small_box(97, 10, 6,103,11,"ì—¬ì",12);
+				small_box(80, 10, 10,86,11,"ë‚¨ì",9);
 			}
 		}
-		if (xx > 67 && xx < 82) {
+		if (xx > 97 && xx < 112) {
 			if (yy > 9 && yy < 13) {
-				strcpy(gender, "¿©");
-				small_box(50, 10,6,56,11,"³²ÀÚ",9);
-				small_box(67, 10, 10,73,11,"¿©ÀÚ",12);
+				strcpy(gender, "ì—¬");
+				small_box(80, 10,6,86,11,"ë‚¨ì",9);
+				small_box(97, 10, 10,103,11,"ì—¬ì",12);
 			}
 		}
-	    if (xx > 38 && xx < 80) {
+	    if (xx > 68 && xx < 110) {
 			if (yy > 18 && yy < 22) {
 				strcpy(name, " ");
 				textcolor(6);
-				goto_xy(58, 20);
+				goto_xy(88, 20);
 				printf("                                 ");
-				goto_xy(58, 20);
+				goto_xy(88, 20);
 				EnableConsoleCursor();
 				gets(name);
 				HideCursor();
 			}
 		}
-		if (xx > 50 && xx < 82) {
+		if (xx > 80 && xx < 112) {
 			if (yy > 25 && yy < 28) {
 				textcolor(6);
-				goto_xy(58, 26);
+				goto_xy(88, 26);
 				printf("                                 ");
-				goto_xy(58, 26);
+				goto_xy(88, 26);
 				EnableConsoleCursor();
 				scanf("%s", phone);
 				HideCursor();
 				check = isValidPhone_or_pw_Number(phone,1);
 				if (check == 0) {
 					strcpy(phone, " ");
-					goto_xy(58, 26);
-					printf("Çü½ÄÀÌ ¿Ã¹Ù¸£Áö ¾Ê½À´Ï´Ù..");
+					goto_xy(88, 26);
+					printf("í˜•ì‹ì´ ì˜¬ë°”ë¥´ì§€ ì•ŠìŠµë‹ˆë‹¤..");
 				}
 
 			}
 		}
-		if (xx > 52 && xx < 78) {
+		if (xx > 82 && xx < 108) {
 			if (yy > 29 && yy < 34) {
 				textcolor(6);
-				goto_xy(58, 32);
+				goto_xy(88, 32);
 				printf("                                 ");
-				goto_xy(58, 32);
+				goto_xy(88, 32);
 				EnableConsoleCursor();
 				scanf("%d", &brith);
 				HideCursor();
 				check = isValidDate(brith);
 				if (check == 0) {
 					brith = 0;
-					goto_xy(58, 32);
-					printf("Çü½ÄÀÌ ¿Ã¹Ù¸£Áö ¾Ê½À´Ï´Ù..");
+					goto_xy(88, 32);
+					printf("í˜•ì‹ì´ ì˜¬ë°”ë¥´ì§€ ì•ŠìŠµë‹ˆë‹¤..");
 				}
 			}
 		}
-		if (xx > 52 && xx < 81) {
+		if (xx > 82 && xx < 111) {
 			if (yy > 36 && yy < 40) {
 				textcolor(6);
-				goto_xy(58, 38);
+				goto_xy(88, 38);
 				printf("                                 ");
-				goto_xy(58, 38);
+				goto_xy(88, 38);
 				EnableConsoleCursor();
 				scanf("%s", pw);
 				HideCursor();
 				check = isValidPhone_or_pw_Number(pw, 2);
 				if (check == 0) {
 					strcpy(pw, " ");
-					goto_xy(58, 38);
-					printf("Çü½ÄÀÌ ¿Ã¹Ù¸£Áö ¾Ê½À´Ï´Ù..");
+					goto_xy(88, 38);
+					printf("í˜•ì‹ì´ ì˜¬ë°”ë¥´ì§€ ì•ŠìŠµë‹ˆë‹¤..");
 				}
 			}
 		}
-		if (xx > 80 && xx < 95) {
+		if (xx > 110 && xx < 125) {
 			if (yy > 45 && yy < 49) {
 				if(strcmp(name ," ") !=0 && strcmp(gender," ")!=0 && strcmp(pw," ")!=0 && strcmp(phone," ")!=0 && brith != 0) {
 					check = 0;
@@ -1982,20 +3146,20 @@ void membership() { // È¸¿ø°¡ÀÔ ÇÔ¼ö
 					}
 					if (check == 1) {
 						textcolor(4);
-						goto_xy(56, 41);
-						printf("ÀÌ¹Ì °¡ÀÔµÈ È¸¿ø ÀÔ´Ï´Ù.");
+						goto_xy(86, 41);
+						printf("ì´ë¯¸ ê°€ì…ëœ íšŒì› ì…ë‹ˆë‹¤.");
 						continue;
 					}
 					else {
-						small_box(80, 46, 10,86,47,"°¡ÀÔ",6);
+						small_box(110, 46, 10,116,47,"ê°€ì…",6);
 						Sleep(500);
 						box_clear();
-						goto_xy(62, 5);
-						printf("È¸¿ø°¡ÀÔ");
-						small_box(38, 46, 6,44,47,"ÀÌÀü",6);
-						small_box(80, 46, 6,85,47,"·Î±×ÀÎ",6);
-						goto_xy(54, 24);
-						printf("È¸¿ø°¡ÀÔÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù.");
+						goto_xy(92, 5);
+						printf("íšŒì›ê°€ì…");
+						small_box(68, 46, 6,74,47,"ì´ì „",6);
+						small_box(110, 46, 6,115,47,"ë¡œê·¸ì¸",6);
+						goto_xy(84, 24);
+						printf("íšŒì›ê°€ì…ì´ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.");
 						strcpy(all[member_count].name, name);
 						strcpy(all[member_count].phone, phone);
 						strcpy(all[member_count].pw, pw);
@@ -2007,16 +3171,16 @@ void membership() { // È¸¿ø°¡ÀÔ ÇÔ¼ö
 							xx = 0;
 							yy = 0;
 							click(&xx, &yy);
-							if (xx > 38 && xx < 53) {
+							if (xx > 68 && xx < 83) {
 								if (yy > 45 && yy < 49) {
-									small_box(38, 46, 10,44,47,"ÀÌÀü",6);
+									small_box(68, 46, 10,74,47,"ì´ì „",6);
 									Sleep(500);
 									break;
 								}
 							}
-							else if (xx > 80 && xx < 95) {
+							else if (xx > 110 && xx < 125) {
 								if (yy > 45 && yy < 49) {
-									small_box(80, 46, 10,85,47,"·Î±×ÀÎ",6);
+									small_box(110, 46, 10,115,47,"ë¡œê·¸ì¸",6);
 									Sleep(500);
 									member_login();
 									break;
@@ -2032,43 +3196,43 @@ void membership() { // È¸¿ø°¡ÀÔ ÇÔ¼ö
 		}		
 	}
 }
-void initial_screen() { // ÃÊ±âÈ­¸é
-	box_clear(30,3);
+void initial_screen() { // ì´ˆê¸°í™”ë©´
+	box_clear(60,3);
 	HideCursor();
 	int xx = 0, yy = 0, lr = 0;
-	basic_UI(30,3);
-	goto_xy(62, 5);
-	printf("°¡µç Çì¾î¼¥");
-	big_box(57,20, 6, 66, 22,"¿¹¾à");
-	big_box(57, 27, 6, 61, 29,"¿¹¾à ³»¿ª Á¶È¸");
-	small_box(36, 46, 6, 41, 47, "·Î±×ÀÎ",6);
-	small_box(59, 46, 6, 63, 47,"È¸¿ø°¡ÀÔ",6);
-	small_box(82, 46, 6, 87, 47,"PW Ã£±â",6);
+	basic_UI(60,3);
+	goto_xy(92, 5);
+	printf("ê°€ë“  í—¤ì–´ìƒµ");
+	big_box(87,20, 6, 96, 22,"ì˜ˆì•½");
+	big_box(87, 27, 6, 91, 29,"ì˜ˆì•½ ë‚´ì—­ ì¡°íšŒ");
+	small_box(66, 46, 6, 71, 47, "ë¡œê·¸ì¸",6);
+	small_box(89, 46, 6, 93, 47,"íšŒì›ê°€ì…",6);
+	small_box(112, 46, 6, 117, 47,"PW ì°¾ê¸°",6);
 	Mouse();
 	//ExClick();
 	while (1) {
 		xx = 0, yy = 0, lr = 0;
 		click(&xx, &yy);
-		if (xx > 59 && xx < 74) {
+		if (xx > 89 && xx < 104) {
 			if (yy > 46 && yy < 49) {
-				small_box(59, 46, 10,63,47,"È¸¿ø°¡ÀÔ",6);
+				small_box(89, 46, 10,93,47,"íšŒì›ê°€ì…",6);
 				Sleep(500);
 				box_clear();
 				membership();
 				break;
 			}
 		}
-		if (xx > 36 && xx < 50) {
+		if (xx > 66 && xx < 80) {
 			if (yy > 46 && yy < 49) {
-				small_box(36, 46, 10,41,47,"·Î±×ÀÎ",6);
+				small_box(66, 46, 10,71,47,"ë¡œê·¸ì¸",6);
 				Sleep(500);
 				login_menu_choice();
 				break;
 			}
 		}
-		if (xx > 82 && xx < 97) {
+		if (xx > 112 && xx < 127) {
 			if (yy > 46 && yy < 49) {
-				small_box(82, 46, 10,87,47,"PW Ã£±â",6);
+				small_box(112, 46, 10,117,47,"PW ì°¾ê¸°",6);
 				Sleep(500);
 				pw_find();
 				break;
@@ -2079,9 +3243,6 @@ void initial_screen() { // ÃÊ±âÈ­¸é
 	xx = 0, yy = 0;
 	return initial_screen();
 }
-int main(void) { //¸ŞÀÎÇÔ¼ö
-	file_read();
-	design_file_read();
-
+int main(void) { //ë©”ì¸í•¨ìˆ˜
 	initial_screen();
 }

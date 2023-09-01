@@ -158,6 +158,11 @@
     <Image Include="bitmap2.bmp" />
     <Image Include="bitmap3.bmp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="design.txt" />
+    <Text Include="designer.txt" />
+    <Text Include="member.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

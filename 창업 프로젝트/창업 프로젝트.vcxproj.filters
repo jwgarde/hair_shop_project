@@ -40,4 +40,15 @@
       <Filter>리소스 파일</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="design.txt">
+      <Filter>헤더 파일</Filter>
+    </Text>
+    <Text Include="designer.txt">
+      <Filter>헤더 파일</Filter>
+    </Text>
+    <Text Include="member.txt">
+      <Filter>헤더 파일</Filter>
+    </Text>
+  </ItemGroup>
 </Project>
