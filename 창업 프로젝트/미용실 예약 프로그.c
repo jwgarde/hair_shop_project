@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+﻿#define _CRT_SECURE_NO_WARNINGS
 #define MAX 200 //회원 최대 인원 수
 //추가 할것 한 디자이너당 디자인 메뉴가 50개 제한 걸어둘것
 #include<stdio.h>
@@ -9,11 +9,9 @@
 #include<string.h>
 #include <stdbool.h>
 #include"resource.h"
-
 #include <wchar.h>
 #define MAX_X 174
 #define MAX_2_X 135
-
 #define MAX_Y 40
 INPUT_RECORD rec;
 DWORD dwNOER;
@@ -22,7 +20,6 @@ int member_count = 0;
 int designer_count = 0;
 int design_count = 0;
 int take_menu_count = 0;
-
 int style_i = 0;
 int previous_choice = -1;
 int date_check = 0;
@@ -184,7 +181,7 @@ void d_file_read() { // 디자이너 파일 읽기
 			if (feof(designer) != 0) {
 				break;
 			}
-			fscanf(designer,"%s %s %s %d %s %[^\n]\n", d_all[designer_count].name, d_all[designer_count].phone, d_all[designer_count].gender, &d_all[designer_count].brith, d_all[designer_count].n_name, d_all[designer_count].introduce);
+			fscanf(designer, "%s %s %s %d %s %[^\n]\n", d_all[designer_count].name, d_all[designer_count].phone, d_all[designer_count].gender, &d_all[designer_count].brith, d_all[designer_count].n_name, d_all[designer_count].introduce);
 			designer_count++;
 		}
 	}
@@ -210,7 +207,7 @@ void design_file_read() { //디자인 파일 읽기
 			if (feof(design) != 0) {
 				break;
 			}
-			fscanf(design,"%s %s %s %d/%[^\n]\n", STYLE[design_count].designer_name, STYLE[design_count].sort, STYLE[design_count].name, &STYLE[design_count].price, &STYLE[design_count].account);
+			fscanf(design, "%s %s %s %d/%[^\n]\n", STYLE[design_count].designer_name, STYLE[design_count].sort, STYLE[design_count].name, &STYLE[design_count].price, &STYLE[design_count].account);
 			design_count++;
 		}
 	}
@@ -237,13 +234,13 @@ void EnableConsoleCursor() { //마우스 커서 보이게 하는 함수
 	CONSOLE_CURSOR_INFO cursor_info = { 1, TRUE };
 	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);
 }
-void design_take_menu(int index, char *str) {
+void design_take_menu(int index, char* str) {
 	take_menu_count = 0;
 	for (int i = 0; i < 50; i++) {
 		D_MENU[i].index = -1;
 		strcpy(D_MENU[i].name, " ");
 		D_MENU[i].price = 0;
-		strcpy(D_MENU[i].account," ");
+		strcpy(D_MENU[i].account, " ");
 	}
 	for (int i = 0; i < design_count; i++) {
 		if (strcmp(d_all[index].name, STYLE[i].designer_name) == 0 && strcmp(str, STYLE[i].sort) == 0) {
@@ -348,7 +345,7 @@ void add_box_UI(int x, int y, int color, int xx, int yy, char* str) {
 	goto_xy(xx, yy);
 	printf("%s", str);
 }
-void design_see_UI(int x, int y, int color, int i,int design_choice,int num) {
+void design_see_UI(int x, int y, int color, int i, int design_choice, int num) {
 	if (num == 0) {
 		if (D_MENU[i].index == -1) {
 			return;
@@ -381,7 +378,7 @@ void design_see_UI(int x, int y, int color, int i,int design_choice,int num) {
 	printf("┛");
 }
 void basic_UI_DELETE(int x, int y) {
-	while(1) {
+	while (1) {
 		goto_xy(x, y);
 		printf("                                                                                                                                                                        ");
 		y++;
@@ -506,7 +503,7 @@ void long_box_UI(int x, int y, int i, int color) {
 		}
 	}
 }
-void delete_modify_finish(int x,int y, char* str) {
+void delete_modify_finish(int x, int y, char* str) {
 	textcolor(DarkYellow);
 	goto_xy(x, y);
 	printf("┏");
@@ -582,7 +579,7 @@ void small_box(int x, int y, int color, int xx, int yy, char* str, int color2) {
 	printf("%s", str);
 
 }
-void time_box(int x, int y, int color, int xx, int yy,int hour, int min, int color2) {
+void time_box(int x, int y, int color, int xx, int yy, int hour, int min, int color2) {
 	textcolor(color);
 	goto_xy(x, y);
 	printf("┏");
@@ -606,7 +603,7 @@ void time_box(int x, int y, int color, int xx, int yy,int hour, int min, int col
 	printf("┛");
 	textcolor(color2);
 	goto_xy(xx, yy);
-	printf("%2d:%02d",hour, min);
+	printf("%2d:%02d", hour, min);
 }
 void big_box(int x, int y, int color, int xx, int yy, char* str) { // 체크박스 큰거 UI
 	textcolor(color);
@@ -634,7 +631,7 @@ void big_box(int x, int y, int color, int xx, int yy, char* str) { // 체크박�
 	goto_xy(xx, yy);
 	printf("%s", str);
 }
-const char* style_management_print(int num, int page_count, int choice, int count, int index ,char*str,int design_choice) {
+const char* style_management_print(int num, int page_count, int choice, int count, int index, char* str, int design_choice) {
 	int x = 60, y = 3;
 	int style_i_copy = style_i;
 	if (num == 1) {
@@ -642,39 +639,39 @@ const char* style_management_print(int num, int page_count, int choice, int coun
 		style_i = (page_count * count) - count;
 	}
 	basic_UI(x, y);
-	goto_xy(x+31, y+2);
+	goto_xy(x + 31, y + 2);
 	textcolor(6);
 	printf("디자인 관리");
-	small_box(x+5, 8, 6, x+11, 9, "커트", 6);
-	small_box(x+21, 8, 6, x+28, 9, "펌", 6);
-	small_box(x+37, 8, 6, x+43, 9, "컬러", 6);
-	small_box(x+53, 8, 6, x+59, 9, "기타", 6);
-	goto_xy(x+31, 39);
+	small_box(x + 5, 8, 6, x + 11, 9, "커트", 6);
+	small_box(x + 21, 8, 6, x + 28, 9, "펌", 6);
+	small_box(x + 37, 8, 6, x + 43, 9, "컬러", 6);
+	small_box(x + 53, 8, 6, x + 59, 9, "기타", 6);
+	goto_xy(x + 31, 39);
 	printf("◁");
-	goto_xy(x+36, 39);
+	goto_xy(x + 36, 39);
 	printf("%d", page_count);
-	goto_xy(x+41, 39);
+	goto_xy(x + 41, 39);
 	printf("▷");
-	small_box(x+8, 46, 6, x+14, 47, "이전", 6);
-	small_box(x+50, 46, 6, x+56, 47, "추가", 6);
+	small_box(x + 8, 46, 6, x + 14, 47, "이전", 6);
+	small_box(x + 50, 46, 6, x + 56, 47, "추가", 6);
 	if (choice == 1) {
 		strcpy(str, "커트");
-		small_box(x+5, 8, 10, x+11, 9, "커트", 6);
+		small_box(x + 5, 8, 10, x + 11, 9, "커트", 6);
 	}
 	else if (choice == 2) {
 		strcpy(str, "펌");
-		small_box(x+21, 8, 10, x+28, 9, "펌", 6);
+		small_box(x + 21, 8, 10, x + 28, 9, "펌", 6);
 	}
 	else if (choice == 3) {
 		strcpy(str, "컬러");
-		small_box(x+37, 8, 10, x+43, 9, "컬러", 6);
+		small_box(x + 37, 8, 10, x + 43, 9, "컬러", 6);
 	}
 	else if (choice == 4) {
 		strcpy(str, "기타");
-		small_box(x+53, 8, 10, x+59, 9, "기타", 6);
+		small_box(x + 53, 8, 10, x + 59, 9, "기타", 6);
 	}
 	design_take_menu(index, str);
-	x = x+5;
+	x = x + 5;
 	y = 12;
 	for (style_i; style_i < count * page_count; style_i++) {
 		goto_xy(x, y);
@@ -807,7 +804,7 @@ int buid(int num, int x, int y, int check) {
 	bool isFinished = true;
 	while (1) {
 		// 그림을 그린다.
-		Render(x, y, num,check);
+		Render(x, y, num, check);
 
 		// 그림 그리기 작업이 처음부터 완료되었다고 가정하고 isFinished를 true로 초기화한다.
 
@@ -902,7 +899,7 @@ int delete_modify(int index) {
 				EnableConsoleCursor();
 				fgets(input, sizeof(input), stdin);
 				HideCursor();
-			  if (input[0] == '\n') {
+				if (input[0] == '\n') {
 					price = 0;
 				}
 				else {
@@ -980,10 +977,10 @@ int delete_modify(int index) {
 						STYLE[index].price = price;
 						small_box(158, 46, 10, 164, 47, "수정", 6);
 						Sleep(500);
-						delete_modify_finish(108,3,"※수정이 완료되었습니다.※");
+						delete_modify_finish(108, 3, "※수정이 완료되었습니다.※");
 						design_file_write();
 						return 1;
-					}	
+					}
 				}
 			}
 			else if (xx > 116 && xx < 132) {
@@ -1006,8 +1003,8 @@ int delete_modify(int index) {
 		}
 	}
 }
-int add_design(int index,char* string) {
-	basic_UI(108,3);
+int add_design(int index, char* string) {
+	basic_UI(108, 3);
 	int xx, yy = 0;
 	char sort[15] = " ";
 	char name[20] = " ";
@@ -1015,7 +1012,7 @@ int add_design(int index,char* string) {
 	char str[240] = " ";// 문자열을 저장 총 100글자
 	int len = 0;
 	int x = 124;
-	int y = 36; 
+	int y = 36;
 	char ch = ' ';
 	small_box(158, 46, 6, 164, 47, "등록", 6);
 	textcolor(6);
@@ -1037,7 +1034,7 @@ int add_design(int index,char* string) {
 	printf("가격      :");
 	goto_xy(122, 31);
 	printf("설명 (입력 후 ENTER) ");
-	add_box_UI(122,33,6,143,37,"※최대 100글자");
+	add_box_UI(122, 33, 6, 143, 37, "※최대 100글자");
 	textcolor(6);
 	//ExClick();
 	while (1) {
@@ -1053,7 +1050,7 @@ int add_design(int index,char* string) {
 				return;
 			}
 		}
-		if (xx > 132 && xx < 171) {			
+		if (xx > 132 && xx < 171) {
 			if (yy > 17 && yy < 21) {
 				strcpy(name, "");
 				goto_xy(140, 19);
@@ -1069,8 +1066,8 @@ int add_design(int index,char* string) {
 			}
 			else if (yy > 23 && yy < 27) {
 				price = 0;
-				char input[30]= "";
-				strcpy(input,"");
+				char input[30] = "";
+				strcpy(input, "");
 				goto_xy(140, 25);
 				printf("                                   ");
 				goto_xy(143, 25);
@@ -1090,11 +1087,11 @@ int add_design(int index,char* string) {
 					printf("형식이 올바르지 않습니다.");
 				}
 			}
-		
+
 		}
 		if (xx > 122 && xx < 175) {
 			if (yy > 32 && yy < 43) {
-				strcpy(str," ");
+				strcpy(str, " ");
 				add_box_UI(122, 33, 6, 143, 37, " ");// 진행시켜 설명 적는거 해야지
 				len = 0;
 				x = 124;
@@ -1103,15 +1100,15 @@ int add_design(int index,char* string) {
 				goto_xy(x, y);
 				textcolor(6);
 				while (1) {
-					 ch = ' ';
-					 ch = _getch();
+					ch = ' ';
+					ch = _getch();
 					if (ch == '\r') { // Enter key
 						ch = ' ';
 						break;
 					}
 					else if (ch == '\b') { // Backspace key
 						if (str[(x - 124) + (len)+(MAX_X - 124) * (y - 36) - 1] & 0x80) {
-							if (str[(x - 124) + (len)+(MAX_X - 124) * (y - 36) - 2] & 0x80){
+							if (str[(x - 124) + (len)+(MAX_X - 124) * (y - 36) - 2] & 0x80) {
 								handleBackspace(str, &len, &x, &y);
 								handleBackspace(str, &len, &x, &y);
 							}
@@ -1157,9 +1154,9 @@ int add_design(int index,char* string) {
 					small_box(158, 46, 6, 164, 47, "등록", 6);
 					strcpy(STYLE[design_count].designer_name, d_all[index].name);
 					strcpy(STYLE[design_count].name, name);
-					strcpy(STYLE[design_count].sort,sort);
+					strcpy(STYLE[design_count].sort, sort);
 					STYLE[design_count].price = price;
-					strcpy(STYLE[design_count].account,str);
+					strcpy(STYLE[design_count].account, str);
 					design_file_append();
 					design_count++;
 					clearconsole();
@@ -1185,7 +1182,7 @@ int style_management(int index) {
 		x = 65, y = 12;
 		xx = 0, yy = 0;
 		check = 0;
-		const char* string = style_management_print(2,page_count,choice,count,index ,str,0);
+		const char* string = style_management_print(2, page_count, choice, count, index, str, 0);
 		strcpy(str, string);
 		if (style_i == (count * page_count) - 1) {
 			style_i++;
@@ -1203,8 +1200,8 @@ int style_management(int index) {
 			}
 			if (xx > 64 && xx < 129) {
 				if (yy > 11 && yy < 15) {
-					if (D_MENU[(page_count * count)-6].index != -1) {
-						long_box_UI(65, 12, (page_count * count) - 6,10);
+					if (D_MENU[(page_count * count) - 6].index != -1) {
+						long_box_UI(65, 12, (page_count * count) - 6, 10);
 						long_box_UI(65, 16, (page_count * count) - 5, 6);
 						long_box_UI(65, 20, (page_count * count) - 4, 6);
 						long_box_UI(65, 24, (page_count * count) - 3, 6);
@@ -1212,7 +1209,7 @@ int style_management(int index) {
 						long_box_UI(65, 32, (page_count * count) - 1, 6);
 						Sleep(200);
 						basic_UI_DELETE(30, 3);
-						style_management_print(1, page_count, choice, count, index, str,1);
+						style_management_print(1, page_count, choice, count, index, str, 1);
 						check = delete_modify(D_MENU[(page_count * count) - 6].index);
 					}
 				}
@@ -1226,7 +1223,7 @@ int style_management(int index) {
 						long_box_UI(65, 32, (page_count * count) - 1, 6);
 						Sleep(200);
 						basic_UI_DELETE(30, 3);
-						style_management_print(1, page_count, choice, count, index, str,2);
+						style_management_print(1, page_count, choice, count, index, str, 2);
 						check = delete_modify(D_MENU[(page_count * count) - 5].index);
 					}
 				}
@@ -1268,7 +1265,7 @@ int style_management(int index) {
 						long_box_UI(65, 32, (page_count * count) - 1, 6);
 						Sleep(200);
 						basic_UI_DELETE(30, 3);
-						style_management_print(1, page_count, choice, count, index, str,5);
+						style_management_print(1, page_count, choice, count, index, str, 5);
 						check = delete_modify(D_MENU[(page_count * count) - 2].index);
 					}
 				}
@@ -1282,8 +1279,8 @@ int style_management(int index) {
 						long_box_UI(65, 32, (page_count * count) - 1, 10);
 						Sleep(200);
 						basic_UI_DELETE(30, 3);
-						style_management_print(1, page_count, choice, count, index, str,6);
-						check = delete_modify(D_MENU[(page_count* count) - 1].index);
+						style_management_print(1, page_count, choice, count, index, str, 6);
+						check = delete_modify(D_MENU[(page_count * count) - 1].index);
 					}
 				}
 				if (check == 1) {
@@ -1316,15 +1313,15 @@ int style_management(int index) {
 					page_count++;
 					break;
 				}
-			 }
-		    if (xx > 110 && xx < 125) {
+			}
+			if (xx > 110 && xx < 125) {
 				if (yy > 45 && yy < 49) {
 					small_box(110, 46, 10, 116, 47, "추가", 6);
 					Sleep(500);
 					small_box(110, 46, 6, 116, 47, "추가", 6);
-					basic_UI_DELETE(30,3);
-					style_management_print(1, page_count, choice, count, index, str,0);
-					check = add_design(index,str);
+					basic_UI_DELETE(30, 3);
+					style_management_print(1, page_count, choice, count, index, str, 0);
+					check = add_design(index, str);
 					if (check == 1) {
 						style_i = 0;
 						page_count = 1;
@@ -1335,7 +1332,7 @@ int style_management(int index) {
 					break;
 				}
 			}
-		    if (yy > 6 && yy < 11) {
+			if (yy > 6 && yy < 11) {
 				if (xx > 64 && xx < 80) {
 					if (choice != 1) {
 						choice = 1;
@@ -1439,7 +1436,7 @@ int isValidPhone_or_pw_Number(char* str, int check) { // 전화번호 비밀번�
 		// 모든 조건을 만족하는 경우 유효한 전화번호
 		return 1;
 	}
-	else if(check == 2) {
+	else if (check == 2) {
 		int length = strlen(str);
 		if (length != 4) {
 			return 0;
@@ -1454,7 +1451,7 @@ int isValidPhone_or_pw_Number(char* str, int check) { // 전화번호 비밀번�
 				}
 			}
 		}
-		
+
 	}
 }
 int isValidDate(int date) { //생년월일 유효한지 체크해주는 함수
@@ -1523,7 +1520,7 @@ void designer_print(int choice) {
 			textcolor(6);
 			goto_xy(nx, ny + 7);
 			printf("★");
-			buid(i, px, py,0);
+			buid(i, px, py, 0);
 			y += 12;
 			ny += 12;
 			py += 215;
@@ -1577,7 +1574,7 @@ int designer_choice(int index) {
 				if (choice < designer_count) {
 					designer_print(choice);
 					Sleep(700);
-					date_choice(index,choice);
+					date_choice(index, choice);
 					break;
 				}
 			}
@@ -1670,13 +1667,13 @@ int day_of_week(int year, int month) //총 일수를 구하는 함수(해당 월
 	return temp % 7; //1=월,2=화...6=토,0=일
 
 }
-void print_calendar(int sd, int year, int month, int x, int y,int d_day) {
+void print_calendar(int sd, int year, int month, int x, int y, int d_day) {
 	date_check = 0;
 	int i, j;
 	int temp;
 	goto_xy(x, y);
 	for (int i = 0; i < 17; i++) {
-		goto_xy(x, y+i);
+		goto_xy(x, y + i);
 		printf("                                            ");
 	}
 	goto_xy(x, y);
@@ -1755,13 +1752,13 @@ int xx_yy_date_find(int xx, int yy) {
 		else {
 			return date_index[index];
 		}
-		
+
 	}
 	else {
 		return 0;
 	}
 }
-int date_choice(int index,int choice) {
+int date_choice(int index, int choice) {
 	time_t seconds = time(NULL);
 	struct tm* now = localtime(&seconds);
 	int xx, yy, lr = 0;
@@ -1887,8 +1884,8 @@ int date_choice(int index,int choice) {
 		}
 	}
 }
-int time_choice(int index, int choice,int year, int mon, int choice_day) {
-	int hour = 10; 
+int time_choice(int index, int choice, int year, int mon, int choice_day) {
+	int hour = 10;
 	int min = 0;
 	int x = 98;
 	int y = 16;
@@ -2030,7 +2027,7 @@ int time_choice(int index, int choice,int year, int mon, int choice_day) {
 		}
 	}
 }
-const char* m_design_print(int index, int design_column, int page_count, int count, char *str,int design_choice) {
+const char* m_design_print(int index, int design_column, int page_count, int count, char* str, int design_choice) {
 	int x = 98;
 	int y = 10;
 	design_column_UI(x, y, 6, x + 4, y + 1, "커트", 6);
@@ -2065,8 +2062,8 @@ const char* m_design_print(int index, int design_column, int page_count, int cou
 			break;
 		}
 		else {
-			design_see_UI(x, y, 6, style_i,design_choice,0);
-			goto_xy(x+2, y+1);
+			design_see_UI(x, y, 6, style_i, design_choice, 0);
+			goto_xy(x + 2, y + 1);
 			textcolor(7);
 			printf("%s", D_MENU[style_i].name);
 			int print_x = x + 7;
@@ -2099,7 +2096,7 @@ const char* m_design_print(int index, int design_column, int page_count, int cou
 				goto_xy(x + 20, y + 3);
 				printf("설명없음");
 			}
-			goto_xy(x + 38,y + 6);
+			goto_xy(x + 38, y + 6);
 			textcolor(7);
 			printf("%d원", D_MENU[style_i].price);
 			y += 8;
@@ -2231,12 +2228,12 @@ int member_design_choice(int index, int choice, int year, int mon, int choice_da
 				style_i = (page_count * count) - count;
 				choice_index = -1;
 				m_design_print(choice, design_column, page_count, count, str, design_choice);
-				payment(choice,year,mon,choice_day,hour,min);
+				payment(choice, year, mon, choice_day, hour, min);
 			}
 		}
 	}
 }
-int payment(int choice, int year, int mon, int choice_day,int hour, int min) {
+int payment(int choice, int year, int mon, int choice_day, int hour, int min) {
 	Sleep(700);
 	int x = 55, y = 34;
 	for (int i = 0; i < 4; i++) {
@@ -2252,21 +2249,21 @@ int payment(int choice, int year, int mon, int choice_day,int hour, int min) {
 	goto_xy(100, 12);
 	printf("디자이너:           %s", d_all[choice].n_name);
 	goto_xy(100, 15);
-	printf("날    짜:           %d.%d.%d", year,mon,choice_day);
+	printf("날    짜:           %d.%d.%d", year, mon, choice_day);
 	goto_xy(100, 18);
 	printf("시    간:           %02d:%02d", hour, min);
 	goto_xy(100, 21);
 	printf("종    류:           %s", STYLE[choice_index].sort);
 	goto_xy(100, 24);
 	printf("디 자 인:           %s", STYLE[choice_index].name);
-	goto_xy(100, 27);  
+	goto_xy(100, 27);
 	printf("금    액:           %d원", STYLE[choice_index].price);
 	goto_xy(105, 31);
 	design_see_UI(98, 30, 8, 0, 0, 1);
 	goto_xy(110, 33);
 	textcolor(4);
 	printf("※요청사항(최대 50글자)");
-	design_column_UI(117,38,7, 121,39, "결제", 7);
+	design_column_UI(117, 38, 7, 121, 39, "결제", 7);
 	Sleep(300000);
 
 }
@@ -2297,7 +2294,7 @@ int design_column_UI(int x, int y, int color, int xx, int yy, char* str, int col
 	goto_xy(xx, yy);
 	printf("%s", str);
 }
-int big_designer_print(){
+int big_designer_print() {
 	textcolor(DarkYellow);
 	int x = 40, y = 6;
 	goto_xy(x, y);
@@ -2320,7 +2317,7 @@ int big_designer_print(){
 	}
 	printf("┛");
 }
-int date_and_time_choice_UI(int x,int y) {
+int date_and_time_choice_UI(int x, int y) {
 	goto_xy(x, y);
 	printf("┏");
 	for (int i = 0; i < 25; i++)
@@ -2361,7 +2358,7 @@ int designer_initial_screen(int index) { //디자이너 초기 화면
 		xx = 0, yy = 0;
 		goto_xy(93, 5);
 		textcolor(6);
-		printf("%s님",d_all[index].name);
+		printf("%s님", d_all[index].name);
 		big_box(87, 14, 6, 94, 16, "예약 관리");
 		big_box(87, 22, 6, 93, 24, "디자인 관리");
 		big_box(87, 30, 6, 93, 32, "프로필 관리");
@@ -2511,7 +2508,7 @@ void modifying_membership(int index) { //회원정보 수정
 	char name[20] = " ";
 	char phone[15] = " ";
 	char pw[15] = " ";
-	basic_UI(60,3);
+	basic_UI(60, 3);
 	goto_xy(92, 5);
 	textcolor(6);
 	printf("회원정보");
@@ -2530,10 +2527,11 @@ void modifying_membership(int index) { //회원정보 수정
 	goto_xy(98, 22);
 	printf("%s", all[index].phone);
 	goto_xy(81, 27);
-	printf("성          별  :");  
+	printf("성          별  :");
 	goto_xy(98, 27);
-	if (strcmp(all[index].gender, "남") == 0) {\
-		printf("남자");
+	if (strcmp(all[index].gender, "남") == 0) {
+		\
+			printf("남자");
 	}
 	else {
 		printf("여자");
@@ -2547,8 +2545,8 @@ void modifying_membership(int index) { //회원정보 수정
 	goto_xy(98, 37);
 	printf("%s", all[index].pw);
 	strcpy(name, all[index].name);
-	strcpy(pw,all[index].pw);
-	strcpy(phone,all[index].phone);
+	strcpy(pw, all[index].pw);
+	strcpy(phone, all[index].phone);
 	while (1) {
 		xx = 0, yy = 0;
 		click(&xx, &yy);
@@ -2652,7 +2650,7 @@ int member_initial_screen(int index) { //로그인 성공시 회원 초기화면
 					choice = 3;
 					xx, yy = 0;
 				}
-			    else if (yy > 17 && yy < 22) {
+				else if (yy > 17 && yy < 22) {
 					big_box(87, 18, 10, 96, 20, "예약", 6);
 					big_box(87, 25, 6, 91, 27, "예약 내역 조회", 6);
 					big_box(87, 32, 6, 93, 34, "정보 수정", 6);
@@ -2694,8 +2692,8 @@ int member_login() { //회원 로그인 하는 부분
 	goto_xy(92, 5);
 	textcolor(6);
 	printf("회원 로그인");
-	small_box(68, 46, 6,74,47,"이전",6);
-	small_box(110, 46, 6,115,47,"로그인",6);
+	small_box(68, 46, 6, 74, 47, "이전", 6);
+	small_box(110, 46, 6, 115, 47, "로그인", 6);
 	char phone[20] = " ";
 	char pw[15] = " ";
 	int xx = 0, yy = 0, lr = 0;
@@ -2714,7 +2712,7 @@ int member_login() { //회원 로그인 하는 부분
 		click(&xx, &yy);
 		if (xx > 68 && xx < 83) {
 			if (yy > 45 && yy < 49) {
-				small_box(68, 46, 10,74,47,"이전",6);
+				small_box(68, 46, 10, 74, 47, "이전", 6);
 				Sleep(500);
 				return;
 			}
@@ -2727,7 +2725,7 @@ int member_login() { //회원 로그인 하는 부분
 				goto_xy(85, 21);
 				EnableConsoleCursor();
 				fflush(stdin);
-				scanf("%s",phone);
+				scanf("%s", phone);
 				fflush(stdin);
 				HideCursor();
 				check = isValidPhone_or_pw_Number(phone, 1);
@@ -2780,7 +2778,7 @@ int member_login() { //회원 로그인 하는 부분
 		if (xx > 110 && xx < 125) {
 			if (yy > 45 && yy < 49) {
 				if (strcmp(pw, " ") != 0 && strcmp(phone, " ") != 0) {
-					small_box(110, 46, 10,115,47,"로그인",6);
+					small_box(110, 46, 10, 115, 47, "로그인", 6);
 					check = -1;
 					for (int i = 0; i < member_count; i++) {
 						if (strcmp(all[i].phone, phone) == 0 && strcmp(all[i].pw, pw) == 0) {
@@ -2794,7 +2792,7 @@ int member_login() { //회원 로그인 하는 부분
 						return 1;
 					}
 					else {
-						small_box(110, 46, 6,115,47,"로그인",6);
+						small_box(110, 46, 6, 115, 47, "로그인", 6);
 						goto_xy(78, 40);
 						textcolor(4);
 						printf("전화번호 혹은 비밀번호를 다시 입력 해주세요.");
@@ -2817,11 +2815,11 @@ void login_menu_choice() { // 로그인 선택 하는 부분 (회원 관리자 �
 		goto_xy(94, 5);
 		textcolor(6);
 		printf("로그인");
-		big_box(87, 15, 6,96,17,"회원",6);
-		big_box(87, 23, 6,94,25,"디자이너",6);
-		big_box(87, 31, 6,95,33,"관리자",6);
-		small_box(68, 46, 6,74,47,"이전",6);
-		small_box(110, 46, 6,116,47,"다음",6);
+		big_box(87, 15, 6, 96, 17, "회원", 6);
+		big_box(87, 23, 6, 94, 25, "디자이너", 6);
+		big_box(87, 31, 6, 95, 33, "관리자", 6);
+		small_box(68, 46, 6, 74, 47, "이전", 6);
+		small_box(110, 46, 6, 116, 47, "다음", 6);
 		//ExClick();
 		while (1) {
 			check = 0;
@@ -2829,16 +2827,16 @@ void login_menu_choice() { // 로그인 선택 하는 부분 (회원 관리자 �
 			click(&xx, &yy);
 			if (xx > 68 && xx < 83) {
 				if (yy > 45 && yy < 49) {
-					small_box(68, 46, 10,74,47,"이전",6);
+					small_box(68, 46, 10, 74, 47, "이전", 6);
 					Sleep(500);
 					return;
 				}
 			}
 			if (xx > 87 && xx < 108) {
 				if (yy > 14 && yy < 19) {
-					big_box(87, 15, 10,96,17,"회원", 6);
-					big_box(87, 23, 6,94,25,"디자이너",6);
-					big_box(87, 31, 6,95,33,"관리자",6);
+					big_box(87, 15, 10, 96, 17, "회원", 6);
+					big_box(87, 23, 6, 94, 25, "디자이너", 6);
+					big_box(87, 31, 6, 95, 33, "관리자", 6);
 					choice = 1;
 				}
 				else if (yy > 22 && yy < 28) {
@@ -2851,7 +2849,7 @@ void login_menu_choice() { // 로그인 선택 하는 부분 (회원 관리자 �
 			if (xx > 110 && xx < 125) {
 				if (yy > 45 && yy < 49) {
 					if (choice != 0) {
-						small_box(110, 46, 10,116,47,"다음", 6);
+						small_box(110, 46, 10, 116, 47, "다음", 6);
 						Sleep(500);
 						if (choice == 1) {
 							check = member_login();
@@ -2883,11 +2881,11 @@ void pw_find() { //비밀번호 찾기 ;
 	char phone[15] = " ";
 	int brith = 0;
 	int check = 0;
-	basic_UI(60,3);
+	basic_UI(60, 3);
 	goto_xy(91, 5);
 	printf("비밀번호 찾기");
-	small_box(68, 46, 6,74,47,"이전",6);
-	small_box(110, 46, 6,116,47,"찾기",6);
+	small_box(68, 46, 6, 74, 47, "이전", 6);
+	small_box(110, 46, 6, 116, 47, "찾기", 6);
 	goto_xy(83, 17);
 	printf("이름 ex) 홍길동");
 	goto_xy(83, 19);
@@ -2906,7 +2904,7 @@ void pw_find() { //비밀번호 찾기 ;
 		click(&xx, &yy);
 		if (xx > 68 && xx < 83) {
 			if (yy > 45 && yy < 49) {
-				small_box(68, 46, 10,74,47,"이전",6);
+				small_box(68, 46, 10, 74, 47, "이전", 6);
 				Sleep(500);
 				return;
 			}
@@ -2961,37 +2959,37 @@ void pw_find() { //비밀번호 찾기 ;
 		}
 		if (xx > 110 && xx < 125) {
 			if (yy > 45 && yy < 49) {
-				if (strcmp(name, " ") != 0 &&  strcmp(phone, " ") != 0 && brith != 0) {
+				if (strcmp(name, " ") != 0 && strcmp(phone, " ") != 0 && brith != 0) {
 					check = -1;
 					for (int i = 0; i < member_count; i++) {
-						if (strcmp(all[i].name,name) == 0 && strcmp(all[i].phone, phone) == 0 && all[i].brith == brith) {
+						if (strcmp(all[i].name, name) == 0 && strcmp(all[i].phone, phone) == 0 && all[i].brith == brith) {
 							check = i;
 						}
 					}
 					if (check >= 0) {
-						small_box(110, 46, 10,116,47,"찾기",6);
+						small_box(110, 46, 10, 116, 47, "찾기", 6);
 						Sleep(500);
 						box_clear();
 						goto_xy(91, 5);
 						printf("비밀번호 찾기");
-						small_box(68, 46, 6,74,47,"이전",6);
-						small_box(110, 46, 6,115,47,"로그인",6);
+						small_box(68, 46, 6, 74, 47, "이전", 6);
+						small_box(110, 46, 6, 115, 47, "로그인", 6);
 						goto_xy(84, 24);
-						printf("%s님의 비밀번호는 %s입니다.", all[check].name,all[check].pw);
+						printf("%s님의 비밀번호는 %s입니다.", all[check].name, all[check].pw);
 						xx = 0;
 						yy = 0;
 						click(&xx, &yy);
 						while (1) {
 							if (xx > 68 && xx < 83) {
 								if (yy > 45 && yy < 49) {
-									small_box(68, 46, 10,74,47,"이전",6);
+									small_box(68, 46, 10, 74, 47, "이전", 6);
 									Sleep(500);
 									break;
 								}
 							}
 							else if (xx > 110 && xx < 125) {
 								if (yy > 45 && yy < 49) {
-									small_box(110, 46, 10,115,47,"로그인",6);
+									small_box(110, 46, 10, 115, 47, "로그인", 6);
 									Sleep(500);
 									member_login();
 									break;
@@ -3025,10 +3023,10 @@ void membership() { // 회원가입 함수
 	goto_xy(92, 5);
 	textcolor(6);
 	printf("회원가입");
-	small_box(80, 10, 6,86,11,"남자",9);
-	small_box(97, 10, 6,103,11,"여자",12);
-	small_box(68, 46, 6,74,47,"이전",6);
-	small_box(110, 46, 6,116,47,"가입",6);
+	small_box(80, 10, 6, 86, 11, "남자", 9);
+	small_box(97, 10, 6, 103, 11, "여자", 12);
+	small_box(68, 46, 6, 74, 47, "이전", 6);
+	small_box(110, 46, 6, 116, 47, "가입", 6);
 	goto_xy(80, 18);
 	printf("이름 ex) 홍길동");
 	goto_xy(80, 20);
@@ -3052,7 +3050,7 @@ void membership() { // 회원가입 함수
 		click(&xx, &yy);
 		if (xx > 68 && xx < 88) {
 			if (yy > 45 && yy < 49) {
-				small_box(68, 46, 10,74,47,"이전",6);
+				small_box(68, 46, 10, 74, 47, "이전", 6);
 				Sleep(500);
 				return;
 			}
@@ -3060,18 +3058,18 @@ void membership() { // 회원가입 함수
 		if (xx > 80 && xx < 94) {
 			if (yy > 9 && yy < 13) {
 				strcpy(gender, "남");
-				small_box(97, 10, 6,103,11,"여자",12);
-				small_box(80, 10, 10,86,11,"남자",9);
+				small_box(97, 10, 6, 103, 11, "여자", 12);
+				small_box(80, 10, 10, 86, 11, "남자", 9);
 			}
 		}
 		if (xx > 97 && xx < 112) {
 			if (yy > 9 && yy < 13) {
 				strcpy(gender, "여");
-				small_box(80, 10,6,86,11,"남자",9);
-				small_box(97, 10, 10,103,11,"여자",12);
+				small_box(80, 10, 6, 86, 11, "남자", 9);
+				small_box(97, 10, 10, 103, 11, "여자", 12);
 			}
 		}
-	    if (xx > 68 && xx < 110) {
+		if (xx > 68 && xx < 110) {
 			if (yy > 18 && yy < 22) {
 				strcpy(name, " ");
 				textcolor(6);
@@ -3092,7 +3090,7 @@ void membership() { // 회원가입 함수
 				EnableConsoleCursor();
 				scanf("%s", phone);
 				HideCursor();
-				check = isValidPhone_or_pw_Number(phone,1);
+				check = isValidPhone_or_pw_Number(phone, 1);
 				if (check == 0) {
 					strcpy(phone, " ");
 					goto_xy(88, 26);
@@ -3137,10 +3135,10 @@ void membership() { // 회원가입 함수
 		}
 		if (xx > 110 && xx < 125) {
 			if (yy > 45 && yy < 49) {
-				if(strcmp(name ," ") !=0 && strcmp(gender," ")!=0 && strcmp(pw," ")!=0 && strcmp(phone," ")!=0 && brith != 0) {
+				if (strcmp(name, " ") != 0 && strcmp(gender, " ") != 0 && strcmp(pw, " ") != 0 && strcmp(phone, " ") != 0 && brith != 0) {
 					check = 0;
 					for (int i = 0; i < member_count; i++) {
-						if (strcmp(all[i].phone, phone )==0) {
+						if (strcmp(all[i].phone, phone) == 0) {
 							check = 1;
 						}
 					}
@@ -3151,13 +3149,13 @@ void membership() { // 회원가입 함수
 						continue;
 					}
 					else {
-						small_box(110, 46, 10,116,47,"가입",6);
+						small_box(110, 46, 10, 116, 47, "가입", 6);
 						Sleep(500);
 						box_clear();
 						goto_xy(92, 5);
 						printf("회원가입");
-						small_box(68, 46, 6,74,47,"이전",6);
-						small_box(110, 46, 6,115,47,"로그인",6);
+						small_box(68, 46, 6, 74, 47, "이전", 6);
+						small_box(110, 46, 6, 115, 47, "로그인", 6);
 						goto_xy(84, 24);
 						printf("회원가입이 완료되었습니다.");
 						strcpy(all[member_count].name, name);
@@ -3173,14 +3171,14 @@ void membership() { // 회원가입 함수
 							click(&xx, &yy);
 							if (xx > 68 && xx < 83) {
 								if (yy > 45 && yy < 49) {
-									small_box(68, 46, 10,74,47,"이전",6);
+									small_box(68, 46, 10, 74, 47, "이전", 6);
 									Sleep(500);
 									break;
 								}
 							}
 							else if (xx > 110 && xx < 125) {
 								if (yy > 45 && yy < 49) {
-									small_box(110, 46, 10,115,47,"로그인",6);
+									small_box(110, 46, 10, 115, 47, "로그인", 6);
 									Sleep(500);
 									member_login();
 									break;
@@ -3193,21 +3191,21 @@ void membership() { // 회원가입 함수
 					break;
 				}
 			}
-		}		
+		}
 	}
 }
 void initial_screen() { // 초기화면
-	box_clear(60,3);
+	box_clear(60, 3);
 	HideCursor();
 	int xx = 0, yy = 0, lr = 0;
-	basic_UI(60,3);
+	basic_UI(60, 3);
 	goto_xy(92, 5);
 	printf("가든 헤어샵");
-	big_box(87,20, 6, 96, 22,"예약");
-	big_box(87, 27, 6, 91, 29,"예약 내역 조회");
-	small_box(66, 46, 6, 71, 47, "로그인",6);
-	small_box(89, 46, 6, 93, 47,"회원가입",6);
-	small_box(112, 46, 6, 117, 47,"PW 찾기",6);
+	big_box(87, 20, 6, 96, 22, "예약");
+	big_box(87, 27, 6, 91, 29, "예약 내역 조회");
+	small_box(66, 46, 6, 71, 47, "로그인", 6);
+	small_box(89, 46, 6, 93, 47, "회원가입", 6);
+	small_box(112, 46, 6, 117, 47, "PW 찾기", 6);
 	Mouse();
 	//ExClick();
 	while (1) {
@@ -3215,7 +3213,7 @@ void initial_screen() { // 초기화면
 		click(&xx, &yy);
 		if (xx > 89 && xx < 104) {
 			if (yy > 46 && yy < 49) {
-				small_box(89, 46, 10,93,47,"회원가입",6);
+				small_box(89, 46, 10, 93, 47, "회원가입", 6);
 				Sleep(500);
 				box_clear();
 				membership();
@@ -3224,7 +3222,7 @@ void initial_screen() { // 초기화면
 		}
 		if (xx > 66 && xx < 80) {
 			if (yy > 46 && yy < 49) {
-				small_box(66, 46, 10,71,47,"로그인",6);
+				small_box(66, 46, 10, 71, 47, "로그인", 6);
 				Sleep(500);
 				login_menu_choice();
 				break;
@@ -3232,13 +3230,13 @@ void initial_screen() { // 초기화면
 		}
 		if (xx > 112 && xx < 127) {
 			if (yy > 46 && yy < 49) {
-				small_box(112, 46, 10,117,47,"PW 찾기",6);
+				small_box(112, 46, 10, 117, 47, "PW 찾기", 6);
 				Sleep(500);
 				pw_find();
 				break;
 			}
 		}
-		
+
 	}
 	xx = 0, yy = 0;
 	return initial_screen();
