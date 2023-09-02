@@ -25,17 +25,13 @@ int previous_choice = -1;
 int date_check = 0;
 int choice_index = -1;
 int date_index[37];
-
 typedef struct { //디자이너에 따른 메뉴 보여주기 위함
 	int index;
 	char name[20];
 	int price;
 	char account[240];
 }d_menu;
-
 d_menu D_MENU[50];
-
-
 // 콘솔 윈도우 창의 핸들값    
 static HWND hWnd;
 // 프로그램의 인스턴스 핸들값
@@ -1899,6 +1895,7 @@ int time_choice(int index, int choice, int year, int mon, int choice_day) {
 		min = 0;
 		x = 98;
 		y = 16;
+		check = 0;
 		textcolor(6);
 		goto_xy(44, 7);
 		printf("◁--");
@@ -2020,6 +2017,7 @@ int time_choice(int index, int choice, int year, int mon, int choice_day) {
 		}
 		if (e_hour != 0 && xx != 0 && yy != 0) {
 			time_box(xx, yy, 10, xx + 3, yy + 1, hour, min, 15);
+			Sleep(700);
 			check = member_design_choice(index, choice, year, mon, choice_day, hour, min);
 			if (check == 1) {
 				return;
@@ -2113,12 +2111,11 @@ const char* m_design_print(int index, int design_column, int page_count, int cou
 }
 int member_design_choice(int index, int choice, int year, int mon, int choice_day, int hour, int min) {
 	design_file_read();
-	goto_xy(66, 38);
 	char str[15] = "커트";
 	int page_count = 1;
 	int design_column = 1;
 	int design_choice = -1;
-	style_i = 0;
+	int check = 0; //1이면 다시 반복문 처음으로 올리고 0이면 return
 	int count = 3;
 	int x = 98;
 	int y = 10;
@@ -2126,109 +2123,132 @@ int member_design_choice(int index, int choice, int year, int mon, int choice_da
 	if (hour < 10) {
 		hour += 12;
 	}
-	printf("%02d:%02d", hour, min);
-	Sleep(700);
-	goto_xy(55, 40);
-	printf("디 자 인 :             ");
-	textcolor(6);
-	date_and_time_choice_UI(95, 7);
-	goto_xy(117, 8);
-	printf("디자인 선택");
-	strcpy(str, "커트");
 	while (1) {
-		const char* string = m_design_print(choice, design_column, page_count, count, str, design_choice);
-		//ExClick();
-		strcpy(str, string);
-		if (style_i == (count * page_count) - 1) {
-			style_i++;
-		}
+		page_count = 1;
+		design_column = 1;
+		design_choice = -1;
+		style_i = 0;
+		textcolor(6);
+		goto_xy(44, 7);
+		printf("◁--");
+		textcolor(15);
+		strcpy(str, "커트");
+		goto_xy(55, 34);
+		printf("디자이너 : %s 디자이너", d_all[choice].n_name);
+		goto_xy(55, 36);
+		printf("날    짜 : %d.%02d.%02d", year, mon, choice_day);
+		goto_xy(55, 38);
+		printf("시    간 : %02d:%02d", hour, min);
+		goto_xy(55, 40);
+		printf("디 자 인 :             ");
+		textcolor(6);
+		date_and_time_choice_UI(95, 7);
+		goto_xy(117, 8);
+		printf("디자인 선택");
+		strcpy(str, "커트");
 		while (1) {
-			xx = 0, yy = 0;
-			click(&xx, &yy);
-			if (yy > 5 && yy < 8) {
-				if (xx > 42 && xx < 48) {
-					textcolor(10);
-					goto_xy(44, 7);
-					printf("◁--");
-					Sleep(500);
-					goto_xy(55, 40);
-					printf("              ");
-					return;
-				}
+			const char* string = m_design_print(choice, design_column, page_count, count, str, design_choice);
+			//ExClick();
+			strcpy(str, string);
+			if (style_i == (count * page_count) - 1) {
+				style_i++;
 			}
-			if (xx > 98 && xx < 145) {
-				if (yy > 12 && yy < 21) {
-					design_choice = (count * page_count) - 3;
-				}
-				else if (yy > 20 && yy < 29) {
-					design_choice = (count * page_count) - 2;
-				}
-				else if (yy > 28 && yy < 37) {
-					design_choice = (count * page_count) - 1;
-				}
-			}
-			if (yy > 9 && yy < 13) {
-				if (xx > 97 && xx < 109) {
-					if (design_column != 1) {
-						design_column = 1;
-						style_i = 0;
-						page_count = 1;
-						break;
-					}
-				}
-				if (xx > 109 && xx < 121) {
-					if (design_column != 2) {
-						design_column = 2;
-						style_i = 0;
-						page_count = 1;
-						break;
-					}
-				}
-				if (xx > 122 && xx < 133) {
-					if (design_column != 3) {
-						design_column = 3;
-						style_i = 0;
-						page_count = 1;
-						break;
-					}
-				}
-				if (xx > 135 && xx < 145) {
-					if (design_column != 4) {
-						design_column = 4;
-						style_i = 0;
-						page_count = 1;
-						break;
-					}
-				}
-			}
-			if (yy > 36 && yy < 39) {
-				if (xx > 116 && xx < 120) {
-					if (page_count != 1) {
+			while (1) {
+				xx = 0, yy = 0;
+				click(&xx, &yy);
+				if (yy > 5 && yy < 8) {
+					if (xx > 42 && xx < 48) {
 						textcolor(10);
-						goto_xy(117, 38);
-						printf("◁");
+						goto_xy(44, 7);
+						printf("◁--");
 						Sleep(500);
-						style_i = (page_count - 2) * count;
-						page_count--;
-						break;
+						goto_xy(55, 40);
+						printf("              ");
+						return 0;
 					}
 				}
-				if (xx > 125 && xx < 129) {
-					if (strcmp(D_MENU[style_i].name, " ") != 0) {
-						textcolor(10);
-						goto_xy(126, 38);
-						printf("▷");
-						Sleep(500);
-						page_count++;
-						break;
+				if (xx > 98 && xx < 145) {
+					if (yy > 12 && yy < 21) {
+						design_choice = (count * page_count) - 3;
 					}
+					else if (yy > 20 && yy < 29) {
+						design_choice = (count * page_count) - 2;
+					}
+					else if (yy > 28 && yy < 37) {
+						design_choice = (count * page_count) - 1;
+					}
+				}
+				if (yy > 9 && yy < 13) {
+					if (xx > 97 && xx < 109) {
+						if (design_column != 1) {
+							design_column = 1;
+							style_i = 0;
+							page_count = 1;
+							break;
+						}
+					}
+					if (xx > 109 && xx < 121) {
+						if (design_column != 2) {
+							design_column = 2;
+							style_i = 0;
+							page_count = 1;
+							break;
+						}
+					}
+					if (xx > 122 && xx < 133) {
+						if (design_column != 3) {
+							design_column = 3;
+							style_i = 0;
+							page_count = 1;
+							break;
+						}
+					}
+					if (xx > 135 && xx < 145) {
+						if (design_column != 4) {
+							design_column = 4;
+							style_i = 0;
+							page_count = 1;
+							break;
+						}
+					}
+				}
+				if (yy > 36 && yy < 39) {
+					if (xx > 116 && xx < 120) {
+						if (page_count != 1) {
+							textcolor(10);
+							goto_xy(117, 38);
+							printf("◁");
+							Sleep(500);
+							style_i = (page_count - 2) * count;
+							page_count--;
+							break;
+						}
+					}
+					if (xx > 125 && xx < 129) {
+						if (strcmp(D_MENU[style_i].name, " ") != 0) {
+							textcolor(10);
+							goto_xy(126, 38);
+							printf("▷");
+							Sleep(500);
+							page_count++;
+							break;
+						}
+					}
+				}
+				if (design_choice != -1) {
+					style_i = (page_count * count) - count;
+					choice_index = -1;
+					m_design_print(choice, design_column, page_count, count, str, design_choice);
+					check = payment(choice, year, mon, choice_day, hour, min);
+					if (check == 0) {
+						return 1;
+					}
+					break;
 				}
 			}
-			if (design_choice != -1) {
-				style_i = (page_count * count) - count;
-				choice_index = -1;
-				m_design_print(choice, design_column, page_count, count, str, design_choice);
-				payment(choice, year, mon, choice_day, hour, min);
+			if (check == 1) {
+				check = 0;
+				break;
 			}
 		}
 	}
@@ -2236,6 +2256,7 @@ int member_design_choice(int index, int choice, int year, int mon, int choice_da
 int payment(int choice, int year, int mon, int choice_day, int hour, int min) {
 	Sleep(700);
 	int x = 55, y = 34;
+	int xx, yy, lr = 0;
 	for (int i = 0; i < 4; i++) {
 		goto_xy(x, y);
 		printf("                               ");
@@ -2264,10 +2285,20 @@ int payment(int choice, int year, int mon, int choice_day, int hour, int min) {
 	textcolor(4);
 	printf("※요청사항(최대 50글자)");
 	design_column_UI(117, 38, 7, 121, 39, "결제", 7);
-	Sleep(300000);
-
+	while (1) {
+		xx = 0, yy = 0;
+		click(&xx, &yy);
+		if (yy > 5 && yy < 8) {
+			if (xx > 42 && xx < 48) {
+				textcolor(10);
+				goto_xy(44, 7);
+				printf("◁--");
+				Sleep(500);
+				return 1;
+			}
+		}
+	}
 }
-
 int design_column_UI(int x, int y, int color, int xx, int yy, char* str, int color2) {
 	textcolor(color);
 	goto_xy(x, y);
