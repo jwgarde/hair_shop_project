@@ -123,6 +123,25 @@ void handleBackspace(char* str, int* len, int* x, int* y) {
 		}
 	}
 }
+void handleBackspace2(char* str, int* len, int* x, int* y) {
+	if (*len > 0) {
+		(*len)--;
+		clearCurrentChar((*x) + (*len) % 142, *y); //이부분
+		str[(*x - 102) + (*len) + (142 - 102) * (*y - 31)] = '\0'; // Remove the deleted character from the string
+		goto_xy(*x + (*len) % 142, *y); // Move the cursor back to the original position
+	}
+	else {
+		if (*y > 31) { // Check if y is greater than 0 (not on the first line)
+			(*y)--;
+			clearCurrentChar(142 - 1, *y); // Clear the last character on the current line
+			goto_xy(*x, *y);
+			*len = (142 - 102) - 1; // Set len to the last index of the previous line
+		}
+		else {
+			return;
+		}
+	}
+}
 
 void clearInputBuffer() {
 	int c;
@@ -2257,6 +2276,9 @@ int payment(int choice, int year, int mon, int choice_day, int hour, int min) {
 	Sleep(700);
 	int x = 55, y = 34;
 	int xx, yy, lr = 0;
+	char str[240] = " ";//100글자 
+	char ch = ' ';
+	int len = 0;
 	for (int i = 0; i < 4; i++) {
 		goto_xy(x, y);
 		printf("                               ");
@@ -2281,10 +2303,11 @@ int payment(int choice, int year, int mon, int choice_day, int hour, int min) {
 	printf("금    액:           %d원", STYLE[choice_index].price);
 	goto_xy(105, 31);
 	design_see_UI(98, 30, 8, 0, 0, 1);
-	goto_xy(110, 33);
+	goto_xy(109, 33);
 	textcolor(4);
-	printf("※요청사항(최대 50글자)");
+	printf("※요청사항(최대 100글자)");
 	design_column_UI(117, 38, 7, 121, 39, "결제", 7);
+	//ExClick();
 	while (1) {
 		xx = 0, yy = 0;
 		click(&xx, &yy);
@@ -2295,6 +2318,62 @@ int payment(int choice, int year, int mon, int choice_day, int hour, int min) {
 				printf("◁--");
 				Sleep(500);
 				return 1;
+			}
+		}
+		if (yy > 29 && yy < 38) {
+			if (xx > 98 && xx < 145) {
+				strcpy(str, " ");
+				design_see_UI(98, 30, 8, 0, 0, 1);// 진행시켜 설명 적는거 해야지
+				len = 0;
+				x = 102;
+				y = 31;
+				EnableConsoleCursor();
+				goto_xy(x, y);
+				textcolor(7);
+				while (1) {
+					ch = ' ';
+					ch = _getch();
+					if (ch == '\r') { // Enter key
+						ch = ' ';
+						break;
+					}
+					else if (ch == '\b') { // Backspace key
+						if (str[(x - 102) + (len)+(142 - 102) * (y - 31) - 1] & 0x80) {
+							if (str[(x - 102) + (len)+(142 - 102) * (y - 31) - 2] & 0x80) {
+								handleBackspace2(str, &len, &x, &y);
+								handleBackspace2(str, &len, &x, &y);
+							}
+							else {
+								handleBackspace2(str, &len, &x, &y);
+							}
+						}
+						else {
+							handleBackspace2(str, &len, &x, &y);
+						}
+					}
+					else if (len < sizeof(str) - 2) {
+						if (len >= 142 - 102 && (len % (142 - 102)) == 0) { // Check if the line length is multiple of MAX_X
+							if (y >= 36 - 1) {
+								continue;
+							}
+							else {
+								handleNewline(&x, &y);
+								len = 0;
+								str[(x - 102) + (len)+((142 - 102) * (y - 31))] = ch;
+								len++;
+								str[(x - 102) + (len)+((142 - 102) * (y - 31))] = '\0';
+								printf("%c", ch);
+							}
+						}
+						else {
+							str[(x - 102) + (len)+((142 - 102) * (y - 31))] = ch;
+							len++;
+							str[(x - 102) + (len)+((142 - 102) * (y - 31))] = '\0';
+							printf("%c", ch);
+						}
+					}
+				}
+				HideCursor();
 			}
 		}
 	}
