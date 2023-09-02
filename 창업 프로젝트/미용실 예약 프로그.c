@@ -25,6 +25,7 @@ int previous_choice = -1;
 int date_check = 0;
 int choice_index = -1;
 int date_index[37];
+int reserve_count = 0;
 typedef struct { //디자이너에 따른 메뉴 보여주기 위함
 	int index;
 	char name[20];
@@ -61,7 +62,49 @@ typedef struct {
 	char account[220];
 }style;
 style STYLE[100];
-
+typedef struct {
+	int division;
+	char name[20];
+	char phone[20];
+	int year;
+	int mon;
+	int day;
+	int hour;
+	int min;
+	char style[30];//스타일
+	char designer[20];//헤어디자이너
+	char request[240];//요구사항
+	int pay;
+	int pyear;
+	int pmon;
+	int pday;
+	int phour;
+	int pmin;
+	char num[20];
+}reserve;
+reserve all_reserve[200];
+typedef struct {
+	int division;
+	char name[20];
+	char phone[20];
+	int year;
+	int mon;
+	int day;
+	int hour;
+	int min;
+	char style[30];//스타일
+	char designer[20];//헤어디자이너
+	char request[240];//요구사항
+	int pay;
+	int pyear;
+	int pmon;
+	int pday;
+	int phour;
+	int pmin;
+	char num[20];
+	int index;
+}m_reserve;
+m_reserve member_reserve[50];
 int getMaskedInput() { //디자이너 비밀번호 생일 입력 할 *로 출력 해주는 함수
 	int birth = 0;
 	int ch;
@@ -147,7 +190,32 @@ void clearInputBuffer() {
 	int c;
 	while ((c = getchar()) != '\n' && c != EOF);
 }
+void reserve_append() {
+	FILE* reserve;
+	reserve = fopen("reserve.txt", "a");
+	fprintf(reserve, "%d %s %s %d/%d/%d/%d/%d %d/%d/%d/%d/%d %s %s %s %d/%s\n",all_reserve[reserve_count].division, all_reserve[reserve_count].name, all_reserve[reserve_count].phone, all_reserve[reserve_count].year,all_reserve[reserve_count].mon, all_reserve[reserve_count].day, all_reserve[reserve_count].hour, all_reserve[reserve_count].min, all_reserve[reserve_count].pyear, all_reserve[reserve_count].pmon, all_reserve[reserve_count].pday, all_reserve[reserve_count].phour, all_reserve[reserve_count].pmin, all_reserve[reserve_count].style, all_reserve[reserve_count].designer, all_reserve[reserve_count].num, all_reserve[reserve_count].pay, all_reserve[reserve_count].request);
+	fclose(reserve);
+	reserve_count++;
+}
+void reserve_read{ //리뷰파일 읽기
+	reserve_count = 0;
+	char c;
+	FILE* reserve = fopen("reserve.txt", "r");
+	if (reserve == NULL) {
+		return 0;
+	}
+	else {
+		while (c = fgetc(reserve) != EOF) {
 
+			fseek(reserve, -1, SEEK_CUR);
+			if (feof(reserve) != 0) {
+				break;
+			}
+			fscanf(reserve, "%d %s %s %d/%d/%d/%d/%d %d/%d/%d/%d/%d %s %s %s %d/%[^\n]\n",&all_reserve[reserve_count].division, all_reserve[reserve_count].name, all_reserve[reserve_count].phone, &all_reserve[reserve_count].year, &all_reserve[reserve_count].mon, &all_reserve[reserve_count].day, &all_reserve[reserve_count].hour,&all_reserve[reserve_count].min,&all_reserve[reserve_count].pyear,&all_reserve[reserve_count].pmon,&all_reserve[reserve_count].pday,&all_reserve[reserve_count].phour,&all_reserve[reserve_count].pmin, all_reserve[reserve_count].style, all_reserve[reserve_count].designer, &all_reserve[reserve_count].num, &all_reserve[reserve_count].pay, all_reserve[reserve_count].request);
+			reserve_count++;
+		}
+	}
+}
 void file_read() { // 파일 읽어서 구조체에 저장하는 함수
 	member_count = 0;
 	char c;
@@ -2258,7 +2326,7 @@ int member_design_choice(int index, int choice, int year, int mon, int choice_da
 					style_i = (page_count * count) - count;
 					choice_index = -1;
 					m_design_print(choice, design_column, page_count, count, str, design_choice);
-					check = payment(choice, year, mon, choice_day, hour, min);
+					check = payment(index, choice, year, mon, choice_day, hour, min);
 					if (check == 0) {
 						return 1;
 					}
@@ -2272,8 +2340,10 @@ int member_design_choice(int index, int choice, int year, int mon, int choice_da
 		}
 	}
 }
-int payment(int choice, int year, int mon, int choice_day, int hour, int min) {
+int payment(int index, int choice, int year, int mon, int choice_day, int hour, int min) {
 	Sleep(700);
+	time_t seconds = time(NULL);
+	struct tm* now = localtime(&seconds);
 	int x = 55, y = 34;
 	int xx, yy, lr = 0;
 	char str[240] = " ";//100글자 
@@ -2307,7 +2377,7 @@ int payment(int choice, int year, int mon, int choice_day, int hour, int min) {
 	textcolor(4);
 	printf("※요청사항(최대 100글자)");
 	design_column_UI(117, 38, 7, 121, 39, "결제", 7);
-	//ExClick();
+	ExClick();
 	while (1) {
 		xx = 0, yy = 0;
 		click(&xx, &yy);
@@ -2374,6 +2444,28 @@ int payment(int choice, int year, int mon, int choice_day, int hour, int min) {
 					}
 				}
 				HideCursor();
+			}
+		}
+		if (yy > 37 && yy < 41) {
+			if (xx > 117 && xx < 128) {
+				if (index >= 0) {
+					all_reserve[reserve_count].division = 1;
+					strcpy(all_reserve[reserve_count].name, all[index].name);
+					strcpy(all_reserve[reserve_count].phone, all[index].phone);
+					all_reserve[reserve_count].year = year;
+					all_reserve[reserve_count].mon = mon;
+					all_reserve[reserve_count].day = choice_day;
+					all_reserve[reserve_count].hour = hour;
+					all_reserve[reserve_count].min = min;
+					strcpy(all_reserve[reserve_count].style, STYLE[choice_index].name);
+					strcpy(all_reserve[reserve_count].designer, d_all[choice].n_name);
+					all_reserve[reserve_count].pyear = 1900 + now->tm_year;
+					all_reserve[reserve_count].pmon = now->tm_mon + 1;
+					all_reserve[reserve_count].pday = now->tm_mday;
+					all_reserve[reserve_count].phour = now->tm_hour);
+					all_reserve[reserve_count].phour = now->tm_min);
+
+				}
 			}
 		}
 	}
