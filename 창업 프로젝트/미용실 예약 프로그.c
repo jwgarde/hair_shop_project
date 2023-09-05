@@ -26,6 +26,7 @@ int date_check = 0;
 int choice_index = -1;
 int date_index[37];
 int reserve_count = 0;
+char* reserve_count_check(int index);
 typedef struct { //디자이너에 따른 메뉴 보여주기 위함
 	int index;
 	char name[20];
@@ -72,6 +73,7 @@ typedef struct {
 	int hour;
 	int min;
 	char style[30];//스타일
+	char sort[15];
 	char designer[20];//헤어디자이너
 	char request[240];//요구사항
 	int pay;
@@ -193,11 +195,11 @@ void clearInputBuffer() {
 void reserve_append() {
 	FILE* reserve;
 	reserve = fopen("reserve.txt", "a");
-	fprintf(reserve, "%d %s %s %d/%d/%d/%d/%d %d/%d/%d/%d/%d %s %s %s %d/%s\n",all_reserve[reserve_count].division, all_reserve[reserve_count].name, all_reserve[reserve_count].phone, all_reserve[reserve_count].year,all_reserve[reserve_count].mon, all_reserve[reserve_count].day, all_reserve[reserve_count].hour, all_reserve[reserve_count].min, all_reserve[reserve_count].pyear, all_reserve[reserve_count].pmon, all_reserve[reserve_count].pday, all_reserve[reserve_count].phour, all_reserve[reserve_count].pmin, all_reserve[reserve_count].style, all_reserve[reserve_count].designer, all_reserve[reserve_count].num, all_reserve[reserve_count].pay, all_reserve[reserve_count].request);
+	fprintf(reserve, "%d %s %s %d/%d/%d/%d/%d %d/%d/%d/%d/%d %s %s %s %s %d/%s\n",all_reserve[reserve_count].division, all_reserve[reserve_count].name, all_reserve[reserve_count].phone, all_reserve[reserve_count].year,all_reserve[reserve_count].mon, all_reserve[reserve_count].day, all_reserve[reserve_count].hour, all_reserve[reserve_count].min, all_reserve[reserve_count].pyear, all_reserve[reserve_count].pmon, all_reserve[reserve_count].pday, all_reserve[reserve_count].phour, all_reserve[reserve_count].pmin, all_reserve[reserve_count].sort, all_reserve[reserve_count].style, all_reserve[reserve_count].designer, all_reserve[reserve_count].num, all_reserve[reserve_count].pay, all_reserve[reserve_count].request);
 	fclose(reserve);
 	reserve_count++;
 }
-void reserve_read{ //리뷰파일 읽기
+void reserve_read(){ //리뷰파일 읽기
 	reserve_count = 0;
 	char c;
 	FILE* reserve = fopen("reserve.txt", "r");
@@ -211,7 +213,7 @@ void reserve_read{ //리뷰파일 읽기
 			if (feof(reserve) != 0) {
 				break;
 			}
-			fscanf(reserve, "%d %s %s %d/%d/%d/%d/%d %d/%d/%d/%d/%d %s %s %s %d/%[^\n]\n",&all_reserve[reserve_count].division, all_reserve[reserve_count].name, all_reserve[reserve_count].phone, &all_reserve[reserve_count].year, &all_reserve[reserve_count].mon, &all_reserve[reserve_count].day, &all_reserve[reserve_count].hour,&all_reserve[reserve_count].min,&all_reserve[reserve_count].pyear,&all_reserve[reserve_count].pmon,&all_reserve[reserve_count].pday,&all_reserve[reserve_count].phour,&all_reserve[reserve_count].pmin, all_reserve[reserve_count].style, all_reserve[reserve_count].designer, &all_reserve[reserve_count].num, &all_reserve[reserve_count].pay, all_reserve[reserve_count].request);
+			fscanf(reserve, "%d %s %s %d/%d/%d/%d/%d %d/%d/%d/%d/%d %s %s %s %s %d/%[^\n]\n",&all_reserve[reserve_count].division, all_reserve[reserve_count].name, all_reserve[reserve_count].phone, &all_reserve[reserve_count].year, &all_reserve[reserve_count].mon, &all_reserve[reserve_count].day, &all_reserve[reserve_count].hour,&all_reserve[reserve_count].min,&all_reserve[reserve_count].pyear,&all_reserve[reserve_count].pmon,&all_reserve[reserve_count].pday,&all_reserve[reserve_count].phour,&all_reserve[reserve_count].pmin, all_reserve[reserve_count].sort, all_reserve[reserve_count].style, all_reserve[reserve_count].designer,all_reserve[reserve_count].num, &all_reserve[reserve_count].pay, all_reserve[reserve_count].request);
 			reserve_count++;
 		}
 	}
@@ -1621,6 +1623,7 @@ int designer_choice(int index) {
 	d_file_read();
 	int xx, yy, lr = 0;
 	int choice = -1;
+	int check = 0;
 	while (1) {
 		box_clear();
 		xx, yy, lr = 0;
@@ -1657,7 +1660,10 @@ int designer_choice(int index) {
 				if (choice < designer_count) {
 					designer_print(choice);
 					Sleep(700);
-					date_choice(index, choice);
+					check = date_choice(index, choice);
+					if (check == 1) {
+						return;
+					}
 					break;
 				}
 			}
@@ -1847,7 +1853,7 @@ int date_choice(int index, int choice) {
 	int xx, yy, lr = 0;
 	basic_UI_DELETE(60, 3);
 	textcolor(6);
-	big_designer_print();
+	big_designer_print(40,6);
 	buid(choice, 395, 180, 1);
 	while (1) {
 		textcolor(6);
@@ -1942,7 +1948,7 @@ int date_choice(int index, int choice) {
 						printf("◁--");
 						Sleep(500);
 						clearconsole();
-						return;
+						return 0;
 					}
 				}
 				if (xx > 100 && xx < 145) {
@@ -1953,8 +1959,7 @@ int date_choice(int index, int choice) {
 							textcolor(10);
 							printf("%2d", choice_day);
 							textcolor(15);
-							time_choice(index, choice, year, mon, choice_day);
-							check = 1;
+							check = time_choice(index, choice, year, mon, choice_day);
 							break;
 						}
 					}
@@ -1963,6 +1968,9 @@ int date_choice(int index, int choice) {
 			if (check == 1) {
 				check = 0;
 				break;
+			}
+			else if (check == 2) {
+				return 1;
 			}
 		}
 	}
@@ -2046,7 +2054,7 @@ int time_choice(int index, int choice, int year, int mon, int choice_day) {
 					Sleep(500);
 					goto_xy(55, 38);
 					printf("              ");
-					return;
+					return 1;
 				}
 			}
 			if (xx > 97 && xx < 146) {
@@ -2107,7 +2115,7 @@ int time_choice(int index, int choice, int year, int mon, int choice_day) {
 			Sleep(700);
 			check = member_design_choice(index, choice, year, mon, choice_day, hour, min);
 			if (check == 1) {
-				return;
+				return 2;
 			}
 		}
 	}
@@ -2327,6 +2335,7 @@ int member_design_choice(int index, int choice, int year, int mon, int choice_da
 					choice_index = -1;
 					m_design_print(choice, design_column, page_count, count, str, design_choice);
 					check = payment(index, choice, year, mon, choice_day, hour, min);
+					design_choice = -1;
 					if (check == 0) {
 						return 1;
 					}
@@ -2377,7 +2386,7 @@ int payment(int index, int choice, int year, int mon, int choice_day, int hour, 
 	textcolor(4);
 	printf("※요청사항(최대 100글자)");
 	design_column_UI(117, 38, 7, 121, 39, "결제", 7);
-	ExClick();
+	//ExClick();
 	while (1) {
 		xx = 0, yy = 0;
 		click(&xx, &yy);
@@ -2448,28 +2457,89 @@ int payment(int index, int choice, int year, int mon, int choice_day, int hour, 
 		}
 		if (yy > 37 && yy < 41) {
 			if (xx > 117 && xx < 128) {
+				design_column_UI(117, 38, 10, 121, 39, "결제", 7);
+				Sleep(700);
 				if (index >= 0) {
-					all_reserve[reserve_count].division = 1;
-					strcpy(all_reserve[reserve_count].name, all[index].name);
-					strcpy(all_reserve[reserve_count].phone, all[index].phone);
-					all_reserve[reserve_count].year = year;
-					all_reserve[reserve_count].mon = mon;
-					all_reserve[reserve_count].day = choice_day;
-					all_reserve[reserve_count].hour = hour;
-					all_reserve[reserve_count].min = min;
-					strcpy(all_reserve[reserve_count].style, STYLE[choice_index].name);
-					strcpy(all_reserve[reserve_count].designer, d_all[choice].n_name);
-					all_reserve[reserve_count].pyear = 1900 + now->tm_year;
-					all_reserve[reserve_count].pmon = now->tm_mon + 1;
-					all_reserve[reserve_count].pday = now->tm_mday;
-					all_reserve[reserve_count].phour = now->tm_hour);
-					all_reserve[reserve_count].phour = now->tm_min);
-
+					reserve_read();
+					all_reserve[reserve_count].division = 1; //회원 비회원 관리자 구분
+					strcpy(all_reserve[reserve_count].name, all[index].name);// 회원이름
+					strcpy(all_reserve[reserve_count].phone, all[index].phone);//전화번호
+					all_reserve[reserve_count].year = year;//선택 연도
+					all_reserve[reserve_count].mon = mon;// 선택 월
+					all_reserve[reserve_count].day = choice_day;// 선택 일
+					all_reserve[reserve_count].hour = hour;// 선택 시간
+					all_reserve[reserve_count].min = min;// 선택 분
+					strcpy(all_reserve[reserve_count].sort, STYLE[choice_index].sort);
+					strcpy(all_reserve[reserve_count].style, STYLE[choice_index].name); //선택한스타일 
+					strcpy(all_reserve[reserve_count].designer, d_all[choice].name);//디자이너 이름
+					all_reserve[reserve_count].pyear = 1900 + now->tm_year;// 결제 연도
+					all_reserve[reserve_count].pmon = now->tm_mon + 1;// 결제 월
+					all_reserve[reserve_count].pday = now->tm_mday;// 결제 일
+					all_reserve[reserve_count].phour = now->tm_hour;// 결제 시간
+					all_reserve[reserve_count].pmin = now->tm_min;// 결제 분
+					all_reserve[reserve_count].pay = STYLE[choice_index].price;
+					strcpy(all_reserve[reserve_count].request,str);
+					char* result = reserve_count_check(index); // 예약번호 받아오기
+					strcpy(all_reserve[reserve_count].num, result);
+					free(result);
+					reserve_append();
+					textcolor(6);
+					reserve_finish_UI(98, 16,"※예약 완료되었습니다.※");
+					Sleep(2500);
+					clearconsole();
+					return 0;
 				}
 			}
 		}
 	}
 }
+int reserve_finish_UI(int x,int y, char *str) {
+	int yy = y - 5;
+	for (int i = 0; i < 30; i++) {
+		goto_xy(x, yy+i);
+		printf("                                               ");
+	}
+	goto_xy(x, y);
+	printf("┏");
+	for (int i = 0; i < 22; i++)
+	{
+		printf("━");
+	}
+	printf("┓");
+	for (int i = 0; i < 12; i++) {
+		y += 1;
+		goto_xy(x, y);
+		printf("┃                                            ┃");
+	}
+	goto_xy(x, y + 1);
+	printf("┗");
+	for (int i = 0; i < 22; i++)
+	{
+		printf("━");
+	}
+	printf("┛");
+	y = y-6;
+	goto_xy(x + 12, y);
+	textcolor(4);
+	printf("%s", str);
+}
+char* reserve_count_check(int index) {
+	reserve_read();
+	int count = 0;
+	for (int i = 0; i < reserve_count; i++) {
+		if (strcmp(all[index].name, all_reserve[i].name) == 0 && strcmp(all[index].phone, all_reserve[i].phone) == 0) {
+			count++;
+		}
+	}
+	char result[20];  // 충분한 공간을 확보하세요 (예: 20)
+	sprintf(result, "%s#%d", all[index].phone + 3, count);
+
+	// 결과를 동적으로 할당된 문자열로 복사
+	char* result_str = (char*)malloc(strlen(result) + 1);
+	strcpy(result_str, result);
+	return result_str;
+}
+
 int design_column_UI(int x, int y, int color, int xx, int yy, char* str, int color2) {
 	textcolor(color);
 	goto_xy(x, y);
@@ -2496,9 +2566,8 @@ int design_column_UI(int x, int y, int color, int xx, int yy, char* str, int col
 	goto_xy(xx, yy);
 	printf("%s", str);
 }
-int big_designer_print() {
+int big_designer_print(int x,int y) {
 	textcolor(DarkYellow);
-	int x = 40, y = 6;
 	goto_xy(x, y);
 	printf("┏");
 	for (int i = 0; i < 54; i++)
