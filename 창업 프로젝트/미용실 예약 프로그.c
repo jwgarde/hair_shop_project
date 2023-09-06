@@ -138,17 +138,14 @@ void clearCurrentChar(int x, int y) {
 	printf(" "); // Print a space to clear the character
 	goto_xy(x, y); // Move the cursor back to the original position
 }
-
 void handleNewline(int* x, int* y) {
 	(*y)++;
 	goto_xy(*x, *y); // Move the cursor to the new position
 }
-
 void handleNewline_2(int* print_x, int* print_y) {
 	(*print_y)++;
 	goto_xy(*print_x, *print_y); // Move the cursor to the new position
 }
-
 void handleBackspace(char* str, int* len, int* x, int* y) {
 	if (*len > 0) {
 		(*len)--;
@@ -187,7 +184,6 @@ void handleBackspace2(char* str, int* len, int* x, int* y) {
 		}
 	}
 }
-
 void clearInputBuffer() {
 	int c;
 	while ((c = getchar()) != '\n' && c != EOF);
@@ -1975,6 +1971,35 @@ int date_choice(int index, int choice) {
 		}
 	}
 }
+int time_check(int choice, int year, int mon,int day, int hour, int min) {
+	reserve_read();
+	time_t seconds = time(NULL);
+	struct tm* now = localtime(&seconds);
+	if (hour < 10) {
+		hour += 12;
+	}
+	if (now->tm_year + 1900 == year && now->tm_mon+1 == mon && now->tm_mday == day) {
+		if (hour <= now->tm_hour) {
+			if (hour < now->tm_hour) {
+				return 1;
+			}
+			else {
+				if (now->tm_min >= min) {
+					return 1;
+				}
+			}
+		}
+		//return 1; // 입력된 시간이 이미 지났음
+	}
+	for (int i = 0; i < reserve_count; i++) {
+		if (strcmp(d_all[choice].name, all_reserve[i].designer) == 0) {
+			if (year == all_reserve[i].year && mon == all_reserve[i].mon && day == all_reserve[i].day && hour == all_reserve[i].hour && min == all_reserve[i].min) {
+				return 1;
+			}
+		}
+	}
+	return 0;//조건에 아무것도 해당이 안됨
+}
 int time_choice(int index, int choice, int year, int mon, int choice_day) {
 	int hour = 10;
 	int min = 0;
@@ -1982,6 +2007,7 @@ int time_choice(int index, int choice, int year, int mon, int choice_day) {
 	int y = 16;
 	int xx = 0, yy = 0, lr = 0;
 	int check = 0;
+	int last_time_check = 0;
 	goto_xy(66, 36);
 	printf("%d.%02d.%02d", year, mon, choice_day);
 	Sleep(700);
@@ -1990,6 +2016,7 @@ int time_choice(int index, int choice, int year, int mon, int choice_day) {
 		min = 0;
 		x = 98;
 		y = 16;
+		last_time_check = 0;
 		check = 0;
 		textcolor(6);
 		goto_xy(44, 7);
@@ -2020,7 +2047,14 @@ int time_choice(int index, int choice, int year, int mon, int choice_day) {
 		textcolor(15);
 		//지금 선택한 날짜 랑 반복문 안에있는 시간이랑 분을 계속해서 함수로 던져서 이 헤어디자이너에 이 날짜에 이 시간 예약이 있는지 확인 해주는 함수 만들어야함 // 당일 예약 할 경우 지난 시간은 예약 못하게 막아야함
 		for (int i = 1; i <= 16; i++) {
-			time_box(x, y, 15, x + 3, y + 1, hour, min, 15);
+			last_time_check = time_check(choice, year, mon, choice_day, hour, min);
+			if (last_time_check == 1) {
+				time_box(x, y, 8, x + 3, y + 1, hour, min, 8);
+			}
+			else {
+				time_box(x, y, 15, x + 3, y + 1, hour, min, 15);
+			}
+			last_time_check = 0;
 			x += 12;
 			min += 30;
 			if (min == 60) {
@@ -2044,6 +2078,10 @@ int time_choice(int index, int choice, int year, int mon, int choice_day) {
 		min = 0;
 		int e_hour = 0;
 		while (1) {
+			hour = 0;
+			min = 0;
+			last_time_check = 0;
+			check = 0;
 			xx = 0, yy = 0;
 			click(&xx, &yy);
 			if (yy > 5 && yy < 8) {
@@ -2106,8 +2144,19 @@ int time_choice(int index, int choice, int year, int mon, int choice_day) {
 						e_hour = 0;
 						continue;
 					}
-					break;
+					check = 1;
 				}
+			}
+			if (check == 1) {
+				last_time_check = time_check(choice, year, mon, choice_day, hour, min);
+				if (last_time_check == 1) {
+					e_hour = 0;
+					hour = 0;
+					min = 0;
+					continue;
+				}
+				check = 0;
+				break;
 			}
 		}
 		if (e_hour != 0 && xx != 0 && yy != 0) {
@@ -2349,6 +2398,10 @@ int member_design_choice(int index, int choice, int year, int mon, int choice_da
 		}
 	}
 }
+int calculateDiscountedPrice(int price) {
+	int discountedPrice = price * 9 / 10; // 10% 할인 적용
+	return discountedPrice;
+}
 int payment(int index, int choice, int year, int mon, int choice_day, int hour, int min) {
 	Sleep(700);
 	time_t seconds = time(NULL);
@@ -2378,8 +2431,20 @@ int payment(int index, int choice, int year, int mon, int choice_day, int hour, 
 	printf("종    류:           %s", STYLE[choice_index].sort);
 	goto_xy(100, 24);
 	printf("디 자 인:           %s", STYLE[choice_index].name);
+	int price = STYLE[choice_index].price;
+	if (index >= 0) {
+		char* price_discount = reserve_count_check(index);
+		if (price_discount[9] == '0') {
+			price = calculateDiscountedPrice(price);
+			goto_xy(129, 27);
+			textcolor(8);
+			printf("(10%% 할인 적용)");
+			textcolor(7);
+		}
+		
+	}
 	goto_xy(100, 27);
-	printf("금    액:           %d원", STYLE[choice_index].price);
+	printf("금    액:           %d원", price);
 	goto_xy(105, 31);
 	design_see_UI(98, 30, 8, 0, 0, 1);
 	goto_xy(109, 33);
@@ -2477,7 +2542,7 @@ int payment(int index, int choice, int year, int mon, int choice_day, int hour, 
 					all_reserve[reserve_count].pday = now->tm_mday;// 결제 일
 					all_reserve[reserve_count].phour = now->tm_hour;// 결제 시간
 					all_reserve[reserve_count].pmin = now->tm_min;// 결제 분
-					all_reserve[reserve_count].pay = STYLE[choice_index].price;
+					all_reserve[reserve_count].pay = price;
 					strcpy(all_reserve[reserve_count].request,str);
 					char* result = reserve_count_check(index); // 예약번호 받아오기
 					strcpy(all_reserve[reserve_count].num, result);
@@ -2539,7 +2604,6 @@ char* reserve_count_check(int index) {
 	strcpy(result_str, result);
 	return result_str;
 }
-
 int design_column_UI(int x, int y, int color, int xx, int yy, char* str, int color2) {
 	textcolor(color);
 	goto_xy(x, y);
@@ -3294,8 +3358,11 @@ void membership() { // 회원가입 함수
 	goto_xy(92, 5);
 	textcolor(6);
 	printf("회원가입");
-	small_box(80, 10, 6, 86, 11, "남자", 9);
-	small_box(97, 10, 6, 103, 11, "여자", 12);
+	textcolor(4);
+	goto_xy(78, 9);
+	printf("※회원가입 후 첫 예약 10%% 할인 적용※");
+	small_box(80, 11, 6, 86, 12, "남자", 9);
+	small_box(97, 11, 6, 103, 12, "여자", 12);
 	small_box(68, 46, 6, 74, 47, "이전", 6);
 	small_box(110, 46, 6, 116, 47, "가입", 6);
 	goto_xy(80, 18);
@@ -3327,17 +3394,17 @@ void membership() { // 회원가입 함수
 			}
 		}
 		if (xx > 80 && xx < 94) {
-			if (yy > 9 && yy < 13) {
+			if (yy > 10 && yy < 14) {
 				strcpy(gender, "남");
-				small_box(97, 10, 6, 103, 11, "여자", 12);
-				small_box(80, 10, 10, 86, 11, "남자", 9);
+				small_box(97, 11, 6, 103, 12, "여자", 12);
+				small_box(80, 11, 10, 86, 12, "남자", 9);
 			}
 		}
 		if (xx > 97 && xx < 112) {
-			if (yy > 9 && yy < 13) {
+			if (yy > 10 && yy < 14) {
 				strcpy(gender, "여");
-				small_box(80, 10, 6, 86, 11, "남자", 9);
-				small_box(97, 10, 10, 103, 11, "여자", 12);
+				small_box(80, 11, 6, 86, 12, "남자", 9);
+				small_box(97, 11, 10, 103, 12, "여자", 12);
 			}
 		}
 		if (xx > 68 && xx < 110) {
