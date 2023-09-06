@@ -1752,7 +1752,7 @@ int day_of_week(int year, int month) //총 일수를 구하는 함수(해당 월
 	return temp % 7; //1=월,2=화...6=토,0=일
 
 }
-void print_calendar(int sd, int year, int month, int x, int y, int d_day) {
+void print_calendar(int choice, int sd, int year, int month, int x, int y, int d_day) {
 	date_check = 0;
 	int i, j;
 	int temp;
@@ -1783,11 +1783,20 @@ void print_calendar(int sd, int year, int month, int x, int y, int d_day) {
 	j = sd;
 	date_check = sd;
 	int check = 0;
-
+	int full = 0;
+	reserve_read();
 	for (i = 1; i <= temp; i++) {
+		full = 0;
+		for (int k = 0; k < reserve_count; k++) {
+			if (strcmp(d_all[choice].name, all_reserve[k].designer) == 0) {
+				if (year == all_reserve[k].year && month == all_reserve[k].mon && i == all_reserve[k].day) {
+					full += 1;
+				}
+			}
+		}
 		if (j == 6) {
 			textcolor(9);
-			if (i < d_day) {
+			if (full == 16 || i < d_day) {
 				check = 1;
 				textcolor(8);
 			}
@@ -1805,7 +1814,7 @@ void print_calendar(int sd, int year, int month, int x, int y, int d_day) {
 			if (j == 0) {
 				textcolor(12);
 			}
-			if (i < d_day) {
+			if (full == 16 || i < d_day) {
 				check = 1;
 				textcolor(8);
 			}
@@ -1891,7 +1900,7 @@ int date_choice(int index, int choice) {
 		while (1) {
 			goto_xy(x + 17, y);
 			printf("%d년 %02d월", year, mon);
-			print_calendar(day, year, mon, x, y + 7, d_day);
+			print_calendar(choice,day, year, mon, x, y + 7, d_day);
 			//ExClick();
 			while (1) {
 				xx = 0, yy = 0;
@@ -2045,7 +2054,7 @@ int time_choice(int index, int choice, int year, int mon, int choice_day) {
 		goto_xy(135, 39);
 		printf("선택가능");
 		textcolor(15);
-		//지금 선택한 날짜 랑 반복문 안에있는 시간이랑 분을 계속해서 함수로 던져서 이 헤어디자이너에 이 날짜에 이 시간 예약이 있는지 확인 해주는 함수 만들어야함 // 당일 예약 할 경우 지난 시간은 예약 못하게 막아야함
+		//지금 선택한 날짜 랑 반복문 안에있는 시간이랑 분을 계속해서 함수로 던져서 이 헤어디자이너에 이 날짜에 이 시간 예약이 있는지 확인 해주는 함수 만들어야함 // 당일 예약 할 경우 지난 시간은 예약 못하게 막아야함 // 했음.
 		for (int i = 1; i <= 16; i++) {
 			last_time_check = time_check(choice, year, mon, choice_day, hour, min);
 			if (last_time_check == 1) {
