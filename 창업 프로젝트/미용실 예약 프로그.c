@@ -9,6 +9,7 @@
 #include<string.h>
 #include <stdbool.h>
 #include"resource.h"
+#include <limits.h>
 #include <wchar.h>
 #define MAX_X 174
 #define MAX_2_X 135
@@ -85,6 +86,11 @@ typedef struct {
 	char num[20];
 }reserve;
 reserve all_reserve[200];
+time_t getCurrentTime() {
+	time_t currentTime;
+	time(&currentTime);
+	return currentTime;
+}
 typedef struct {
 	int division;
 	char name[20];
@@ -95,6 +101,7 @@ typedef struct {
 	int hour;
 	int min;
 	char style[30];//스타일
+	char sort[15];
 	char designer[20];//헤어디자이너
 	char request[240];//요구사항
 	int pay;
@@ -107,6 +114,104 @@ typedef struct {
 	int index;
 }m_reserve;
 m_reserve member_reserve[50];
+// 윤년 여부
+int isLeapYear(int year) { 
+	if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
+		return 1; // 윤년
+	}
+	return 0; // 평년
+}
+// 두 날짜 사이의 일 수를 계산하는 함수
+int calculateDaysRemaining(int year, int mon, int day) {
+	time_t currentTime;
+	struct tm targetDate;
+
+	if (time(&currentTime) == -1) {
+		perror("time");
+		return -1;
+	}
+
+	// 입력한 날짜 설정
+	targetDate.tm_year = year - 1900;
+	targetDate.tm_mon = mon - 1;
+	targetDate.tm_mday = day;
+	targetDate.tm_hour = 0;
+	targetDate.tm_min = 0;
+	targetDate.tm_sec = 0;
+	targetDate.tm_isdst = -1;
+
+	// 윤년 여부 확인
+	int isLeap = isLeapYear(year);
+
+	// 2월의 일 수 설정 (윤년 고려)
+	if (mon == 2) {
+		targetDate.tm_mday = isLeap ? 29 : 28;
+	}
+
+	// 입력한 날짜와 현재 날짜 비교
+	double secondsRemaining = difftime(mktime(&targetDate), currentTime);
+	int daysRemaining = (int)(secondsRemaining / (60 * 60 * 24) + 1);
+
+	return daysRemaining;
+}
+int compare_dates(m_reserve reserve1, m_reserve reserve2) {
+	// 먼저 연도를 비교합니다.
+	if (reserve1.pyear < reserve2.pyear) {
+		return -1;
+	}
+	else if (reserve1.pyear > reserve2.pyear) {
+		return 1;
+	}
+
+	// 연도가 같은 경우 월을 비교합니다.
+	if (reserve1.pmon < reserve2.pmon) {
+		return -1;
+	}
+	else if (reserve1.pmon > reserve2.pmon) {
+		return 1;
+	}
+
+	// 연도와 월이 같은 경우 일을 비교합니다.
+	if (reserve1.pday < reserve2.pday) {
+		return -1;
+	}
+	else if (reserve1.pday > reserve2.pday) {
+		return 1;
+	}
+
+	// 연도, 월, 일이 모두 같은 경우 시간을 비교합니다.
+	if (reserve1.phour < reserve2.phour) {
+		return -1;
+	}
+	else if (reserve1.phour > reserve2.phour) {
+		return 1;
+	}
+
+	// 연도, 월, 일, 시간이 모두 같은 경우 분을 비교합니다.
+	if (reserve1.pmin < reserve2.pmin) {
+		return -1;
+	}
+	else if (reserve1.pmin > reserve2.pmin) {
+		return 1;
+	}
+
+	// 위의 모든 경우에 해당하지 않으면 날짜가 같다고 간주하고 0을 반환합니다.
+	return 0;
+}
+// 결제일 기준으로 부터 정렬
+void sort_member_reserve(int m_reserve_count) {
+	for (int i = 0; i < m_reserve_count - 1; i++) {
+		for (int j = 0; j < m_reserve_count - i - 1; j++) {
+			// 현재 예약과 다음 예약을 비교하여 결제일 역순으로 정렬
+			if (compare_dates(member_reserve[j], member_reserve[j + 1]) < 0) {
+				// 두 예약을 스왑
+				m_reserve temp = member_reserve[j];
+				member_reserve[j] = member_reserve[j + 1];
+				member_reserve[j + 1] = temp;
+			}
+		}
+	}
+}
 int getMaskedInput() { //디자이너 비밀번호 생일 입력 할 *로 출력 해주는 함수
 	int birth = 0;
 	int ch;
@@ -2960,22 +3065,113 @@ void modifying_membership(int index) { //회원정보 수정
 	}
 	//ExClick();
 }
+int take_m_reserve(int index,int *reserve_index) {
+	int m_reserve_count = 0; 
+	int r_index = -1;
+	int result_min = 0;
+	int possible_count = 0; //예약이 안지난 예약의 횟수를 계산해서 초기 값을 정해 놓기 위해
+	reserve_read();
+	for (int i = 0; i < reserve_count; i++) {
+		if (strcmp(all[index].name, all_reserve[i].name) == 0) {
+			member_reserve[m_reserve_count].division = all_reserve[i].division;
+			strcpy(member_reserve[m_reserve_count].name, all_reserve[i].name);
+			strcpy(member_reserve[m_reserve_count].phone, all_reserve[i].phone);//전화번호
+			member_reserve[m_reserve_count].year = all_reserve[i].year;//선택 연도
+			member_reserve[m_reserve_count].mon = all_reserve[i].mon;// 선택 월
+			member_reserve[m_reserve_count].day = all_reserve[i].day;// 선택 일
+			member_reserve[m_reserve_count].hour = all_reserve[i].hour;// 선택 시간
+			member_reserve[m_reserve_count].min = all_reserve[i].min;// 선택 분
+			strcpy(member_reserve[m_reserve_count].sort, all_reserve[i].sort);//디자인 종류
+			strcpy(member_reserve[m_reserve_count].style, all_reserve[i].style); //선택한스타일 
+			strcpy(member_reserve[m_reserve_count].designer, all_reserve[i].designer);;//디자이너 이름
+			member_reserve[m_reserve_count].pyear = all_reserve[i].pyear;// 결제 연도
+			member_reserve[m_reserve_count].pmon = all_reserve[i].pmon;// 결제 월
+			member_reserve[m_reserve_count].pday = all_reserve[i].pday;// 결제 일
+			member_reserve[m_reserve_count].phour = all_reserve[i].phour;// 결제 시간
+			member_reserve[m_reserve_count].pmin = all_reserve[i].pmin;// 결제 분
+			member_reserve[m_reserve_count].pay = all_reserve[i].pay;
+			strcpy(member_reserve[m_reserve_count].request, all_reserve[i].request);
+			strcpy(member_reserve[m_reserve_count].num, all_reserve[i].num);
+			member_reserve[m_reserve_count].index = i;
+			int reckoning_min = calculateRemainingMinutes(member_reserve[m_reserve_count].year, member_reserve[m_reserve_count].mon, member_reserve[m_reserve_count].day, member_reserve[m_reserve_count].hour, member_reserve[m_reserve_count].min);
+			if (reckoning_min > 0) {
+				if (possible_count == 0) {
+					result_min = reckoning_min;
+					r_index = m_reserve_count;
+				}
+				else {
+					if(reckoning_min < result_min) {
+						result_min = reckoning_min;
+						r_index = m_reserve_count;
+					}
+				}
+				possible_count++;
+			}
+			m_reserve_count++;
+		}
+	}
+	*reserve_index = r_index;
+	return m_reserve_count;
+}
+int calculateRemainingMinutes(int year, int month, int day, int hour, int minute) {
+	struct tm targetTime;
+	time_t currentTime = getCurrentTime();
+	targetTime.tm_year = year - 1900; // tm_year는 1900을 빼야 올바른 연도 값이 됩니다.
+	targetTime.tm_mon = month - 1;    // tm_mon은 0부터 시작하므로 1을 빼야 합니다.
+	targetTime.tm_mday = day;
+	targetTime.tm_hour = hour;
+	targetTime.tm_min = minute;
+	targetTime.tm_sec = 0;
+	targetTime.tm_isdst = -1; // 시간대 정보를 시스템에 맡깁니다.
+
+	time_t targetTimestamp = mktime(&targetTime);
+
+	if (targetTimestamp == -1) {
+		// mktime 함수가 실패한 경우
+		perror("mktime");
+		return -1;
+	}
+
+	double secondsRemaining = difftime(targetTimestamp, currentTime);
+	int minutesRemaining = (int)(secondsRemaining / 60);
+
+	return minutesRemaining;
+}
 int member_initial_screen(int index) { //로그인 성공시 회원 초기화면
 	int xx, yy, lr = 0;
 	int choice = 0;
+	int reserve_index = -1;//다가오는 예약 인덱스 변수
+	int m_reserve_count = 0;
 	while (1) {
 		box_clear();
 		m_basic_UI();
+		m_reserve_count = 0;
+		reserve_index = -1;
 		xx = 0, yy = 0;
 		goto_xy(93, 5);
 		textcolor(6);
 		printf("%s님", all[index].name);
+		m_reserve_count = take_m_reserve(index, &reserve_index);
+		if (reserve_index != -1) {
+			int daysRemaining = calculateDaysRemaining(member_reserve[reserve_index].year, member_reserve[reserve_index].mon, member_reserve[reserve_index].day);
+			if (daysRemaining == 0) {
+				goto_xy(70, 9);
+				printf("D-DAY");
+			}
+			else {
+				goto_xy(70, 9);
+				printf("D-%d", daysRemaining);
+			}
+			goto_xy(85, 9);
+			printf("예약날짜 : %d/%02d/%02d/%02d:%02d", member_reserve[reserve_index].year, member_reserve[reserve_index].mon, member_reserve[reserve_index].day, member_reserve[reserve_index].hour, member_reserve[reserve_index].min);
+		}
+		/*sort_member_reserve(m_reserve_count); *///정렬
 		big_box(87, 18, 6, 96, 20, "예약");
 		big_box(87, 25, 6, 91, 27, "예약 내역 조회");
 		big_box(87, 32, 6, 93, 34, "정보 수정");
 		small_box(68, 46, 6, 72, 47, "로그아웃", 6);
 		small_box(110, 46, 6, 116, 47, "다음", 6);
-		//ExClick();
+		ExClick();
 		while (1) {
 			xx = 0, yy = 0;
 			click(&xx, &yy);
@@ -3001,6 +3197,12 @@ int member_initial_screen(int index) { //로그인 성공시 회원 초기화면
 					choice = 1;
 					xx, yy = 0;
 				}
+				else if (yy > 24 && yy < 30) {
+					big_box(87, 18, 6, 96, 20, "예약", 6);
+					big_box(87, 25, 10, 91, 27, "예약 내역 조회", 6);
+					big_box(87, 32, 6, 93, 34, "정보 수정", 6);
+					choice = 2;
+				}
 			}
 			if (xx > 110 && xx < 125) {
 				if (yy > 45 && yy < 49) {
@@ -3015,10 +3217,6 @@ int member_initial_screen(int index) { //로그인 성공시 회원 초기화면
 						else if (choice == 1) {
 							designer_choice(index);
 							choice = 0;
-							break;
-						}
-						else if (choice == 1) {
-							designer_choice(index);
 							break;
 						}
 					}
