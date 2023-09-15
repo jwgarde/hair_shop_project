@@ -27,7 +27,7 @@ int date_check = 0;
 int choice_index = -1;
 int date_index[37];
 int reserve_count = 0;
-char* reserve_count_check(int index);
+int reserve_count_check(int index);
 typedef struct { //디자이너에 따른 메뉴 보여주기 위함
 	int index;
 	char name[20];
@@ -66,7 +66,6 @@ typedef struct {
 style STYLE[100];
 typedef struct {
 	int cancel_check;
-	int division;
 	char name[20];
 	char phone[20];
 	int year;
@@ -84,7 +83,7 @@ typedef struct {
 	int pday;
 	int phour;
 	int pmin;
-	char num[20];
+	int psec;
 }reserve;
 reserve all_reserve[200];
 time_t getCurrentTime() {
@@ -94,7 +93,6 @@ time_t getCurrentTime() {
 }
 typedef struct {
 	int cancel_check;
-	int division;
 	char name[20];
 	char phone[20];
 	int year;
@@ -112,7 +110,7 @@ typedef struct {
 	int pday;
 	int phour;
 	int pmin;
-	char num[20];
+	int psec;
 	int index;
 }m_reserve;
 m_reserve member_reserve[50];
@@ -298,7 +296,7 @@ void clearInputBuffer() {
 void reserve_append() {
 	FILE* reserve;
 	reserve = fopen("reserve.txt", "a");
-	fprintf(reserve, "%d %d %s %s %d/%d/%d/%d/%d %d/%d/%d/%d/%d %s %s %s %s %d/%s\n", all_reserve[reserve_count].cancel_check, all_reserve[reserve_count].division, all_reserve[reserve_count].name, all_reserve[reserve_count].phone, all_reserve[reserve_count].year, all_reserve[reserve_count].mon, all_reserve[reserve_count].day, all_reserve[reserve_count].hour, all_reserve[reserve_count].min, all_reserve[reserve_count].pyear, all_reserve[reserve_count].pmon, all_reserve[reserve_count].pday, all_reserve[reserve_count].phour, all_reserve[reserve_count].pmin, all_reserve[reserve_count].sort, all_reserve[reserve_count].style, all_reserve[reserve_count].designer, all_reserve[reserve_count].num, all_reserve[reserve_count].pay, all_reserve[reserve_count].request);
+	fprintf(reserve, "%d %s %s %d/%d/%d/%d/%d %d/%d/%d/%d/%d/%d %s %s %s %d/%s\n", all_reserve[reserve_count].cancel_check, all_reserve[reserve_count].name, all_reserve[reserve_count].phone, all_reserve[reserve_count].year, all_reserve[reserve_count].mon, all_reserve[reserve_count].day, all_reserve[reserve_count].hour, all_reserve[reserve_count].min, all_reserve[reserve_count].pyear, all_reserve[reserve_count].pmon, all_reserve[reserve_count].pday, all_reserve[reserve_count].phour, all_reserve[reserve_count].pmin, all_reserve[reserve_count].psec, all_reserve[reserve_count].sort, all_reserve[reserve_count].style, all_reserve[reserve_count].designer, all_reserve[reserve_count].pay, all_reserve[reserve_count].request);
 	fclose(reserve);
 	reserve_count++;
 }
@@ -317,7 +315,7 @@ void reserve_read() { //리뷰파일 읽기
 			if (feof(reserve) != 0) {
 				break;
 			}
-			fscanf(reserve, "%d %d %s %s %d/%d/%d/%d/%d %d/%d/%d/%d/%d %s %s %s %s %d/%[^\n]\n",&all_reserve[reserve_count].cancel_check, &all_reserve[reserve_count].division, all_reserve[reserve_count].name, all_reserve[reserve_count].phone, &all_reserve[reserve_count].year, &all_reserve[reserve_count].mon, &all_reserve[reserve_count].day, &all_reserve[reserve_count].hour, &all_reserve[reserve_count].min, &all_reserve[reserve_count].pyear, &all_reserve[reserve_count].pmon, &all_reserve[reserve_count].pday, &all_reserve[reserve_count].phour, &all_reserve[reserve_count].pmin, all_reserve[reserve_count].sort, all_reserve[reserve_count].style, all_reserve[reserve_count].designer, all_reserve[reserve_count].num, &all_reserve[reserve_count].pay, all_reserve[reserve_count].request);
+			fscanf(reserve, "%d %s %s %d/%d/%d/%d/%d %d/%d/%d/%d/%d/%d %s %s %s %d/%[^\n]\n", &all_reserve[reserve_count].cancel_check, all_reserve[reserve_count].name, all_reserve[reserve_count].phone, &all_reserve[reserve_count].year, &all_reserve[reserve_count].mon, &all_reserve[reserve_count].day, &all_reserve[reserve_count].hour, &all_reserve[reserve_count].min, &all_reserve[reserve_count].pyear, &all_reserve[reserve_count].pmon, &all_reserve[reserve_count].pday, &all_reserve[reserve_count].phour, &all_reserve[reserve_count].pmin, &all_reserve[reserve_count].psec, all_reserve[reserve_count].sort, all_reserve[reserve_count].style, all_reserve[reserve_count].designer, &all_reserve[reserve_count].pay, all_reserve[reserve_count].request);
 			reserve_count++;
 		}
 	}
@@ -2563,8 +2561,8 @@ int payment(int index, int choice, int year, int mon, int choice_day, int hour, 
 	printf("디 자 인:           %s", STYLE[choice_index].name);
 	int price = STYLE[choice_index].price;
 	if (index >= 0) {
-		char* price_discount = reserve_count_check(index);
-		if (price_discount[9] == '0') {
+		int price_discount = reserve_count_check(index);
+		if (price_discount == 0) {
 			price = calculateDiscountedPrice(price);
 			goto_xy(129, 27);
 			textcolor(8);
@@ -2656,7 +2654,6 @@ int payment(int index, int choice, int year, int mon, int choice_day, int hour, 
 				Sleep(700);
 				if (index >= 0) {
 					reserve_read();
-					all_reserve[reserve_count].division = 1; //회원 비회원 관리자 구분
 					strcpy(all_reserve[reserve_count].name, all[index].name);// 회원이름
 					strcpy(all_reserve[reserve_count].phone, all[index].phone);//전화번호
 					all_reserve[reserve_count].year = year;//선택 연도
@@ -2672,12 +2669,10 @@ int payment(int index, int choice, int year, int mon, int choice_day, int hour, 
 					all_reserve[reserve_count].pday = now->tm_mday;// 결제 일
 					all_reserve[reserve_count].phour = now->tm_hour;// 결제 시간
 					all_reserve[reserve_count].pmin = now->tm_min;// 결제 분
+					all_reserve[reserve_count].psec = now->tm_sec;
 					all_reserve[reserve_count].pay = price;
 					all_reserve[reserve_count].cancel_check = 1;
-					strcpy(all_reserve[reserve_count].request, str);
-					char* result = reserve_count_check(index); // 예약번호 받아오기
-					strcpy(all_reserve[reserve_count].num, result);
-					free(result);
+					strcpy(all_reserve[reserve_count].request, str);// 요구
 					reserve_append();
 					textcolor(6);
 					reserve_finish_UI(98, 16, "※예약 완료되었습니다.※");
@@ -2719,23 +2714,17 @@ int reserve_finish_UI(int x, int y, char* str) {
 	textcolor(4);
 	printf("%s", str);
 }
-char* reserve_count_check(int index) {
+int reserve_count_check(int index) {
 	reserve_read();
 	int count = 0;
 	for (int i = 0; i < reserve_count; i++) {
 		if (all_reserve[i].cancel_check == 1) {
-			if (strcmp(all[index].name, all_reserve[i].name) == 0 && strcmp(all[index].phone, all_reserve[i].phone) == 0) {
+			if (strcmp(all[index].name, all_reserve[i].name) == 0 && strcmp(all[index].phone, all_reserve[i].phone) == 0 && all_reserve[i].pyear != 0) {
 				count++;
 			}
 		}
 	}
-	char result[20];  // 충분한 공간을 확보하세요 (예: 20)
-	sprintf(result, "%s#%d", all[index].phone + 3, count);
-
-	// 결과를 동적으로 할당된 문자열로 복사
-	char* result_str = (char*)malloc(strlen(result) + 1);
-	strcpy(result_str, result);
-	return result_str;
+	return count;
 }
 int design_column_UI(int x, int y, int color, int xx, int yy, char* str, int color2) {
 	textcolor(color);
@@ -3092,7 +3081,6 @@ int take_m_reserve(int index, int* reserve_index) { //코드 뻑이면 여기 �
 	reserve_read();
 	for (int i = 0; i < reserve_count; i++) {
 		if (strcmp(all[index].name, all_reserve[i].name) == 0) {
-			member_reserve[m_reserve_count].division = all_reserve[i].division;
 			strcpy(member_reserve[m_reserve_count].name, all_reserve[i].name);
 			strcpy(member_reserve[m_reserve_count].phone, all_reserve[i].phone);//전화번호
 			member_reserve[m_reserve_count].year = all_reserve[i].year;//선택 연도
@@ -3108,10 +3096,10 @@ int take_m_reserve(int index, int* reserve_index) { //코드 뻑이면 여기 �
 			member_reserve[m_reserve_count].pday = all_reserve[i].pday;// 결제 일
 			member_reserve[m_reserve_count].phour = all_reserve[i].phour;// 결제 시간
 			member_reserve[m_reserve_count].pmin = all_reserve[i].pmin;// 결제 분
+			member_reserve[m_reserve_count].psec = all_reserve[i].psec;
 			member_reserve[m_reserve_count].pay = all_reserve[i].pay;
 			member_reserve[m_reserve_count].cancel_check = all_reserve[i].cancel_check;
 			strcpy(member_reserve[m_reserve_count].request, all_reserve[i].request);
-			strcpy(member_reserve[m_reserve_count].num, all_reserve[i].num);
 			member_reserve[m_reserve_count].index = i;
 			if (member_reserve[m_reserve_count].cancel_check == 1) {
 				int reckoning_min = calculateRemainingMinutes(member_reserve[m_reserve_count].year, member_reserve[m_reserve_count].mon, member_reserve[m_reserve_count].day, member_reserve[m_reserve_count].hour, member_reserve[m_reserve_count].min);
