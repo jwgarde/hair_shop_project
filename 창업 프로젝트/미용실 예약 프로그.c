@@ -3078,6 +3078,9 @@ int take_m_reserve(int index, int* reserve_index) { //코드 뻑이면 여기 �
 	int r_index = -1;
 	int result_min = 0;
 	int possible_count = 0; //예약이 안지난 예약의 횟수를 계산해서 초기 값을 정해 놓기 위해
+	for (int i = 0; i < 50; i++) {
+		strcpy(member_reserve[i].name," ");
+	}
 	reserve_read();
 	for (int i = 0; i < reserve_count; i++) {
 		if (strcmp(all[index].name, all_reserve[i].name) == 0) {
@@ -3147,6 +3150,109 @@ int calculateRemainingMinutes(int year, int month, int day, int hour, int minute
 
 	return minutesRemaining;
 }
+int m_reserve_print(int page_count, int count, int reserve_i) {
+	d_file_read();
+	int x = 60, y = 3;
+	basic_UI(x, y);
+	goto_xy(x+31, y+2);
+	printf("예약내역 조회");
+	small_box(x + 8, 46, 6, x + 14, 47, "이전", 6);
+	goto_xy(x + 31, 42);
+	printf("◁");
+	goto_xy(x + 36, 42);
+	printf("%d", page_count);
+	goto_xy(x + 41, 42);
+	printf("▷");
+	/*ExClick();*/
+	int same_desinger = -1;
+	x = 62, y = 8;
+	for (reserve_i; reserve_i < count * page_count; reserve_i++) {
+		goto_xy(x, y);
+		if (strcmp(member_reserve[reserve_i].name, " ") == 0) {
+			break;
+		}
+		else {
+			textcolor(6);
+			designer_seeUI(x, y, 6);
+			for (int i = 0; i < designer_count; i++) {
+				if (strcmp(member_reserve[reserve_i].designer, d_all[i].name) == 0) {
+					same_desinger = i;
+				}
+			}
+			int check = calculateRemainingMinutes(member_reserve[reserve_i].year, member_reserve[reserve_i].mon, member_reserve[reserve_i].day, member_reserve[reserve_i].hour, member_reserve[reserve_i].min);
+			if (check > 0) {
+				textcolor(15);
+			}
+			else {
+				design_column_UI(x + 56, y + 7, 15, x + 58,y + 8, "리뷰쓰기", 15);
+				textcolor(8);
+			}
+			goto_xy(x + 10, y + 2);
+			if (same_desinger > -1) {
+				printf("디자이너 :     %s",d_all[same_desinger].n_name);
+			}
+			else {
+				printf("디자이너 :     정보없음");
+			}
+			goto_xy(x + 50, y + 2);
+			printf("%02d.%02d.%02d 결제", member_reserve[reserve_i].pyear, member_reserve[reserve_i].pmon, member_reserve[reserve_i].pday);
+			goto_xy(x + 10, y + 4);
+			printf("디 자 인 :     %s", member_reserve[reserve_i].style);
+			goto_xy(x + 10, y + 6);
+			printf("방문일자 :     %02d.%02d.%02d.%02d:%02d", member_reserve[reserve_i].year, member_reserve[reserve_i].mon, member_reserve[reserve_i].day, member_reserve[reserve_i].hour, member_reserve[reserve_i].min);
+			goto_xy(x + 10, y + 8);
+			printf("금    액 :     %d원", member_reserve[reserve_i].pay);
+			y += 11;
+		}
+	}
+	return reserve_i;
+}
+int getReservationHistory() { //예약 내약 확인 해주는 함수
+	int page_count = 1;
+	int count = 3;  
+	int reserve_i = 0;
+	int xx, yy;
+	while (1) {
+		reserve_i = m_reserve_print(page_count, count, reserve_i);
+		if (reserve_i == (count * page_count) - 1) {
+			reserve_i++;
+		}
+		while (1) {
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (xx > 68 && xx < 83) {
+				if (yy > 45 && yy < 49) {
+					small_box(68, 46, 10, 74, 47, "이전", 6);
+					Sleep(500);
+					return;
+				}
+			}
+			if (xx > 89 && xx < 95 && yy > 40 && yy < 44) {
+				if (page_count != 1) {
+					textcolor(10);
+					goto_xy(91, 42);
+					printf("◁");
+					Sleep(500);
+					reserve_i = (page_count - 2) * count;
+					page_count--;
+					break;
+				}
+			}
+			if (xx > 97 && xx < 104 && yy > 40 && yy < 44) {
+				if (strcmp(member_reserve[reserve_i].name, " ") != 0) {
+					textcolor(10);
+					goto_xy(101, 42);
+					printf("▷");
+					Sleep(500);
+					page_count++;
+					break;
+				}
+			}
+		}
+	}
+	
+	
+}
 int member_initial_screen(int index) { //로그인 성공시 회원 초기화면
 	int xx, yy, lr = 0;
 	int choice = 0;
@@ -3177,7 +3283,7 @@ int member_initial_screen(int index) { //로그인 성공시 회원 초기화면
 			printf("예약날짜 : %d/%02d/%02d/%02d:%02d", member_reserve[reserve_index].year, member_reserve[reserve_index].mon, member_reserve[reserve_index].day, member_reserve[reserve_index].hour, member_reserve[reserve_index].min);
 		}
 		textcolor(6);
-		/*sort_member_reserve(m_reserve_count); *///정렬
+		sort_member_reserve(m_reserve_count); ///정렬
 		big_box(87, 18, 6, 96, 20, "예약");
 		big_box(87, 25, 6, 91, 27, "예약 내역 조회");
 		big_box(87, 32, 6, 93, 34, "정보 수정");
@@ -3228,6 +3334,11 @@ int member_initial_screen(int index) { //로그인 성공시 회원 초기화면
 						}
 						else if (choice == 1) {
 							designer_choice(index);
+							choice = 0;
+							break;
+						}
+						else  if (choice == 2) {
+							getReservationHistory();
 							choice = 0;
 							break;
 						}
