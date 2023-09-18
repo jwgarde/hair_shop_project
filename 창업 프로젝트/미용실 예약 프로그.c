@@ -3080,6 +3080,7 @@ int take_m_reserve(int index, int* reserve_index) { //코드 뻑이면 여기 �
 	int possible_count = 0; //예약이 안지난 예약의 횟수를 계산해서 초기 값을 정해 놓기 위해
 	for (int i = 0; i < 50; i++) {
 		strcpy(member_reserve[i].name," ");
+		member_reserve[i].index = -1;
 	}
 	reserve_read();
 	for (int i = 0; i < reserve_count; i++) {
@@ -3150,9 +3151,11 @@ int calculateRemainingMinutes(int year, int month, int day, int hour, int minute
 
 	return minutesRemaining;
 }
-int m_reserve_print(int page_count, int count, int reserve_i) {
+int m_reserve_print(int x, int y, int page_count, int count, int reserve_i,int choice_i) {
 	d_file_read();
-	int x = 60, y = 3;
+	if (choice_i > -1) {
+		basic_UI_DELETE(30, 3);
+	}
 	basic_UI(x, y);
 	goto_xy(x+31, y+2);
 	printf("예약내역 조회");
@@ -3165,7 +3168,7 @@ int m_reserve_print(int page_count, int count, int reserve_i) {
 	printf("▷");
 	/*ExClick();*/
 	int same_desinger = -1;
-	x = 62, y = 8;
+	x = x+2, y = y+5;
 	for (reserve_i; reserve_i < count * page_count; reserve_i++) {
 		goto_xy(x, y);
 		if (strcmp(member_reserve[reserve_i].name, " ") == 0) {
@@ -3173,7 +3176,12 @@ int m_reserve_print(int page_count, int count, int reserve_i) {
 		}
 		else {
 			textcolor(6);
-			designer_seeUI(x, y, 6);
+			if (choice_i != -1 && choice_i == reserve_i) {
+				designer_seeUI(x, y, 10);
+			}
+			else {
+				designer_seeUI(x, y, 6);
+			}
 			for (int i = 0; i < designer_count; i++) {
 				if (strcmp(member_reserve[reserve_i].designer, d_all[i].name) == 0) {
 					same_desinger = i;
@@ -3224,7 +3232,7 @@ int getReservationHistory() { //예약 내약 확인 해주는 함수
 	int reserve_i = 0;
 	int xx, yy;
 	while (1) {
-		reserve_i = m_reserve_print(page_count, count, reserve_i);
+		reserve_i = m_reserve_print(60,3,page_count, count, reserve_i,-1);
 		if (reserve_i == (count * page_count) - 1) {
 			reserve_i++;
 		}
@@ -3257,6 +3265,28 @@ int getReservationHistory() { //예약 내약 확인 해주는 함수
 					Sleep(500);
 					page_count++;
 					break;
+				}
+			}
+			if (xx > 62 && xx < 131) {
+				if (yy > 7 && yy < 19) {
+					if (member_reserve[(page_count * count) - 3].index != -1) {
+						reserve_i = (page_count * count) - count;
+						m_reserve_print(25, 3, page_count, count, reserve_i, (page_count * count) - 3);
+
+					}
+				}
+				else if (yy > 18 && yy < 30) {
+					if (member_reserve[(page_count * count) - 2].index != -1) {
+						reserve_i = (page_count * count) - count;
+						m_reserve_print(25, 3, page_count, count, reserve_i, (page_count * count) - 2);
+
+					}
+				}
+				else if (yy > 29 && yy < 41) {
+					if (member_reserve[(page_count * count) - 1].index != -1) {
+						reserve_i = (page_count * count) - count;
+						m_reserve_print(25, 3, page_count, count, reserve_i, (page_count * count) - 1);
+					}
 				}
 			}
 		}
@@ -3722,8 +3752,6 @@ void membership() { // 회원가입 함수
 	printf("비밀번호(숫자 4자리) ex) 0000");
 	goto_xy(80, 38);
 	printf(":");
-	//Mouse();
-	//ExClick();
 	while (1) {
 		xx = 0, yy = 0;
 		click(&xx, &yy);
