@@ -3180,12 +3180,25 @@ int m_reserve_print(int page_count, int count, int reserve_i) {
 				}
 			}
 			int check = calculateRemainingMinutes(member_reserve[reserve_i].year, member_reserve[reserve_i].mon, member_reserve[reserve_i].day, member_reserve[reserve_i].hour, member_reserve[reserve_i].min);
-			if (check > 0) {
+			if (check > 0 && member_reserve[reserve_i].cancel_check == 1) {
 				textcolor(15);
+				goto_xy(x + 50, y + 2);
+				printf("%02d.%02d.%02d 결제", member_reserve[reserve_i].pyear, member_reserve[reserve_i].pmon, member_reserve[reserve_i].pday);
 			}
 			else {
-				design_column_UI(x + 56, y + 7, 15, x + 58,y + 8, "리뷰쓰기", 15);
 				textcolor(8);
+				if (member_reserve[reserve_i].cancel_check == 0) {
+					goto_xy(x + 53, y + 2);
+					textcolor(4);
+					printf("결제취소");
+					textcolor(8);
+				}
+				else {
+					goto_xy(x + 50, y + 2);
+					printf("%02d.%02d.%02d 결제", member_reserve[reserve_i].pyear, member_reserve[reserve_i].pmon, member_reserve[reserve_i].pday);
+					design_column_UI(x + 56, y + 7, 15, x + 58, y + 8, "리뷰쓰기", 15);
+					textcolor(8);
+				}
 			}
 			goto_xy(x + 10, y + 2);
 			if (same_desinger > -1) {
@@ -3194,8 +3207,6 @@ int m_reserve_print(int page_count, int count, int reserve_i) {
 			else {
 				printf("디자이너 :     정보없음");
 			}
-			goto_xy(x + 50, y + 2);
-			printf("%02d.%02d.%02d 결제", member_reserve[reserve_i].pyear, member_reserve[reserve_i].pmon, member_reserve[reserve_i].pday);
 			goto_xy(x + 10, y + 4);
 			printf("디 자 인 :     %s", member_reserve[reserve_i].style);
 			goto_xy(x + 10, y + 6);
