@@ -6,17 +6,17 @@
 <br/>
 
 <div style="display: flex; align-items: center;">
-    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/e356123a-d1bd-4dd2-a4d5-a6653731eefd" width="100%" style="max-width: 800px; border: 1px solid #ddd;">
+    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/de1884d7-8646-4905-abaf-feb46c26862d" width="100%" style="max-width: 800px; border: 1px solid #ddd;">
 </div>
 <hr/>
 
 <div style="display: flex; align-items: center;">
-    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/c393a6ba-4334-43e3-802f-1a2b97501a74" width="100%" style="max-width: 800px; border: 1px solid #ddd;">
+    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/7b0626b4-3272-4cdb-b90c-be6781eedf66" width="100%" style="max-width: 800px; border: 1px solid #ddd;">
 </div>
 <hr/>
 
 <div style="display: flex; align-items: center;">
-    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/08c0e9e0-59e3-4682-bda5-8c11b8b99c6f" width="100%" style="max-width: 800px; border: 1px solid #ddd;">
+    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/a126b0d2-d7de-4fc3-a9f2-00bd032a3716" width="100%" style="max-width: 800px; border: 1px solid #ddd;">
 </div>
 <hr/>
 
