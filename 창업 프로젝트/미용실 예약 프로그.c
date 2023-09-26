@@ -270,6 +270,26 @@ void handleBackspace(char* str, int* len, int* x, int* y) {
 		}
 	}
 }
+void handleBackspace_last(char* str, int* len, int* x, int* y, int max_x, int max_y, int basic_x, int basic_y) {
+	if (*len > 0) {
+		(*len)--;
+		clearCurrentChar((*x) + (*len) % max_x, *y); //이부분
+		str[(*x - basic_x) + (*len) + (max_x - basic_x) * (*y - basic_y)] = '\0'; // Remove the deleted character from the string
+		goto_xy(*x + (*len) % max_x, *y); // Move the cursor back to the original position
+	}
+	else {
+		if (*y > basic_y) { // Check if y is greater than 0 (not on the first line)
+			(*y)--;
+			clearCurrentChar(max_x - 1, *y); // Clear the last character on the current line
+			goto_xy(*x, *y);
+			*len = (max_x - basic_x) - 1; // Set len to the last index of the previous line
+		}
+		else {
+			return;
+		}
+	}
+}
+
 void handleBackspace2(char* str, int* len, int* x, int* y) {
 	if (*len > 0) {
 		(*len)--;
@@ -3319,6 +3339,8 @@ int management_reserve(int check,int reserve_i) {
 	int x = 126;
 	int y = 35;
 	int xx = 0, yy = 0;
+	char str[240] = " ";
+	char ch = ' ';
 	goto_xy(167, 4);
 	printf("[X]");
 	goto_xy(131, 5);
@@ -3382,7 +3404,7 @@ int management_reserve(int check,int reserve_i) {
 	textcolor(color);
 	for (int i = 0; i < len; i++) {
 		if (len < sizeof(member_reserve[reserve_i].request) - 2) {
-			if (len_2 >= 164 - 126 && (len_2 % (164 - 126)) == 0) {
+			if (len_2 >= 166 - 126 && (len_2 % (166	 - 126)) == 0) {
 				if (y >= 40 - 1) {
 					break;
 				}
@@ -3400,12 +3422,12 @@ int management_reserve(int check,int reserve_i) {
 		}
 	}
 	while (1) {
+		/*ExClick();*/
 		xx = 0, yy = 0;
 		click(&xx, &yy);
 		if (yy > 45 && yy < 49) {
 			if (xx > 107 && xx < 122) {
 				if (check > 0 && member_reserve[reserve_i].cancel_check == 1) {
-					printf("%d", member_reserve[reserve_i].index);
 					member_reserve[reserve_i].cancel_check = 0;
 					all_reserve[member_reserve[reserve_i].index].cancel_check = 0;
 					small_box(107, 46, 10, 113, 47, "취소", 6);
@@ -3417,8 +3439,76 @@ int management_reserve(int check,int reserve_i) {
 				}
 			}
 		}
-	}
-	
+		if (yy > 3 && yy < 6) {
+			if (xx > 166 && xx < 171) {
+				textcolor(4);
+				goto_xy(167, 4);
+				printf("[X]");
+				Sleep(500);
+				basic_UI_DELETE(22, 3);
+				return;
+			}
+		}
+		if (yy > 33 && yy < 42) {
+			if (xx > 121 && xx < 169) {
+				if (check > 0 && member_reserve[reserve_i].cancel_check == 1) {
+					strcpy(str, " ");
+					design_see_UI(122, 34, 15, 0, 0, 1);;// 진행시켜 설명 적는거 해야지
+					len = 0;
+					x = 126;
+					y = 35;
+					EnableConsoleCursor();
+					goto_xy(x, y);
+					textcolor(15);
+					while (1) {
+						ch = ' ';
+						ch = _getch();
+						if (ch == '\r') { // Enter key
+							ch = ' ';
+							break;
+						}
+						else if (ch == '\b') { // Backspace key
+							if (str[(x - 126) + (len)+(166 - 126) * (y - 35) - 1] & 0x80) {
+								if (str[(x - 126) + (len)+(166 - 126) * (y - 35) - 2] & 0x80) {
+									handleBackspace_last(str, &len, &x, &y, 166, 40, 126, 35);
+									handleBackspace_last(str, &len, &x, &y, 166, 40, 126, 35);
+								}
+								else {
+									handleBackspace_last(str, &len, &x, &y, 166, 40, 126, 35);
+								}
+							}
+							else {
+								handleBackspace_last(str, &len, &x, &y, 166, 40, 126, 35);
+							}
+						}
+						else if (len < sizeof(str) - 2) {
+							if (len >= 166 - 126 && (len % (166 - 126)) == 0) { // Check if the line length is multiple of MAX_X
+								if (y >= 40 - 1) {
+									continue;
+								}
+								else {
+									handleNewline(&x, &y);
+									len = 0;
+									str[(x - 126) + (len)+((166 - 126) * (y - 35))] = ch;
+									len++;
+									str[(x - 126) + (len)+((166 - 126) * (y - 35))] = '\0';
+									printf("%c", ch);
+								}
+							}
+							else {
+								str[(x - 126) + (len)+((166 - 126) * (y - 35))] = ch;
+								len++;
+								str[(x - 126) + (len)+((166 - 126) * (y - 35))] = '\0';
+								printf("%c", ch);
+							}
+						}
+					}
+					HideCursor();
+				}
+			}
+		}
+
+	}	
 }
 int member_initial_screen(int index) { //로그인 성공시 회원 초기화면
 	int xx, yy, lr = 0;
