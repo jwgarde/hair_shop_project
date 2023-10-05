@@ -1980,10 +1980,18 @@ void print_calendar(int choice, int sd, int year, int month, int x, int y, int d
 		date_check++;
 	}
 }
-int xx_yy_date_find(int xx, int yy) {
+int xx_yy_date_find(int xx, int yy, int check) {
 	int index = -1;
-	int date_x = 101;
-	int date_y = 19;
+	int date_x = 0;
+	int date_y = 0;
+	if (check == 0) {
+		date_x = 101;
+		date_y = 19;
+	}
+	else {
+		date_x = 114;
+		date_y = 17;
+	}
 	if ((xx - date_x) % 7 == 0 && (yy - date_y) % 3 == 0) {
 		index = (((yy - date_y) / 3) * 7) + ((xx - date_x) / 7);
 		if (index >= date_check || date_index[index] == 0) {
@@ -1996,6 +2004,124 @@ int xx_yy_date_find(int xx, int yy) {
 	}
 	else {
 		return 0;
+	}
+}
+int desinger_date(int x, int y, int index,int *c_year,int*c_mon,int *c_day) {
+	time_t seconds = time(NULL);
+	struct tm* now = localtime(&seconds);
+	int xx, yy, lr = 0;
+	int year = 1900 + now->tm_year;
+	int mon = now->tm_mon + 1;
+	int day = day_of_week(year, mon);
+	int d_day = now->tm_mday;
+	int choice_day = 0;
+	int check = 0;
+	while (1) {
+		textcolor(6);
+		date_and_time_choice_UI(x, y);
+		goto_xy(x + 49, y + 1);
+		printf("[X]");
+		goto_xy(x + 23, y + 1);
+		printf("날짜 선택");
+		textcolor(15);
+		goto_xy(x + 19, y + 4);
+		printf("◀");
+		goto_xy(x + 22, y + 4);
+		printf("%d년 %02d월", year, mon);
+		goto_xy(x + 34, y + 4);
+		printf("▶");
+		goto_xy(x + 5, y + 6);
+		printf("일     월     화     수     목     금     토");
+		goto_xy(x + 37, y + 27);
+		textcolor(8);
+		printf("■");
+		textcolor(15);
+		goto_xy(x + 40, y + 27);
+		printf("선택불가");
+		while (1) {
+			reserve_read();
+			goto_xy(x + 22, y+4);
+			printf("%d년 %02d월", year, mon);
+			print_calendar(index, day, year, mon, x+5, y + 9, d_day);
+			while (1) {
+				xx = 0, yy = 0;
+				click(&xx, &yy);
+				if (yy > 11 && yy < 14) {
+					if (xx > 125 && xx < 130) {
+						if (year == 1900 + now->tm_year && mon == now->tm_mon + 1) {
+							continue;
+						}
+						textcolor(10);
+						goto_xy(x + 19, y + 4);
+						printf("◀");
+						mon -= 1;
+						if (mon < 1) {
+							year -= 1;
+							mon = 12;
+						}
+						if (year == 1900 + now->tm_year && mon == now->tm_mon + 1) {
+							d_day = now->tm_mday;
+						}
+						day = day_of_week(year, mon);
+						Sleep(500);
+						textcolor(15);
+						goto_xy(x + 19, y + 4);
+						printf("◀");
+						break;
+					}	
+					else if (xx > 141 && xx < 145) {
+						goto_xy(x + 34, y + 4);
+						textcolor(10);
+						printf("▶");
+						mon += 1;
+						if (mon > 12) {
+							year += 1;
+							mon = 1;
+						}
+						day = day_of_week(year, mon);
+						Sleep(500);
+						goto_xy(x + 34, y + 4);
+						textcolor(15);
+						d_day = 0;
+						printf("▶");
+						break;
+					}
+				}
+				else if (yy > 16 && yy < 30) {
+					if (xx > 113 && xx < 157) {
+						choice_day = xx_yy_date_find(xx, yy,1);
+						if (choice_day != 0) {
+							goto_xy(xx - 1, yy);
+							textcolor(10);
+							printf("%2d", choice_day);
+							textcolor(15);
+							Sleep(700);
+							*c_year = year;
+							*c_mon = mon;
+							*c_day = choice_day;
+							return;
+						}
+					}
+				}
+				else if (yy > 7 && yy < 11) {
+					if (xx > 156 && xx < 161) {
+						textcolor(4);
+						goto_xy(x + 49, y + 1);
+						printf("[X]");
+						Sleep(700);
+						return;
+					}
+				}
+			}
+		}
+	}
+}
+void basic_UI_2_clear() {
+	int x = 102, y = 8;
+	for (int i = 0; i < 35; i++) {
+		goto_xy(x, y);
+		printf("                                                                   ");
+		y++;
 	}
 }
 int date_choice(int index, int choice) {
@@ -2048,7 +2174,7 @@ int date_choice(int index, int choice) {
 			goto_xy(x + 17, y);
 			printf("%d년 %02d월", year, mon);
 			print_calendar(choice, day, year, mon, x, y + 7, d_day);
-			//ExClick();
+			/*ExClick();*/
 			while (1) {
 				xx = 0, yy = 0;
 				click(&xx, &yy);
@@ -2105,7 +2231,7 @@ int date_choice(int index, int choice) {
 				}
 				if (xx > 100 && xx < 145) {
 					if (yy > 18 && yy < 35) {
-						choice_day = xx_yy_date_find(xx, yy);
+						choice_day = xx_yy_date_find(xx, yy,0);
 						if (choice_day != 0) {
 							goto_xy(xx - 1, yy);
 							textcolor(10);
@@ -2125,6 +2251,179 @@ int date_choice(int index, int choice) {
 				return 1;
 			}
 		}
+	}
+}
+int again_time(int x, int y,int choice, int year, int mon, int choice_day, int *c_hour, int *c_min) {
+	int hour = 10;
+	int min = 0;
+	int xx = 0, yy = 0, lr = 0;
+	int check = 0;
+	int last_time_check = 0;
+	while (1) {
+		hour = 10;
+		min = 0;
+		last_time_check = 0;
+		check = 0;
+		textcolor(6);
+		date_and_time_choice_UI(x, y);
+		goto_xy(x + 49, y + 1);
+		printf("[X]");
+		goto_xy(x + 4, y + 1);
+		printf("◁--");
+		goto_xy(x + 23, y + 1);
+		printf("시간 선택");
+		textcolor(15);
+		goto_xy(x + 25, y + 5);
+		printf("오전");
+		goto_xy(x + 25, y + 15);
+		printf("오후");
+		goto_xy(x + 39, y + 31);
+		textcolor(8);
+		printf("■");
+		textcolor(15);
+		goto_xy(x + 42, y + 31);
+		printf("선택불가");
+		goto_xy(x + 39, y + 32);
+		textcolor(15);
+		printf("■");
+		goto_xy(x + 42, y + 32);
+		printf("선택가능");
+		x += 3;
+		y += 9;
+		int r_x = x, r_y = y;
+		textcolor(15);
+		//지금 선택한 날짜 랑 반복문 안에있는 시간이랑 분을 계속해서 함수로 던져서 이 헤어디자이너에 이 날짜에 이 시간 예약이 있는지 확인 해주는 함수 만들어야함 // 당일 예약 할 경우 지난 시간은 예약 못하게 막아야함 // 했음.
+		for (int i = 1; i <= 16; i++) {
+			last_time_check = time_check(choice, year, mon, choice_day, hour, min);
+			if (last_time_check == 1) {
+				time_box(x, y, 8, x + 3, y + 1, hour, min, 8);
+			}
+			else {
+				time_box(x, y, 15, x + 3, y + 1, hour, min, 15);
+			}
+			last_time_check = 0;
+			x += 12;
+			min += 30;
+			if (min == 60) {
+				hour += 1;
+				min = 0;
+				if (hour > 12) {
+					hour = 1;
+				}
+			}
+			if (i % 4 == 0) {
+				if (i == 4) {
+					y += 10;
+				}
+				else {
+					y += 4;
+				}
+				x = r_x;
+			}
+		}
+		hour = 0;
+		min = 0;
+		x = r_x;
+		y = r_y;
+		int e_hour = 0;
+		while (1) {
+		/*	ExClick();*/
+			hour = 0;
+			min = 0;
+			last_time_check = 0;
+			check = 0;
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (yy > 7 && yy < 10) {
+				if (xx > 112 && xx < 116) {
+					textcolor(10);
+					goto_xy(x + 1, y - 8);
+					printf("◁--");
+					Sleep(500);
+					return 1;
+				}
+			}
+			if (yy > 7 && yy < 11) {
+				if (xx > 156 && xx < 161) {
+					textcolor(4);
+					goto_xy(x + 46, y - 8);
+					printf("[X]");
+					Sleep(700);
+					return 0;
+				}
+			}
+			if (xx > 110 && xx < 158) {
+				if (yy > 16 && yy < 20) {
+					yy = 17;
+					e_hour = 10;
+				}
+				if (yy > 26 && yy < 30) {
+					yy = 27;
+					e_hour = 12;
+				}
+				if (yy > 30 && yy < 34) {
+					yy = 31;
+					e_hour = 2;
+				}
+				if (yy > 34 && yy < 38) {
+					yy = 35;
+					e_hour = 4;
+				}
+				if (e_hour != 0) {
+					if (xx > 110 && xx < 123) {
+						xx = 111;
+						hour = e_hour;
+						min = min;
+					}
+					else if (xx > 122 && xx < 135) {
+						xx = 123;
+						hour = e_hour;
+						min += 30;
+					}
+					else if (xx > 134 && xx < 147) {
+						xx = 135;
+						min = 0;
+						hour = e_hour + 1;
+						if (hour > 12) {
+							hour = 1;
+						}
+
+					}
+					else if (xx > 146 && xx < 159) {
+						xx = 147;
+						hour = e_hour + 1;
+						if (hour > 12) {
+							hour = 1;
+						}
+						min += 30;
+					}
+					else {
+						e_hour = 0;
+						continue;
+					}
+					check = 1;
+				}
+			}
+			if (check == 1) {
+				last_time_check = time_check(choice, year, mon, choice_day, hour, min);
+				if (last_time_check == 1) {
+					e_hour = 0;
+					hour = 0;
+					min = 0;
+					continue;
+				}
+				check = 0;
+				break;
+			}
+		}
+		if (e_hour != 0 && xx != 0 && yy != 0) {
+			time_box(xx, yy, 10, xx + 3, yy + 1, hour, min, 15);
+			*c_hour = hour;
+			*c_min = min;
+			Sleep(700);
+			return 0;
+		}
+
 	}
 }
 int time_check(int choice, int year, int mon, int day, int hour, int min) {
@@ -3335,7 +3634,7 @@ int management_reserve(int check,int reserve_i) {
 	basic_UI(98,3);
 	textcolor(6);
 	int same_desinger = -1;
-	int color = 0;
+	int color = 0,c_year = 0,c_mon = 0,c_day = 0,c_hour = 0 ,c_min = 0;
 	int x = 126;
 	int y = 35;
 	int xx = 0, yy = 0;
@@ -3352,163 +3651,193 @@ int management_reserve(int check,int reserve_i) {
 			same_desinger = i;
 		}
 	}
-	if (check > 0 && member_reserve[reserve_i].cancel_check == 1) {
-		goto_xy(120, 9);
-		textcolor(4);
-		printf("날짜 및 시간,요구사항 수정 가능");
-		goto_xy(124, 10);
-		printf("(디자이너, 디자인 변경 X)");
-		color = 15;
-		textcolor(15);
-		goto_xy(111, 30);
-		printf("결 제 일 :        %02d.%02d.%02d.%02d:%02d", member_reserve[reserve_i].pyear, member_reserve[reserve_i].pmon, member_reserve[reserve_i].pday, member_reserve[reserve_i].phour, member_reserve[reserve_i].pmin);
-		design_column_UI(155, 21, 15, 159, 22, "변경", 15);
-		design_see_UI(122, 34, 15, 0, 0, 1);
-	}
-	else {
-		textcolor(8);
-		color = 8;
-		design_see_UI(122, 34, 8, 0, 0, 1);
-		if (member_reserve[reserve_i].cancel_check == 0) {
-			goto_xy(111, 30);
-			printf("결 제 일 :");
-			goto_xy(129, 30);
+	while (1) {
+		if (check > 0 && member_reserve[reserve_i].cancel_check == 1) {
+			goto_xy(120, 9);
 			textcolor(4);
-			printf("결제취소");
-			textcolor(8);
-		}
-		else {
+			printf("날짜 및 시간,요구사항 수정 가능");
+			goto_xy(124, 10);
+			printf("(디자이너, 디자인 변경 X)");
+			color = 15;
+			textcolor(15);
 			goto_xy(111, 30);
 			printf("결 제 일 :        %02d.%02d.%02d.%02d:%02d", member_reserve[reserve_i].pyear, member_reserve[reserve_i].pmon, member_reserve[reserve_i].pday, member_reserve[reserve_i].phour, member_reserve[reserve_i].pmin);
-			textcolor(8);
+			design_column_UI(155, 21, 15, 159, 22, "변경", 15);
+			design_see_UI(122, 34, 15, 0, 0, 1);
 		}
-	}
-	goto_xy(111, 14);
-	if (same_desinger > -1) {
-		printf("디자이너 :         %s", d_all[same_desinger].n_name);
-	}
-	else {
-		printf("디자이너 :        정보없음");
-	}
-	goto_xy(111, 18);
-	printf("디 자 인 :        %s", member_reserve[reserve_i].style);
-	goto_xy(111, 22);
-	printf("방문일자 :        %02d.%02d.%02d.%02d:%02d", member_reserve[reserve_i].year, member_reserve[reserve_i].mon, member_reserve[reserve_i].day, member_reserve[reserve_i].hour, member_reserve[reserve_i].min);
-	goto_xy(111, 26);  
-	printf("금    액 :        %d원", member_reserve[reserve_i].pay);
-	goto_xy(111, 34);
-	printf("요청사항");
-	goto_xy(x, y);
-	int len = strlen(member_reserve[reserve_i].request);
-	int len_2 = 0;
-	textcolor(color);
-	for (int i = 0; i < len; i++) {
-		if (len < sizeof(member_reserve[reserve_i].request) - 2) {
-			if (len_2 >= 166 - 126 && (len_2 % (166	 - 126)) == 0) {
-				if (y >= 40 - 1) {
-					break;
+		else {
+			textcolor(8);
+			color = 8;
+			design_see_UI(122, 34, 8, 0, 0, 1);
+			if (member_reserve[reserve_i].cancel_check == 0) {
+				goto_xy(111, 30);
+				printf("결 제 일 :");
+				goto_xy(129, 30);
+				textcolor(4);
+				printf("결제취소");
+				textcolor(8);
+			}
+			else {
+				goto_xy(111, 30);
+				printf("결 제 일 :        %02d.%02d.%02d.%02d:%02d", member_reserve[reserve_i].pyear, member_reserve[reserve_i].pmon, member_reserve[reserve_i].pday, member_reserve[reserve_i].phour, member_reserve[reserve_i].pmin);
+				textcolor(8);
+			}
+		}
+		goto_xy(111, 14);
+		if (same_desinger > -1) {
+			printf("디자이너 :         %s", d_all[same_desinger].n_name);
+		}
+		else {
+			printf("디자이너 :        정보없음");
+		}
+		goto_xy(111, 18);
+		printf("디 자 인 :        %s", member_reserve[reserve_i].style);
+		if (c_year != 0 && c_mon != 0 && c_day != 0 && c_hour != 0) {
+			goto_xy(111, 22);
+			printf("방문일자 :        %02d.%02d.%02d.%02d:%02d", c_year, c_mon, c_day, c_hour, c_min);
+		}
+		else {
+			goto_xy(111, 22);
+			printf("방문일자 :        %02d.%02d.%02d.%02d:%02d", member_reserve[reserve_i].year, member_reserve[reserve_i].mon, member_reserve[reserve_i].day, member_reserve[reserve_i].hour, member_reserve[reserve_i].min);
+		}
+		goto_xy(111, 26);
+		printf("금    액 :        %d원", member_reserve[reserve_i].pay);
+		goto_xy(111, 34);
+		printf("요청사항");
+		goto_xy(x, y);
+		int len = strlen(member_reserve[reserve_i].request);
+		int len_2 = 0;
+		textcolor(color);
+		for (int i = 0; i < len; i++) {
+			if (len < sizeof(member_reserve[reserve_i].request) - 2) {
+				if (len_2 >= 166 - 126 && (len_2 % (166 - 126)) == 0) {
+					if (y >= 40 - 1) {
+						break;
+					}
+					else {
+						handleNewline(&x, &y);
+						len_2 = 0;
+						len_2++;
+						printf("%c", member_reserve[reserve_i].request[i]);
+					}
 				}
 				else {
-					handleNewline(&x, &y);
-					len_2 = 0;
 					len_2++;
 					printf("%c", member_reserve[reserve_i].request[i]);
 				}
 			}
-			else {
-				len_2++;
-				printf("%c", member_reserve[reserve_i].request[i]);
-			}
 		}
-	}
-	while (1) {
-		/*ExClick();*/
-		xx = 0, yy = 0;
-		click(&xx, &yy);
-		if (yy > 45 && yy < 49) {
-			if (xx > 107 && xx < 122) {
-				if (check > 0 && member_reserve[reserve_i].cancel_check == 1) {
-					member_reserve[reserve_i].cancel_check = 0;
-					all_reserve[member_reserve[reserve_i].index].cancel_check = 0;
-					small_box(107, 46, 10, 113, 47, "취소", 6);
-					Sleep(700);
-					delete_modify_finish(98, 3, "※취소가 완료되었습니다.※");
-					reserve_write();
-					clearconsole();
+		while (1) {
+			/*ExClick();*/
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (yy > 45 && yy < 49) {
+				if (xx > 107 && xx < 122) {
+					if (check > 0 && member_reserve[reserve_i].cancel_check == 1) {
+						member_reserve[reserve_i].cancel_check = 0;
+						all_reserve[member_reserve[reserve_i].index].cancel_check = 0;
+						small_box(107, 46, 10, 113, 47, "취소", 6);
+						Sleep(700);
+						delete_modify_finish(98, 3, "※취소가 완료되었습니다.※");
+						reserve_write();
+						clearconsole();
+						return;
+					}
+				}
+			}
+			if (yy > 3 && yy < 6) {
+				if (xx > 166 && xx < 171) {
+					textcolor(4);
+					goto_xy(167, 4);
+					printf("[X]");
+					Sleep(500);
+					basic_UI_DELETE(22, 3);
 					return;
 				}
 			}
-		}
-		if (yy > 3 && yy < 6) {
-			if (xx > 166 && xx < 171) {
-				textcolor(4);
-				goto_xy(167, 4);
-				printf("[X]");
-				Sleep(500);
-				basic_UI_DELETE(22, 3);
-				return;
-			}
-		}
-		if (yy > 33 && yy < 42) {
-			if (xx > 121 && xx < 169) {
-				if (check > 0 && member_reserve[reserve_i].cancel_check == 1) {
-					strcpy(str, " ");
-					design_see_UI(122, 34, 15, 0, 0, 1);;// 진행시켜 설명 적는거 해야지
-					len = 0;
-					x = 126;
-					y = 35;
-					EnableConsoleCursor();
-					goto_xy(x, y);
-					textcolor(15);
-					while (1) {
-						ch = ' ';
-						ch = _getch();
-						if (ch == '\r') { // Enter key
+			if (yy > 33 && yy < 42) {
+				if (xx > 121 && xx < 169) {
+					if (check > 0 && member_reserve[reserve_i].cancel_check == 1) {
+						strcpy(str, " ");
+						design_see_UI(122, 34, 15, 0, 0, 1);;// 진행시켜 설명 적는거 해야지
+						len = 0;
+						x = 126;
+						y = 35;
+						EnableConsoleCursor();
+						goto_xy(x, y);
+						textcolor(15);
+						while (1) {
 							ch = ' ';
-							break;
-						}
-						else if (ch == '\b') { // Backspace key
-							if (str[(x - 126) + (len)+(166 - 126) * (y - 35) - 1] & 0x80) {
-								if (str[(x - 126) + (len)+(166 - 126) * (y - 35) - 2] & 0x80) {
-									handleBackspace_last(str, &len, &x, &y, 166, 40, 126, 35);
-									handleBackspace_last(str, &len, &x, &y, 166, 40, 126, 35);
+							ch = _getch();
+							if (ch == '\r') { // Enter key
+								ch = ' ';
+								break;
+							}
+							else if (ch == '\b') { // Backspace key
+								if (str[(x - 126) + (len)+(166 - 126) * (y - 35) - 1] & 0x80) {
+									if (str[(x - 126) + (len)+(166 - 126) * (y - 35) - 2] & 0x80) {
+										handleBackspace_last(str, &len, &x, &y, 166, 40, 126, 35);
+										handleBackspace_last(str, &len, &x, &y, 166, 40, 126, 35);
+									}
+									else {
+										handleBackspace_last(str, &len, &x, &y, 166, 40, 126, 35);
+									}
 								}
 								else {
 									handleBackspace_last(str, &len, &x, &y, 166, 40, 126, 35);
 								}
 							}
-							else {
-								handleBackspace_last(str, &len, &x, &y, 166, 40, 126, 35);
-							}
-						}
-						else if (len < sizeof(str) - 2) {
-							if (len >= 166 - 126 && (len % (166 - 126)) == 0) { // Check if the line length is multiple of MAX_X
-								if (y >= 40 - 1) {
-									continue;
+							else if (len < sizeof(str) - 2) {
+								if (len >= 166 - 126 && (len % (166 - 126)) == 0) { // Check if the line length is multiple of MAX_X
+									if (y >= 40 - 1) {
+										continue;
+									}
+									else {
+										handleNewline(&x, &y);
+										len = 0;
+										str[(x - 126) + (len)+((166 - 126) * (y - 35))] = ch;
+										len++;
+										str[(x - 126) + (len)+((166 - 126) * (y - 35))] = '\0';
+										printf("%c", ch);
+									}
 								}
 								else {
-									handleNewline(&x, &y);
-									len = 0;
 									str[(x - 126) + (len)+((166 - 126) * (y - 35))] = ch;
 									len++;
 									str[(x - 126) + (len)+((166 - 126) * (y - 35))] = '\0';
 									printf("%c", ch);
 								}
 							}
-							else {
-								str[(x - 126) + (len)+((166 - 126) * (y - 35))] = ch;
-								len++;
-								str[(x - 126) + (len)+((166 - 126) * (y - 35))] = '\0';
-								printf("%c", ch);
-							}
 						}
+						HideCursor();
 					}
-					HideCursor();
+				}
+			}
+			if (yy > 20 && yy < 24) {
+				if (xx > 154 && xx < 166) {
+					if (check > 0 && member_reserve[reserve_i].cancel_check == 1) {
+						design_column_UI(155, 21, 10, 159, 22, "변경", 15);
+						Sleep(700);
+						while (1) {
+							c_year = 0, c_mon = 0, c_day = 0;
+							basic_UI_2_clear();
+							desinger_date(108, 8, same_desinger, &c_year, &c_mon, &c_day);
+							basic_UI_2_clear();
+							if (c_year != 0 && c_mon != 0 && c_day != 0) {
+								int again_check = again_time(108, 8, same_desinger, c_year, c_mon, c_day, &c_hour, &c_min);
+								if (again_check == 1) {
+									continue;
+								}
+							}
+							break;
+						}
+						basic_UI_2_clear();
+						break;
+					}
 				}
 			}
 		}
-
-	}	
+	}
 }
 int member_initial_screen(int index) { //로그인 성공시 회원 초기화면
 	int xx, yy, lr = 0;
