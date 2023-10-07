@@ -289,7 +289,6 @@ void handleBackspace_last(char* str, int* len, int* x, int* y, int max_x, int ma
 		}
 	}
 }
-
 void handleBackspace2(char* str, int* len, int* x, int* y) {
 	if (*len > 0) {
 		(*len)--;
@@ -3411,7 +3410,7 @@ int take_m_reserve(int index, int* reserve_index) { //코드 뻑이면 여기 �
 	}
 	reserve_read();
 	for (int i = 0; i < reserve_count; i++) {
-		if (strcmp(all[index].name, all_reserve[i].name) == 0) {
+		if (strcmp(all[index].name, all_reserve[i].name )== 0 && strcmp(all[index].phone, all_reserve[i].phone) == 0) {
 			strcpy(member_reserve[m_reserve_count].name, all_reserve[i].name);
 			strcpy(member_reserve[m_reserve_count].phone, all_reserve[i].phone);//전화번호
 			member_reserve[m_reserve_count].year = all_reserve[i].year;//선택 연도
@@ -3640,6 +3639,8 @@ int management_reserve(int check,int reserve_i) {
 	int xx = 0, yy = 0;
 	char str[240] = " ";
 	char ch = ' ';
+	int change_check = 0;
+	strcpy(str, member_reserve[reserve_i].request);
 	goto_xy(167, 4);
 	printf("[X]");
 	goto_xy(131, 5);
@@ -3728,7 +3729,6 @@ int management_reserve(int check,int reserve_i) {
 			}
 		}
 		while (1) {
-			/*ExClick();*/
 			xx = 0, yy = 0;
 			click(&xx, &yy);
 			if (yy > 45 && yy < 49) {
@@ -3739,6 +3739,28 @@ int management_reserve(int check,int reserve_i) {
 						small_box(107, 46, 10, 113, 47, "취소", 6);
 						Sleep(700);
 						delete_modify_finish(98, 3, "※취소가 완료되었습니다.※");
+						reserve_write();
+						clearconsole();
+						return;
+					}
+				}
+				else if (xx > 149 && xx < 164) {
+					if (strcmp(str, member_reserve[reserve_i].request) != 0 || c_year != 0) {
+						small_box(149, 46, 10, 155, 47, "변경", 6);
+						Sleep(700);
+						delete_modify_finish(98, 3, "※변경 완료되었습니다.※");
+						if (strcmp(str, member_reserve[reserve_i].request) != 0) {
+							strcpy(member_reserve[reserve_i].request, str);
+						}
+						if (c_year != 0 && c_mon != 0 && c_day != 0 && c_hour != 0) {
+							member_reserve[reserve_i].year = c_year, member_reserve[reserve_i].mon = c_mon, member_reserve[reserve_i].day = c_day, member_reserve[reserve_i].hour = c_hour, member_reserve[reserve_i].min = c_min;
+						}
+						strcpy(all_reserve[member_reserve[reserve_i].index].request, member_reserve[reserve_i].request);
+						all_reserve[member_reserve[reserve_i].index].year = member_reserve[reserve_i].year;
+						all_reserve[member_reserve[reserve_i].index].mon = member_reserve[reserve_i].mon;
+						all_reserve[member_reserve[reserve_i].index].day = member_reserve[reserve_i].day;
+						all_reserve[member_reserve[reserve_i].index].hour = member_reserve[reserve_i].hour;
+						all_reserve[member_reserve[reserve_i].index].min = member_reserve[reserve_i].min;
 						reserve_write();
 						clearconsole();
 						return;
