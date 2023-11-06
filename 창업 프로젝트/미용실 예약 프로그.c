@@ -3185,10 +3185,10 @@ int designer_profile(int index) {
 	int x = 82;
 	int y = 36;
 	goto_xy(x, y);
-	len = strlen(intro);
+	int len = strlen(intro);
 	int len_2 = 0;
 	for (int i = 0; i < len; i++) {
-		if (len < sizeof(str) - 2) {
+		if (len < sizeof(intro) - 2) {
 			if (len_2 >= MAX_X - 124 && (len_2 % (MAX_X - 124)) == 0) {
 				if (y >= MAX_Y - 1) {
 					break;
