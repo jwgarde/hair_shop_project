@@ -53,7 +53,7 @@ typedef struct {
 	char gender[15];
 	int brith;
 	char n_name[15];
-	char introduce[60];
+	char introduce[85];
 }DESIGNER;
 DESIGNER d_all[3];
 typedef struct {
@@ -1588,7 +1588,7 @@ int style_management(int index) {
 		}
 	}
 }
-void copy(int index) {
+int copy(int index) {
 	char sourcePath[100];  // 입력 받은 경로를 저장할 변수
 	char destinationPath[] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\hair_shop_project-master\\창업 프로젝트\\bitmap2.bmp";
 	char destinationPath_1[] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\hair_shop_project-master\\창업 프로젝트\\bitmap1.bmp";
@@ -3159,19 +3159,19 @@ int date_and_time_choice_UI(int x, int y) {
 }
 int designer_profile(int index) {
 	clearconsole();
-	int MaX_X = 142;//아직
-	int MaY_Y = 39;
+	int MaX_X = 122;//아직
+	int MaX_Y = 38;
 	int ph_check = 1;
 	char name[20] = " ";
-	char sourcePath[100];
 	strcpy(name, d_all[index].name);
 	char ph[15] = " ";
 	strcpy(ph, d_all[index].phone);
 	char nk[20] = " ";
 	strcpy(nk, d_all[index].n_name);
-	char intro[60] = " ";
+	char intro[85] = " ";
 	strcpy(intro, d_all[index].introduce);
 	int xx, yy, lr = 0;
+	char ch = ' ';
 	basic_UI(60, 3);
 	goto_xy(92, 5);
 	printf("프로필 관리");
@@ -3206,13 +3206,14 @@ int designer_profile(int index) {
 	design_see_UI(78, 34, 15, 0, 0, 1);
 	int x = 82;
 	int y = 36;
+	int c_check = 0;
 	goto_xy(x, y);
 	int len = strlen(intro);
 	int len_2 = 0;
 	for (int i = 0; i < len; i++) {
 		if (len < sizeof(intro) - 2) {
 			if (len_2 >= MaX_X - 82 && (len_2 % (MaX_X - 82)) == 0) {
-				if (y >= MaY_Y - 1) {
+				if (y >= MaX_Y - 1) {
 					break;
 				}
 				else {
@@ -3257,7 +3258,7 @@ int designer_profile(int index) {
 				HideCursor();
 				ph_check = isValidPhone_or_pw_Number(ph, 1);
 				if (ph_check == 0) {
-					goto_xy(98, 22);
+					goto_xy(110, 14);
 					printf("형식이 올바르지 않습니다..");
 				}
 			}
@@ -3275,9 +3276,80 @@ int designer_profile(int index) {
 				design_column_UI(76, 25, 7, 80, 26, "변경", 15);
 				Sleep(800);
 				design_column_UI(76, 25, 15, 80, 26, "변경", 15);
-				copy(index);
+				c_check = copy(index);
 			}
 		}
+		if (xx > 78 && xx < 125) {
+			if (yy > 33 && yy < 42) {
+				strcpy(intro, " ");
+				design_see_UI(78, 34, 15, 0, 0, 1);// 진행시켜 설명 적는거 해야지
+				len = 0;
+				x = 82;
+				y = 36;
+				EnableConsoleCursor();
+				goto_xy(x, y);
+				textcolor(15);
+				while (1) {
+					ch = ' ';
+					ch = _getch();
+					if (ch == '\r') { // Enter key
+						ch = ' ';
+						HideCursor();
+						break;
+					}
+					else if (ch == '\b') { // Backspace key
+						if (intro[(x - 82) + (len)+(MaX_X - 82) * (y - 36) - 1] & 0x80) {
+							if (intro[(x - 82) + (len)+(MaX_X - 82) * (y - 36) - 2] & 0x80) {
+								handleBackspace_last(intro, &len, &x, &y, MaX_X, MaX_Y, 82, 36);
+								handleBackspace_last(intro, &len, &x, &y, MaX_X, MaX_Y, 82, 36);
+							}
+							else {
+								handleBackspace_last(intro, &len, &x, &y, MaX_X, MaX_Y, 82, 36);
+							}
+						}
+						else {
+							handleBackspace_last(intro, &len, &x, &y, MaX_X, MaX_Y, 82, 36);
+						}
+					}
+					else if (len < sizeof(intro) - 2) {
+						if (len >= MaX_X - x && (len % (MaX_X - x)) == 0) { // Check if the line length is multiple of MAX_X
+							if (y >= MaX_Y - 1) {
+								continue;
+							}
+							else {
+								handleNewline(&x, &y);
+								len = 0;
+								intro[(x - 82) + (len)+((MaX_X - x) * (y - 36))] = ch;
+								len++;
+								intro[(x - 82) + (len)+((MaX_X - x) * (y - 36))] = '\0';
+								printf("%c", ch);
+							}
+						}
+						else {
+							intro[(x - 82) + (len)+((MaX_X - 82) * (y - 36))] = ch;
+							len++;
+							intro[(x - 82) + (len)+((MaX_X - 82) * (y - 36))] = '\0';
+							printf("%c", ch);
+						}
+					}
+				}
+			}
+		}
+		if (xx > 110 && xx < 125) {
+			if (yy > 45 && yy < 49) {
+				if (c_check != 1 && ph_check != 0) {
+					small_box(110, 46, 10, 116, 47, "저장", 6);
+					strcpy(d_all[index].name, name);
+					strcpy(d_all[index].phone, ph);
+					strcpy(d_all[index].n_name, nk);
+					strcpy(d_all[index].introduce, intro);
+					d_file_write();
+					Sleep(500);
+					return;
+				}
+			}
+		}
+		
 	}
 }
 int designer_initial_screen(int index) { //디자이너 초기 화면
@@ -3941,7 +4013,7 @@ int management_reserve(int check,int reserve_i) {
 				if (xx > 121 && xx < 169) {
 					if (check > 0 && member_reserve[reserve_i].cancel_check == 1) {
 						strcpy(str, " ");
-						design_see_UI(122, 34, 15, 0, 0, 1);;// 진행시켜 설명 적는거 해야지
+						design_see_UI(122, 34, 15, 0, 0, 1);// 진행시켜 설명 적는거 해야지
 						len = 0;
 						x = 126;
 						y = 35;
