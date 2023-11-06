@@ -1588,33 +1588,55 @@ int style_management(int index) {
 		}
 	}
 }
-void copy() {
+void copy(int index) {
 	char sourcePath[100];  // 입력 받은 경로를 저장할 변수
-	char destinationPath[] = "C:\\Users\\chlwj\\source\\repos\\그만\\그만\\bitmap2.bmp";
-	goto_xy(5, 40);
-	printf("파일 경로를 입력하세요: ");
+	char destinationPath[] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\hair_shop_project-master\\창업 프로젝트\\bitmap2.bmp";
+	char destinationPath_1[] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\hair_shop_project-master\\창업 프로젝트\\bitmap1.bmp";
+	char destinationPath_2[] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\hair_shop_project-master\\창업 프로젝트\\bitmap2.bmp";
+	char destinationPath_3[] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\hair_shop_project-master\\창업 프로젝트\\bitmap3.bmp";
+	if (index == 0) {
+		strcpy(destinationPath, destinationPath_1);
+	}
+	else if (index == 1) {
+		strcpy(destinationPath, destinationPath_2);
+	}
+	else {
+		strcpy(destinationPath, destinationPath_3);
+	}
+	goto_xy(69, 29);
+	printf("파일 경로를 입력: ");
+	goto_xy(88, 29);
+	printf("                                            ");
+	goto_xy(88, 29);
+	EnableConsoleCursor();
 	fgets(sourcePath, sizeof(sourcePath), stdin);
+	HideCursor();
 	sourcePath[strcspn(sourcePath, "\n")] = '\0';  // 개행 문자 제거
-
 	// 파일 복사 수행
 	FILE* sourceFile = fopen(sourcePath, "rb");
 	FILE* destinationFile = fopen(destinationPath, "wb");
-
 	if (sourceFile == NULL) {
+		goto_xy(88, 29);
+		printf("                                            ");
+		goto_xy(88, 29);
 		printf("입력한 경로에 파일을 찾을 수 없습니다.\n");
 		return 1;
 	}
-
 	if (destinationFile == NULL) {
+		goto_xy(88, 29);
+		printf("                                            ");
+		goto_xy(88, 29);
 		printf("목적지 경로에 파일을 생성할 수 없습니다.\n");
 		fclose(sourceFile);
 		return 1;
 	}
-
 	int bufferSize = 1024;  // 복사할 때 사용할 버퍼 크기
 	char* buffer = (char*)malloc(bufferSize);
 
 	if (buffer == NULL) {
+		goto_xy(88, 29);
+		printf("                                           ");
+		goto_xy(88, 29);
 		printf("메모리 할당에 실패했습니다.\n");
 		fclose(sourceFile);
 		fclose(destinationFile);
@@ -1625,9 +1647,6 @@ void copy() {
 	while ((bytesRead = fread(buffer, 1, bufferSize, sourceFile)) > 0) {
 		fwrite(buffer, 1, bytesRead, destinationFile);
 	}
-
-	printf("파일이 성공적으로 복사되었습니다.\n");
-
 	fclose(sourceFile);
 	fclose(destinationFile);
 	free(buffer);
@@ -3140,8 +3159,11 @@ int date_and_time_choice_UI(int x, int y) {
 }
 int designer_profile(int index) {
 	clearconsole();
-	int MaX_X = 0;//아직
+	int MaX_X = 142;//아직
+	int MaY_Y = 39;
+	int ph_check = 1;
 	char name[20] = " ";
+	char sourcePath[100];
 	strcpy(name, d_all[index].name);
 	char ph[15] = " ";
 	strcpy(ph, d_all[index].phone);
@@ -3189,24 +3211,74 @@ int designer_profile(int index) {
 	int len_2 = 0;
 	for (int i = 0; i < len; i++) {
 		if (len < sizeof(intro) - 2) {
-			if (len_2 >= MAX_X - 124 && (len_2 % (MAX_X - 124)) == 0) {
-				if (y >= MAX_Y - 1) {
+			if (len_2 >= MaX_X - 82 && (len_2 % (MaX_X - 82)) == 0) {
+				if (y >= MaY_Y - 1) {
 					break;
 				}
 				else {
 					handleNewline(&x, &y);
 					len_2 = 0;
 					len_2++;
-					printf("%c", STYLE[index].account[i]);
+					printf("%c", intro[i]);
 				}
 			}
 			else {
 				len_2++;
-				printf("%c", STYLE[index].account[i]);
+				printf("%c",intro[i]);
 			}
 		}
 	}
-	ExClick();
+	/*ExClick();*/
+	while (1) {
+		xx = 0, yy = 0;
+		click(&xx, &yy);
+		if (xx > 68 && xx < 83) {
+			if (yy > 45 && yy < 49) {
+				small_box(68, 46, 10, 74, 47, "이전", 6);
+				Sleep(500);
+				return;
+			}
+		}
+		if (xx > 109 && xx < 122) {
+			if (yy == 10) {
+				goto_xy(110, 10);
+				printf("             ");
+				EnableConsoleCursor();
+				goto_xy(110, 10);
+				scanf("%s", name);
+				HideCursor();
+			}
+			else if (yy == 14) {
+				goto_xy(110, 14);
+				printf("                  ");
+				goto_xy(110, 14);
+				EnableConsoleCursor();
+				scanf("%s", ph);
+				HideCursor();
+				ph_check = isValidPhone_or_pw_Number(ph, 1);
+				if (ph_check == 0) {
+					goto_xy(98, 22);
+					printf("형식이 올바르지 않습니다..");
+				}
+			}
+			else if (yy == 18) {
+				goto_xy(110, 18);
+				printf("                 ");
+				goto_xy(110, 18);
+				EnableConsoleCursor();
+				scanf("%s", nk);
+				HideCursor();
+			}
+		}
+		if (xx > 76 && xx < 87) {
+			if (yy > 24 &&yy < 28) {
+				design_column_UI(76, 25, 7, 80, 26, "변경", 15);
+				Sleep(800);
+				design_column_UI(76, 25, 15, 80, 26, "변경", 15);
+				copy(index);
+			}
+		}
+	}
 }
 int designer_initial_screen(int index) { //디자이너 초기 화면
 	int xx, yy, lr = 0;	
