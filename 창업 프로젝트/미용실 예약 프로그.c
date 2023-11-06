@@ -1650,7 +1650,7 @@ int copy(int index) {
 	fclose(sourceFile);
 	fclose(destinationFile);
 	free(buffer);
-
+	return 0;
 }
 int isValidPhone_or_pw_Number(char* str, int check) { // 전화번호 비밀번호 유효한지 체크해주는 함수
 	if (check == 1) {
@@ -3337,7 +3337,7 @@ int designer_profile(int index) {
 		}
 		if (xx > 110 && xx < 125) {
 			if (yy > 45 && yy < 49) {
-				if (c_check != 1 && ph_check != 0) {
+				if (c_check != 1 && ph_check == 1) {
 					small_box(110, 46, 10, 116, 47, "저장", 6);
 					strcpy(d_all[index].name, name);
 					strcpy(d_all[index].phone, ph);
