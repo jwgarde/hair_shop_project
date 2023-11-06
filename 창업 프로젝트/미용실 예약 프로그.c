@@ -53,7 +53,7 @@ typedef struct {
 	char gender[15];
 	int brith;
 	char n_name[15];
-	char introduce[50];
+	char introduce[60];
 }DESIGNER;
 DESIGNER d_all[3];
 typedef struct {
@@ -951,6 +951,10 @@ void Render(int x, int y, int num, int check)
 		pictureWidth = 300;
 		pictureHeight = 400;
 	}
+	else if (check == 2) {
+		pictureWidth = 200;
+		pictureHeight = 250;
+	}
 	// DC의 핸들값을 받을 변수를 선언한다.(hDC : 실제화면DC, hMemDC : 이미지를 담을 DC)
 	// Device Context는 그래픽에 필요한 모든 옵션을 넣어둔 구조체라고 볼 수 있다.
 	// 그림그릴때 그림을 그릴 화폭이라 보면된다.
@@ -1727,8 +1731,11 @@ void designer_print(int choice) {
 			textcolor(7);
 			for (int k = 0; k < len; k++) {
 				printf("%c", d_all[i].introduce[k]);
-				if (k == 20) {
+				if (k == 25) {
 					goto_xy(nx + 10, ny + 4);
+				}
+				else if (k == 50) {
+					goto_xy(nx + 10, ny + 5);
 				}
 			}
 			textcolor(6);
@@ -3131,8 +3138,78 @@ int date_and_time_choice_UI(int x, int y) {
 	}
 	printf("┛");
 }
-int designer_initial_screen(int index) { //디자이너 초기 화면
+int designer_profile(int index) {
+	clearconsole();
+	int MaX_X = 0;//아직
+	char name[20] = " ";
+	strcpy(name, d_all[index].name);
+	char ph[15] = " ";
+	strcpy(ph, d_all[index].phone);
+	char nk[20] = " ";
+	strcpy(nk, d_all[index].n_name);
+	char intro[60] = " ";
+	strcpy(intro, d_all[index].introduce);
 	int xx, yy, lr = 0;
+	basic_UI(60, 3);
+	goto_xy(92, 5);
+	printf("프로필 관리");
+	small_box(68, 46, 6, 74, 47, "이전", 6);
+	small_box(110, 46, 6, 116, 47, "저장", 6);
+	textcolor(15);
+	goto_xy(99, 10);
+	printf("이    름 :");
+	goto_xy(110, 10);
+	printf("%s", name);
+	goto_xy(99, 14);
+	printf("전화번호 :");
+	goto_xy(110, 14);
+	printf("%s", ph);
+	goto_xy(99, 18);
+	printf("닉 네 임 :");
+	goto_xy(110, 18);
+	printf("%s", nk);
+	goto_xy(99, 22);
+	printf("성    별 :");
+	goto_xy(110, 22);
+	if (strcmp(d_all[index].gender, "남") == 0) {
+		printf("남자");
+	}
+	else {
+		printf("여자");
+	}
+	buid(index, 550, 180, 2);
+	design_column_UI(76, 25, 15, 80, 26, "변경", 15);
+	goto_xy(70, 32);
+	printf("자기소개 글");
+	design_see_UI(78, 34, 15, 0, 0, 1);
+	int x = 82;
+	int y = 36;
+	goto_xy(x, y);
+	len = strlen(intro);
+	int len_2 = 0;
+	for (int i = 0; i < len; i++) {
+		if (len < sizeof(str) - 2) {
+			if (len_2 >= MAX_X - 124 && (len_2 % (MAX_X - 124)) == 0) {
+				if (y >= MAX_Y - 1) {
+					break;
+				}
+				else {
+					handleNewline(&x, &y);
+					len_2 = 0;
+					len_2++;
+					printf("%c", STYLE[index].account[i]);
+				}
+			}
+			else {
+				len_2++;
+				printf("%c", STYLE[index].account[i]);
+			}
+		}
+	}
+	ExClick();
+}
+int designer_initial_screen(int index) { //디자이너 초기 화면
+	int xx, yy, lr = 0;	
 	int choice = 0;
 	design_file_read();
 	while (1) {
@@ -3148,7 +3225,6 @@ int designer_initial_screen(int index) { //디자이너 초기 화면
 		big_box(87, 38, 6, 94, 40, "리뷰 관리");
 		small_box(68, 46, 6, 72, 47, "로그아웃", 6);
 		small_box(110, 46, 6, 116, 47, "다음", 6);
-		//ExClick();
 		while (1) {
 			xx = 0, yy = 0;
 			click(&xx, &yy);
@@ -3168,6 +3244,13 @@ int designer_initial_screen(int index) { //디자이너 초기 화면
 					choice = 2;
 					xx, yy = 0;
 				}
+				else if (yy > 29 && yy < 35) {
+					big_box(87, 22, 6, 93, 24, "디자인 관리");
+					big_box(87, 14, 6, 94, 16, "예약 관리");
+					big_box(87, 30, 10, 93, 32, "프로필 관리");
+					big_box(87, 38, 6, 94, 40, "리뷰 관리");
+					choice = 3;
+				}
 			}
 			if (xx > 110 && xx < 125) {
 				if (yy > 45 && yy < 49) {
@@ -3176,6 +3259,12 @@ int designer_initial_screen(int index) { //디자이너 초기 화면
 						Sleep(500);
 						if (choice == 2) {
 							style_management(index);
+							choice = 0;
+							break;
+						}
+						else if (choice == 3) {
+							designer_profile(index);
+							choice = 0;
 							break;
 						}
 					}
@@ -3313,7 +3402,6 @@ void modifying_membership(int index) { //회원정보 수정
 	printf("성          별  :");
 	goto_xy(98, 27);
 	if (strcmp(all[index].gender, "남") == 0) {
-		\
 			printf("남자");
 	}
 	else {
