@@ -1911,6 +1911,133 @@ int day_of_week(int year, int month) //총 일수를 구하는 함수(해당 월
 	return temp % 7; //1=월,2=화...6=토,0=일
 
 }
+void print_calendar_2(int choice, int sd, int year, int month, int x, int y, int d_day) {
+	time_t seconds = time(NULL);
+	struct tm* now = localtime(&seconds);
+	date_check = 0;
+	int i, j;
+	int temp;
+	goto_xy(x, y);
+	for (int i = 0; i < 17; i++) {
+		goto_xy(x, y + i);
+		printf("                                            ");
+	}
+	goto_xy(x, y);
+
+	switch (month) {
+	case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+		temp = 31;
+		break;
+	case 4: case 6: case 9: case 11:
+		temp = 30;
+		break;
+	case 2:
+		if ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0))
+			temp = 29;
+		else
+			temp = 28;
+	}
+	for (i = 0; i < sd; i++) {
+		printf("%c      ", "       \n"[i == sd]);
+		date_index[i] = 0;
+	}
+	j = sd;
+	date_check = sd;
+	int check = 0;
+	int full = 0;
+	int last_time_check = 0;
+	reserve_read();
+	for (i = 1; i <= temp; i++) {
+		full = 0;
+		int hour = 10;
+		int min = 0;
+		for (int m = 1; m <= 16; m++) {
+			last_time_check = time_check(choice, year, month, i, hour, min);
+			if (last_time_check == 1) {
+				full += 1;
+			}
+			min += 30;
+			if (min == 60) {
+				hour += 1;
+				min = 0;
+				if (hour > 12) {
+					hour = 1;
+				}
+			}
+		}
+		hour = 0;
+		min = 0;
+		if (j == 6) {
+			textcolor(9);
+			if (full == 16 || i < d_day) {
+				check = 1;
+				textcolor(8);
+			}
+			else if (year <= 1900 + now->tm_year) {
+				if (year < 1900 + now->tm_year) {
+					check = 1;
+					textcolor(8);
+				}
+				else {
+					if (now->tm_mon + 1 > month) {
+						check = 1;
+						textcolor(8);
+					}
+					else if (now->tm_mon + 1 == month) {
+						if (i == d_day) {
+							textcolor(10);
+						}
+					}
+				}
+			}
+			else if (i == d_day) {
+				textcolor(10);
+			}
+			printf("%2d", i);
+			textcolor(15);
+			y += 3;
+			goto_xy(x, y);
+			j = -1;
+		}
+		else {
+			textcolor(15);
+			if (j == 0) {
+				textcolor(12);
+			}
+			if (full == 16 || i < d_day) {
+				check = 1;
+				textcolor(8);
+			}
+			else if (year <= 1900 + now->tm_year) {
+				if (year < 1900 + now->tm_year) {
+					check = 1;
+					textcolor(8);
+				}
+				else {
+					if (now->tm_mon + 1 > month) {
+						check = 1;
+						textcolor(8);
+					}
+					else if(now->tm_mon + 1 == month){
+						if(i == d_day) {
+							textcolor(10);
+						}
+					}
+				}
+			}
+			printf("%2d     ", i);
+		}
+		j++;
+		if (check == 1) {
+			date_index[date_check] = 0;
+			check = 0;
+		}
+		else {
+			date_index[date_check] = i;
+		}
+		date_check++;
+	}
+}
 void print_calendar(int choice, int sd, int year, int month, int x, int y, int d_day) {
 	date_check = 0;
 	int i, j;
@@ -3352,6 +3479,93 @@ int designer_profile(int index) {
 		
 	}
 }
+int designer_reserve_manage(int index) {
+	int xx, yy, lr = 0;
+	clearconsole();
+	time_t seconds = time(NULL);
+	struct tm* now = localtime(&seconds);
+	basic_UI(60, 3);
+	goto_xy(94, 5);
+	printf("예약관리");
+	while (1) {
+		int year = 1900 + now->tm_year;
+		int mon = now->tm_mon + 1;
+		int day = day_of_week(year, mon);
+		int x = 75;
+		int y = 11;
+		int d_day = now->tm_mday;
+		int choice_day = 0;
+		int check = 0;
+		textcolor(15);
+		goto_xy(x + 14, y);
+		printf("◀");
+		goto_xy(x + 17, y);
+		printf("%d년 %02d월", year, mon);
+		goto_xy(x + 29, y);
+		printf("▶");
+		goto_xy(x, y + 4);
+		printf("일     월     화     수     목     금     토");
+		while (1) {
+			reserve_read();
+			goto_xy(x + 17, y);
+			printf("%d년 %02d월", year, mon);
+			print_calendar_2(index, day, year, mon, x, y + 7, d_day);
+			while (1) {
+				xx = 0, yy = 0;
+				click(&xx, &yy);
+				if (yy > 10 && yy < 13) {
+					if (xx > 102 && xx < 107) {
+						goto_xy(x + 29, y);
+						textcolor(10);
+						printf("▶");
+						mon += 1;
+						if (mon > 12) {
+							year += 1;
+							mon = 1;
+						}
+						if (year == 1900 + now->tm_year && mon == now->tm_mon + 1) {
+							d_day = now->tm_mday;
+						}
+						else {
+							d_day = 0;
+						}
+						day = day_of_week(year, mon);
+						Sleep(500);
+						goto_xy(x + 29, y);
+						textcolor(15);
+						printf("▶");
+						break;
+					}
+					else if (xx > 87 && xx < 92) {
+						/*if (year == 1900 + now->tm_year && mon == now->tm_mon + 1) {
+							continue;
+						}*/
+						textcolor(10);
+						goto_xy(x + 14, y);
+						printf("◀");
+						mon -= 1;
+						if (mon < 1) {
+							year -= 1;
+							mon = 12;
+						}
+						if (year == 1900 + now->tm_year && mon == now->tm_mon + 1) {
+							d_day = now->tm_mday;
+						}
+						else {
+							d_day = 0;
+						}
+						day = day_of_week(year, mon);
+						Sleep(500);
+						textcolor(15);
+						goto_xy(x + 14, y);
+						printf("◀");
+						break;
+					}
+				}
+			}
+		}
+	}
+}
 int designer_initial_screen(int index) { //디자이너 초기 화면
 	int xx, yy, lr = 0;	
 	int choice = 0;
@@ -3395,6 +3609,14 @@ int designer_initial_screen(int index) { //디자이너 초기 화면
 					big_box(87, 38, 6, 94, 40, "리뷰 관리");
 					choice = 3;
 				}
+				else if (yy > 13 && yy < 19) {
+					big_box(87, 22, 6, 93, 24, "디자인 관리");
+					big_box(87, 14, 10, 94, 16, "예약 관리");
+					big_box(87, 30, 6, 93, 32, "프로필 관리");
+					big_box(87, 38, 6, 94, 40, "리뷰 관리");
+					choice = 1;
+				}
+				
 			}
 			if (xx > 110 && xx < 125) {
 				if (yy > 45 && yy < 49) {
@@ -3408,6 +3630,11 @@ int designer_initial_screen(int index) { //디자이너 초기 화면
 						}
 						else if (choice == 3) {
 							designer_profile(index);
+							choice = 0;
+							break;
+						}
+						else if (choice == 1) {
+							designer_reserve_manage(index);
 							choice = 0;
 							break;
 						}
