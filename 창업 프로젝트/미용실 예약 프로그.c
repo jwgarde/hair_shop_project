@@ -114,6 +114,29 @@ typedef struct {
 	int index;
 }m_reserve;
 m_reserve member_reserve[50];
+typedef struct {
+	int cancel_check;
+	char name[20];
+	char phone[20];
+	int year;
+	int mon;
+	int day;
+	int hour;
+	int min;
+	char style[30];//스타일
+	char sort[15];
+	char designer[20];//헤어디자이너
+	char request[240];//요구사항
+	int pay;
+	int pyear;
+	int pmon;
+	int pday;
+	int phour;
+	int pmin;
+	int psec;
+	int index;
+}d_reserve;
+d_reserve designer_reserve[16];
 // 윤년 여부
 int isLeapYear(int year) {
 	if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
@@ -2028,13 +2051,7 @@ void print_calendar_2(int choice, int sd, int year, int month, int x, int y, int
 			printf("%2d     ", i);
 		}
 		j++;
-		if (check == 1) {
-			date_index[date_check] = 0;
-			check = 0;
-		}
-		else {
-			date_index[date_check] = i;
-		}
+		date_index[date_check] = i;
 		date_check++;
 	}
 }
@@ -2153,6 +2170,18 @@ int xx_yy_date_find(int xx, int yy, int check) {
 			return date_index[index];
 		}
 
+	}
+	else {
+		return 0;
+	}
+}
+int xx_yy_date_find_2(int xx, int yy) { //101 19
+	int index = -1;
+	int date_x = 76;
+	int date_y = 18;
+	if ((xx - date_x) % 7 == 0 && (yy - date_y) % 3 == 0) {
+		index = (((yy - date_y) / 3) * 7) + ((xx - date_x) / 7);
+		return date_index[index];
 	}
 	else {
 		return 0;
@@ -3479,14 +3508,26 @@ int designer_profile(int index) {
 		
 	}
 }
+int desinger_money(int index, int year, int mon) {
+	reserve_read();
+	int total_mon = 0;
+	for (int i = 0; i < reserve_count; i++) {
+		if (strcmp(all_reserve[i].designer, d_all[index].name) == 0 && all_reserve[i].year == year && all_reserve[i].mon == mon && all_reserve[i].cancel_check != 0) {
+			total_mon += all_reserve[i].pay;
+		}
+	}
+	return total_mon;
+}
 int designer_reserve_manage(int index) {
 	int xx, yy, lr = 0;
 	clearconsole();
+	int mon_money = 0;
 	time_t seconds = time(NULL);
 	struct tm* now = localtime(&seconds);
 	basic_UI(60, 3);
 	goto_xy(94, 5);
 	printf("예약관리");
+	small_box(68, 46, 6, 74, 47, "이전", 6);
 	while (1) {
 		int year = 1900 + now->tm_year;
 		int mon = now->tm_mon + 1;
@@ -3510,6 +3551,13 @@ int designer_reserve_manage(int index) {
 			goto_xy(x + 17, y);
 			printf("%d년 %02d월", year, mon);
 			print_calendar_2(index, day, year, mon, x, y + 7, d_day);
+			goto_xy(x + 35, y+25);
+			mon_money = desinger_money(index, year, mon);
+			textcolor(15);
+			printf("                     ");
+			goto_xy(x + 35, y + 25);
+			printf("총 월매출 %d원", mon_money);
+			/*ExClick();*/
 			while (1) {
 				xx = 0, yy = 0;
 				click(&xx, &yy);
@@ -3562,10 +3610,31 @@ int designer_reserve_manage(int index) {
 						break;
 					}
 				}
+				if (xx > 68 && xx < 83) {
+					if (yy > 45 && yy < 49) {
+						small_box(68, 46, 10, 74, 47, "이전", 6);
+						Sleep(500);
+						return;
+					}
+				}
+				if (xx > 78 && xx < 120) {
+					if (yy > 16 && yy < 32) {
+						choice_day = xx_yy_date_find_2(xx, yy);
+						if (choice_day != 0) {
+							goto_xy(xx - 1, yy);
+							textcolor(10);
+							printf("%2d", choice_day);
+							Sleep(700);
+							textcolor(15);
+							//check = time_choice(index, choice, year, mon, choice_day);
+							break;
+						}
+					}
+				}
 			}
 		}
 	}
-}
+} //예약관리
 int designer_initial_screen(int index) { //디자이너 초기 화면
 	int xx, yy, lr = 0;	
 	int choice = 0;
@@ -3912,6 +3981,60 @@ int take_m_reserve(int index, int* reserve_index) { //코드 뻑이면 여기 �
 	*reserve_index = r_index;
 	return m_reserve_count;
 }
+int take_d_reserve(int index, int* d_reserve_index, int year, int mon,int day) { //코드 뻑이면 여기 문제
+	int d_reserve_count = 0;
+	int dr_index = -1;
+	int result_min = 0;
+	int possible_count = 0; //예약이 안지난 예약의 횟수를 계산해서 초기 값을 정해 놓기 위해
+	for (int i = 0; i < 50; i++) {
+		strcpy(designer_reserve[i].name, " ");
+		designer_reserve[i].index = -1;
+	}
+	reserve_read();
+	for (int i = 0; i < reserve_count; i++) {
+		if (strcmp(d_all[index].name, all_reserve[i].designer) == 0 && year == all_reserve[i].year, year == all_reserve[i].mon && day == all_reserve[i].day) {
+			strcpy(designer_reserve[d_reserve_count].name, all_reserve[i].name);
+			strcpy(designer_reserve[d_reserve_count].phone, all_reserve[i].phone);//전화번호
+			designer_reserve[d_reserve_count].year = all_reserve[i].year;//선택 연도
+			designer_reserve[d_reserve_count].mon = all_reserve[i].mon;// 선택 월
+			designer_reserve[d_reserve_count].day = all_reserve[i].day;// 선택 일
+			designer_reserve[d_reserve_count].hour = all_reserve[i].hour;// 선택 시간
+			designer_reserve[d_reserve_count].min = all_reserve[i].min;// 선택 분
+			strcpy(designer_reserve[d_reserve_count].sort, all_reserve[i].sort);//디자인 종류
+			strcpy(designer_reserve[d_reserve_count].style, all_reserve[i].style); //선택한스타일 
+			strcpy(designer_reserve[d_reserve_count].designer, all_reserve[i].designer);;//디자이너 이름
+			designer_reserve[d_reserve_count].pyear = all_reserve[i].pyear;// 결제 연도
+			designer_reserve[d_reserve_count].pmon = all_reserve[i].pmon;// 결제 월
+			designer_reserve[d_reserve_count].pday = all_reserve[i].pday;// 결제 일
+			designer_reserve[d_reserve_count].phour = all_reserve[i].phour;// 결제 시간
+			designer_reserve[d_reserve_count].pmin = all_reserve[i].pmin;// 결제 분
+			designer_reserve[d_reserve_count].psec = all_reserve[i].psec;
+			designer_reserve[d_reserve_count].pay = all_reserve[i].pay;
+			designer_reserve[d_reserve_count].cancel_check = all_reserve[i].cancel_check;
+			strcpy(designer_reserve[d_reserve_count].request, all_reserve[i].request);
+			designer_reserve[d_reserve_count].index = i;
+			if (designer_reserve[d_reserve_count].cancel_check == 1) {
+				int reckoning_min = calculateRemainingMinutes(designer_reserve[d_reserve_count].year, designer_reserve[d_reserve_count].mon, designer_reserve[d_reserve_count].day, designer_reserve[d_reserve_count].hour, designer_reserve[d_reserve_count].min);
+				if (reckoning_min > 0) {
+					if (possible_count == 0) {
+						result_min = reckoning_min;
+						dr_index = d_reserve_count;
+					}
+					else {
+						if (reckoning_min < result_min) {
+							result_min = reckoning_min;
+							dr_index = d_reserve_count;
+						}
+					}
+					possible_count++;
+				}
+			}
+			d_reserve_count++;
+		}
+	}
+	*d_reserve_index = dr_index;
+	return d_reserve_count;
+}
 int calculateRemainingMinutes(int year, int month, int day, int hour, int minute) {
 	struct tm targetTime;
 	time_t currentTime = getCurrentTime();
@@ -4046,6 +4169,83 @@ int getReservationHistory() { //예약 내약 확인 해주는 함수
 			}
 			if (xx > 97 && xx < 104 && yy > 40 && yy < 44) {
 				if (strcmp(member_reserve[reserve_i].name, " ") != 0) {
+					textcolor(10);
+					goto_xy(101, 42);
+					printf("▷");
+					Sleep(500);
+					page_count++;
+					break;
+				}
+			}
+			if (xx > 62 && xx < 131) {
+				if (yy > 7 && yy < 19) {
+					if (member_reserve[(page_count * count) - 3].index != -1) {
+						reserve_i = (page_count * count) - count;
+						m_reserve_print(22, 3, page_count, count, reserve_i, (page_count * count) - 3);
+						c_i = (page_count * count) - 3;
+						check = 1;
+					}
+				}
+				else if (yy > 18 && yy < 30) {
+					if (member_reserve[(page_count * count) - 2].index != -1) {
+						reserve_i = (page_count * count) - count;
+						m_reserve_print(22, 3, page_count, count, reserve_i, (page_count * count) - 2);
+						check = 1;
+						c_i = (page_count * count) - 2;
+					}
+				}
+				else if (yy > 29 && yy < 41) {
+					if (member_reserve[(page_count * count) - 1].index != -1) {
+						reserve_i = (page_count * count) - count;
+						m_reserve_print(22, 3, page_count, count, reserve_i, (page_count * count) - 1);
+						check = 1;
+						c_i = (page_count * count) - 1;
+					}
+				}
+			}
+			if (check == 1) {
+				check = calculateRemainingMinutes(member_reserve[c_i].year, member_reserve[c_i].mon, member_reserve[c_i].day, member_reserve[c_i].hour, member_reserve[c_i].min);
+				management_reserve(check, c_i);
+				break;
+			}
+		}
+	}
+}
+int designer_getReservationHistory() { //예약 내약 확인 해주는 함수
+	int page_count = 1;
+	int count = 3;
+	int reserve_i = 0;
+	int xx, yy;
+	int c_i = -1;
+	int check = 0;
+	while (1) {
+		reserve_i = m_reserve_print(60, 3, page_count, count, reserve_i, -1);
+		if (reserve_i == (count * page_count) - 1) {
+			reserve_i++;
+		}
+		while (1) {
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (xx > 68 && xx < 83) {
+				if (yy > 45 && yy < 49) {
+					small_box(68, 46, 10, 74, 47, "이전", 6);
+					Sleep(500);
+					return;
+				}
+			}
+			if (xx > 89 && xx < 95 && yy > 40 && yy < 44) {
+				if (page_count != 1) {
+					textcolor(10);
+					goto_xy(91, 42);
+					printf("◁");
+					Sleep(500);
+					reserve_i = (page_count - 2) * count;
+					page_count--;
+					break;
+				}
+			}
+			if (xx > 97 && xx < 104 && yy > 40 && yy < 44) {
+				if (strcmp(designer_reserve[reserve_i].name, " ") != 0) {
 					textcolor(10);
 					goto_xy(101, 42);
 					printf("▷");
