@@ -163,6 +163,7 @@
     <Text Include="designer.txt" />
     <Text Include="member.txt" />
     <Text Include="reserve.txt" />
+    <Text Include="review.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
