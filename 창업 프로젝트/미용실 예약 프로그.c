@@ -4629,6 +4629,7 @@ int getReservationHistory() { //예약 내약 확인 해주는 함수
 int review_new_write(int c_i) {
 	int xx = 0, yy = 0;
 	int score = 0;
+	char detail[220];
 	basic_UI(98, 3);
 	goto_xy(132, 5);
 	printf("리뷰 작성");
