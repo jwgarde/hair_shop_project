@@ -154,7 +154,7 @@ typedef struct {
 	int day;
 	int hour;
 	int min;
-	char detail[220];
+	char detail[240];
 	int score;
 }review;
 review REVIEW[100];
@@ -4606,7 +4606,7 @@ int getReservationHistory() { //예약 내약 확인 해주는 함수
 					break;
 				}
 				else{
-					if (r_check < 0) {
+					if (r_check == -1) {
 						//if (yy > 14 && yy < 18) {
 						//	design_column_UI(118,15,10,120,16, "리뷰쓰기", 15);
 						//	Sleep(700);
@@ -4617,19 +4617,31 @@ int getReservationHistory() { //예약 내약 확인 해주는 함수
 						//else if (yy > 36 && yy < 40) {
 						//	design_column_UI(118, 37, 10, 120, 38, "리뷰쓰기", 15);
 						//}
-						review_new_write(c_i);
-
+						int c = review_new_write(c_i);
+						if (c == 0) {
+							style_i = 0;
+							page_count = 1;
+						}
+						else {
+							style_i = (page_count * count) - count;
+						}
+						break;
 					}
 				}
 
 			}
 		}
+		r_check = -2;
+		c_i = -1;
 	}
 }
 int review_new_write(int c_i) {
 	int xx = 0, yy = 0;
 	int score = 0;
-	char detail[220];
+	char detail[240] = " ";
+	char ch = ' ';
+	time_t seconds = time(NULL);
+	struct tm* now = localtime(&seconds);
 	basic_UI(98, 3);
 	goto_xy(132, 5);
 	printf("리뷰 작성");
@@ -4654,18 +4666,17 @@ int review_new_write(int c_i) {
 	goto_xy(126, 32);
 	printf("어떤 점이 좋았나요?");
 	add_box_UI(107, 34, 15, 128, 38, "※최대 100글자");
-	ExClick();
 	while (1) {
 		xx = 0, yy = 0;
 		click(&xx, &yy);
 		if (xx > 164 && xx < 172) {
 			if (yy > 2 && yy < 6) {
 				textcolor(4);
-				goto_xy(177, 4);
+				goto_xy(167, 4);
 				printf("[X]");
 				Sleep(500);
-				basic_UI_DELETE(30, 3);
-				return;
+				clearconsole();
+				return 1;
 			}
 		}
 		if (yy > 28 && yy < 31) {
@@ -4696,8 +4707,93 @@ int review_new_write(int c_i) {
 			else if (xx > 139 && xx < 143) {
 				goto_xy(128, 29);
 				textcolor(6);
-				printf("★ ★ ★ ★ ☆");
+				printf("★ ★ ★ ★ ★");
 				score = 5;
+			}
+		}
+		if (xx > 107 && xx < 162) {
+			if (yy > 33 && yy < 44) {
+				strcpy(detail, " ");
+				add_box_UI(107, 34, 15, 128, 38, " ");// 진행시켜 설명 적는거 해야지
+				int len = 0;
+				int x = 111;
+				int y = 37;
+				EnableConsoleCursor();
+				goto_xy(x, y);
+				textcolor(15);
+				while (1) {
+					ch = ' ';
+					ch = _getch();
+					if (ch == '\r') { // Enter key
+						ch = ' ';
+						break;
+					}
+					else if (ch == '\b') { // Backspace key
+						if (detail[(x - 111) + (len)+(161 - 111) * (y - 37) - 1] & 0x80) {
+							if (detail[(x - 111) + (len)+(161 - 111) * (y - 37) - 2] & 0x80) {
+								handleBackspace_last(detail, &len, &x, &y, 161, 41, 111, 37);
+								handleBackspace_last(detail, &len, &x, &y, 161, 41, 111, 37);
+							}
+							else {
+								handleBackspace_last(detail, &len, &x, &y, 161, 41, 111, 37);
+							}
+						}
+						else {
+							handleBackspace_last(detail, &len, &x, &y, 161, 41, 111, 37);
+						}
+					}
+					else if (len < sizeof(detail) - 2) {
+						if (len >= 161 - 111 && (len % (161 - 111)) == 0) { // Check if the line length is multiple of MAX_X
+							if (y >= 41 - 1) {
+								continue;
+							}
+							else {
+								handleNewline(&x, &y);
+								len = 0;
+								detail[(x - 111) + (len)+((161 - 111) * (y - 37))] = ch;
+								len++;
+								detail[(x - 111) + (len)+((161 - 111) * (y - 37))] = '\0';
+								printf("%c", ch);
+							}
+						}
+						else {
+							detail[(x - 111) + (len)+((161 - 111) * (y - 37))] = ch;
+							len++;
+							detail[(x - 111) + (len)+((161 - 111) * (y - 37))] = '\0';
+							printf("%c", ch);
+						}
+					}
+				}
+				HideCursor();
+			}
+		}
+		if (xx > 48 && xx < 163) {
+			if (yy > 45 && yy < 49) {
+				if (strcmp(detail, " ") != 0 && score != 0) {
+					small_box(148, 46, 10, 154, 47, "등록", 6);
+					Sleep(700);
+					delete_modify_finish(98,3,"리뷰 등록이 완료 되었습니다.");
+					strcpy(REVIEW[review_count].name, member_reserve[c_i].name);
+					strcpy(REVIEW[review_count].phone_num, member_reserve[c_i].phone);
+					strcpy(REVIEW[review_count].designer, member_reserve[c_i].designer);
+					strcpy(REVIEW[review_count].sort, member_reserve[c_i].sort);
+					strcpy(REVIEW[review_count].hair, member_reserve[c_i].style);
+					REVIEW[review_count].ryear = member_reserve[c_i].year;
+					REVIEW[review_count].rmon = member_reserve[c_i].mon;
+					REVIEW[review_count].rday = member_reserve[c_i].day;
+					REVIEW[review_count].rhour = member_reserve[c_i].hour;
+					REVIEW[review_count].rmin = member_reserve[c_i].min;
+					REVIEW[review_count].year = now->tm_year + 1900;
+					REVIEW[review_count].mon = now->tm_mon + 1;
+					REVIEW[review_count].day = now->tm_mday;
+					REVIEW[review_count].hour = now->tm_hour;
+					REVIEW[review_count].min = now->tm_min;
+					REVIEW[review_count].score = score;
+					strcpy(REVIEW[review_count].detail, detail);
+					review_append();
+					clearconsole();
+					return 1;
+				}
 			}
 		}
 	}
