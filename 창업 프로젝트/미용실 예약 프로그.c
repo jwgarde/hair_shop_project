@@ -4254,7 +4254,6 @@ int m_reserve_print(int x, int y, int page_count, int count, int reserve_i,int c
 					goto_xy(x + 50, y + 2);
 					printf("%02d.%02d.%02d 결제", member_reserve[reserve_i].pyear, member_reserve[reserve_i].pmon, member_reserve[reserve_i].pday);
 					check = review_check(reserve_i);
-					printf("%d", check);
 					if (check >= 0) {
 						design_column_UI(x + 56, y + 7, 15, x + 58, y + 8, "작성완료", 15);
 					}
@@ -5455,7 +5454,6 @@ void review_see_and_delete_modifying(int index) {
 	int xx, yy;
 	int c_i = -1;
 	int check = 0;
-	//int late_or_cancel_check = 0; //리뷰 체크
 	int x = 0, y = 0;
 	while (1) {
 		int m_review_count = take_m_review(index);
