@@ -5401,8 +5401,8 @@ int management_review(int review_i) {
 				HideCursor();
 			}
 		}
-		if (xx > 48 && xx < 163) {
-			if (yy > 45 && yy < 49) {
+		if (yy > 45 && yy < 49) {
+			if (xx > 148 && xx < 163) {
 				if (strcmp(detail, M_REVIEW[review_i].detail) != 0 || M_REVIEW[review_i].score != score) {
 					small_box(149, 46, 10, 155, 47, "수정", 6);
 					Sleep(700);
@@ -5415,6 +5415,34 @@ int management_review(int review_i) {
 					clearconsole();
 					return 0;
 				}
+			}
+			else if (xx > 106 && xx < 122) {
+				small_box(107, 46, 10, 113, 47, "삭제", 6);
+				Sleep(700);
+				delete_modify_finish(98, 3, "리뷰 삭제가 완료 되었습니다.");
+				for (int i = M_REVIEW[review_i].index; i < review_count; i++) {
+					strcpy(REVIEW[i].name, REVIEW[i + 1].name);
+					strcpy(REVIEW[i].phone_num, REVIEW[i + 1].phone_num);
+					strcpy(REVIEW[i].sort, REVIEW[i + 1].sort);
+					strcpy(REVIEW[i].hair, REVIEW[i + 1].hair);
+					strcpy(REVIEW[i].designer, REVIEW[i + 1].designer);
+					REVIEW[i].ryear, REVIEW[i + 1].ryear;
+					REVIEW[i].rmon, REVIEW[i + 1].rmon;
+					REVIEW[i].rday, REVIEW[i + 1].rday;
+					REVIEW[i].rhour,REVIEW[i + 1].rhour;
+					REVIEW[i].rmin,REVIEW[i + 1].rmin;
+					REVIEW[i].year,REVIEW[i + 1].year;
+					REVIEW[i].mon, REVIEW[i + 1].mon;
+					REVIEW[i].day, REVIEW[i + 1].day;
+					REVIEW[i].hour,REVIEW[i + 1].hour;
+					REVIEW[i].min, REVIEW[i + 1].min;
+					strcpy(REVIEW[i].detail, REVIEW[i + 1].detail);
+					REVIEW[i].score = REVIEW[i + 1].score;
+				}
+				review_count--;
+				review_write();
+				clearconsole();
+				return 0;
 			}
 		}
 
@@ -5559,6 +5587,7 @@ int member_initial_screen(int index) { //로그인 성공시 회원 초기화면
 			}
 			if (xx > 87 && xx < 108) {
 				if (yy > 31 && yy < 37) {
+					design_column_UI(120, 12, 6, 122, 13, "리뷰관리", 15);
 					big_box(87, 18, 6, 96, 20, "예약", 6);
 					big_box(87, 25, 6, 91, 27, "예약 내역 조회", 6);
 					big_box(87, 32, 10, 93, 34, "정보 수정", 6);
@@ -5566,6 +5595,7 @@ int member_initial_screen(int index) { //로그인 성공시 회원 초기화면
 					xx, yy = 0;
 				}
 				else if (yy > 17 && yy < 22) {
+					design_column_UI(120, 12, 6, 122, 13, "리뷰관리", 15);
 					big_box(87, 18, 10, 96, 20, "예약", 6);
 					big_box(87, 25, 6, 91, 27, "예약 내역 조회", 6);
 					big_box(87, 32, 6, 93, 34, "정보 수정", 6);
@@ -5573,6 +5603,7 @@ int member_initial_screen(int index) { //로그인 성공시 회원 초기화면
 					xx, yy = 0;
 				}
 				else if (yy > 24 && yy < 30) {
+					design_column_UI(120, 12, 6, 122, 13, "리뷰관리", 15);
 					big_box(87, 18, 6, 96, 20, "예약", 6);
 					big_box(87, 25, 10, 91, 27, "예약 내역 조회", 6);
 					big_box(87, 32, 6, 93, 34, "정보 수정", 6);
@@ -5582,6 +5613,9 @@ int member_initial_screen(int index) { //로그인 성공시 회원 초기화면
 			if (xx > 120 && xx < 131) {
 				if (yy > 11 && yy < 15) {
 					design_column_UI(120, 12, 10, 122, 13, "리뷰관리", 15);
+					big_box(87, 18, 6, 96, 20, "예약", 6);
+					big_box(87, 25, 6, 91, 27, "예약 내역 조회", 6);
+					big_box(87, 32, 6, 93, 34, "정보 수정", 6);
 					choice = 4;
 				}
 			}
