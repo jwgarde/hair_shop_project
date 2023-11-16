@@ -282,16 +282,15 @@ int compare_reviews(const void* a, const void* b) { //리뷰 정렬
 	const m_review* review_b = (const m_review*)b;
 
 	// 년, 월, 일, 시간, 분 순서로 비교
-	if (review_a->ryear != review_b->ryear) return review_a->ryear - review_b->ryear;
-	if (review_a->rmon != review_b->rmon) return review_a->rmon - review_b->rmon;
-	if (review_a->rday != review_b->rday) return review_a->rday - review_b->rday;
-	if (review_a->rhour != review_b->rhour) return review_a->rhour - review_b->rhour;
-	if (review_a->rmin != review_b->rmin) return review_a->rmin - review_b->rmin;
+	if (review_b->year != review_a->year) return review_b->year - review_a->year;
+	if (review_b->mon != review_a->mon) return review_b->mon - review_a->mon;
+	if (review_b->day != review_a->day) return review_b->day - review_a->day;
+	if (review_b->hour != review_a->hour) return review_b->hour - review_a->hour;
+	if (review_b->min != review_a->min) return review_b->min - review_a->min;
 
 	// 모든 필드가 동일한 경우 순서를 유지
 	return 0;
 }
-
 // 비교 함수: 두 예약을 비교하여 정렬 순서 결정
 int compareReservations(const d_reserve* a, const d_reserve* b) {
 	if (a->hour != b->hour) {
@@ -302,7 +301,6 @@ int compareReservations(const d_reserve* a, const d_reserve* b) {
 	}
 	return 0; // 예약 시간이 같을 경우
 }
-
 // 예약 배열을 시간 (시와 분)으로 정렬하는 함수
 void sortReservationsByTime(d_reserve* reservations, int numReservations) {
 	int i, j;
@@ -319,7 +317,6 @@ void sortReservationsByTime(d_reserve* reservations, int numReservations) {
 		}
 	}
 }
-
 int getMaskedInput() { //디자이너 비밀번호 생일 입력 할 *로 출력 해주는 함수
 	int birth = 0;
 	int ch;
@@ -5571,7 +5568,7 @@ int member_initial_screen(int index) { //로그인 성공시 회원 초기화면
 		big_box(87, 32, 6, 93, 34, "정보 수정");
 		small_box(68, 46, 6, 72, 47, "로그아웃", 6);
 		small_box(110, 46, 6, 116, 47, "다음", 6);
-		design_column_UI(120, 12, 6, 122, 13, "리뷰관리", 15);
+		design_column_UI(120, 12, 6, 122, 13, "리뷰관리", 7);
 	/*	ExClick();*/
 		while (1) {
 			xx = 0, yy = 0;
