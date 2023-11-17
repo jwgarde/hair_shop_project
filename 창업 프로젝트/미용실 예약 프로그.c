@@ -4122,7 +4122,7 @@ int designer_initial_screen(int index) { //디자이너 초기 화면
 		textcolor(6);
 		printf("%s님", d_all[index].name);
 		big_box(87, 14, 6, 94, 16, "예약 관리");
-		design_column_UI(120, 12, 6, 122, 13, "리뷰관리", 7);
+		design_column_UI(120, 8, 6, 122, 9, "리뷰관리", 7);
 		big_box(87, 22, 6, 93, 24, "디자인 관리");
 		big_box(87, 30, 6, 93, 32, "프로필 관리");
 		small_box(68, 46, 6, 72, 47, "로그아웃", 6);
@@ -4143,7 +4143,7 @@ int designer_initial_screen(int index) { //디자이너 초기 화면
 					big_box(87, 22, 10, 93, 24, "디자인 관리");
 					big_box(87, 14, 6, 94, 16, "예약 관리");
 					big_box(87, 30, 6, 93, 32, "프로필 관리");
-					design_column_UI(120, 12, 6, 122, 13, "리뷰관리", 7);
+					design_column_UI(120, 8, 6, 122, 9, "리뷰관리", 7);
 					choice = 2;
 					xx, yy = 0;
 				}
@@ -4151,23 +4151,23 @@ int designer_initial_screen(int index) { //디자이너 초기 화면
 					big_box(87, 22, 6, 93, 24, "디자인 관리");
 					big_box(87, 14, 6, 94, 16, "예약 관리");
 					big_box(87, 30, 10, 93, 32, "프로필 관리");
-					design_column_UI(120, 12, 6, 122, 13, "리뷰관리", 7);
+					design_column_UI(120, 8, 6, 122, 9, "리뷰관리", 7);
 					choice = 3;
 				}
 				else if (yy > 13 && yy < 19) {
 					big_box(87, 22, 6, 93, 24, "디자인 관리");
 					big_box(87, 14, 10, 94, 16, "예약 관리");
 					big_box(87, 30, 6, 93, 32, "프로필 관리");
-					design_column_UI(120, 12, 6, 122, 13, "리뷰관리", 7);
+					design_column_UI(120, 8, 6, 122, 9, "리뷰관리", 7);
 					choice = 1;
 				}
 			}
 			if (xx > 120 && xx < 131) {
-				if (yy > 11 && yy < 15) {
+				if (yy > 7 && yy < 11) {
 					big_box(87, 22, 6, 93, 24, "디자인 관리");
 					big_box(87, 14, 6, 94, 16, "예약 관리");
 					big_box(87, 30, 6, 93, 32, "프로필 관리");
-					design_column_UI(120, 12, 10, 122, 13, "리뷰관리", 15);
+					design_column_UI(120, 8, 10, 122, 9, "리뷰관리", 7);
 					choice = 4;
 				}
 			}
@@ -4193,6 +4193,7 @@ int designer_initial_screen(int index) { //디자이너 초기 화면
 						}
 						else if (choice == 4) {
 							another_review_see(index);
+							clearconsole();
 							choice = 0;
 							break;
 						}
