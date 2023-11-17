@@ -6259,6 +6259,135 @@ int member_login() { //회원 로그인 하는 부분
 	}
 
 }
+int admin_login() {
+	char phone_num[15] = "01073555364";
+	char pw_num[15] = "1234";
+	char phone[15] = " ";
+	char pw[15] = " ";
+	int xx = 0, yy = 0, lr = 0;
+	int check = 0;
+	box_clear();
+	goto_xy(91, 5);
+	textcolor(6);
+	printf("관리자 로그인");
+	small_box(68, 46, 6, 74, 47, "이전", 6);
+	small_box(110, 46, 6, 115, 47, "로그인", 6);
+	goto_xy(83, 19);
+	printf("전화번호(11자리 ex) 010xxxxxxxx ");
+	goto_xy(83, 21);
+	printf(":");
+	goto_xy(83, 28);
+	printf("비밀번호(숫자 4자리) ex) 0000");
+	goto_xy(83, 30);
+	printf(":");
+	while (1) {
+		xx = 0, yy = 0;
+		click(&xx, &yy);
+		if (xx > 68 && xx < 83) {
+			if (yy > 45 && yy < 49) {
+				small_box(68, 46, 10, 74, 47, "이전", 6);
+				Sleep(500);
+				return;
+			}
+		}
+		if (xx > 83 && xx < 115) {
+			if (yy > 19 && yy < 23) {
+				textcolor(6);
+				goto_xy(85, 21);
+				printf("                                 ");
+				goto_xy(85, 21);
+				EnableConsoleCursor();
+				fflush(stdin);
+				scanf("%s", phone);
+				fflush(stdin);
+				HideCursor();
+				check = isValidPhone_or_pw_Number(phone, 1);
+				if (check == 0) {
+					strcpy(phone, " ");
+					goto_xy(85, 21);
+					printf("형식이 올바르지 않습니다..");
+				}
+
+			}
+		}
+		if (xx > 83 && xx < 115) {
+			if (yy > 28 && yy < 32) {
+				textcolor(6);
+				goto_xy(85, 30);
+				printf("                                 ");
+				goto_xy(85, 30);
+				EnableConsoleCursor();
+				char ch;
+				int i = 0;
+				while (1) {
+					ch = _getch();
+					fflush(stdin);
+					// Check if Enter key is pressed (ASCII value 13)
+					if (ch == 13) {
+						pw[i] = '\0'; // Null-terminate the password string
+						break;
+					}
+
+					// Check if the input is a printable character (ASCII range 32 to 126)
+					if (ch == 8 && i > 0) { // Backspace (ASCII value 8)
+						i--;
+						printf("\b \b"); // Move the cursor back, print space to erase the last character, move the cursor back again
+					}
+					else if (ch >= 32 && ch <= 126 && i < 4) { // Printable characters (ASCII range 32 to 126)
+						printf("*");
+						pw[i] = ch; // Store the character in the password array
+						i++;
+					}
+				}
+				HideCursor();
+				check = isValidPhone_or_pw_Number(pw, 2);
+				if (check == 0) {
+					strcpy(pw, " ");
+					goto_xy(85, 30);
+					printf("형식이 올바르지 않습니다..");
+				}
+			}
+		}
+		if (xx > 110 && xx < 125) {
+			if (yy > 45 && yy < 49) {
+				if (strcmp(pw, " ") != 0 && strcmp(phone, " ") != 0) {
+					small_box(110, 46, 10, 115, 47, "로그인", 6);
+					Sleep(500);
+					if (strcmp(phone_num, phone) == 0 && strcmp(pw_num, pw) == 0) {
+						check = 1;
+						admin_initial_screen();
+						return 1;
+					}
+					else {
+						small_box(110, 46, 6, 115, 47, "로그인", 6);
+						goto_xy(78, 40);
+						textcolor(4);
+						printf("전화번호 혹은 비밀번호를 다시 입력 해주세요.");
+					}
+				}
+
+			}
+		}
+		xx = 0, yy = 0;
+	}
+}
+int admin_initial_screen() {
+	int xx, yy, lr = 0;
+	int choice = 0;
+	while (1) {
+		box_clear();
+		basic_UI(60, 3);
+		goto_xy(94, 5);
+		printf("관리자");
+		big_box(87, 14, 6, 94, 16, "회원 관리");
+		big_box(87, 22, 6, 92, 24, "디자이너 관리");
+		big_box(87, 30, 6, 94, 32, "매출 관리");
+		small_box(68, 46, 6, 72, 47, "로그아웃", 6);
+		small_box(110, 46, 6, 116, 47, "다음", 6);
+		design_column_UI(120, 9, 6, 122, 10, "리뷰관리", 7);
+		ExClick();
+	}
+}
 void login_menu_choice() { // 로그인 선택 하는 부분 (회원 관리자 디자이너)
 	int xx = 0, yy = 0, lr = 0;
 	int choice = 0;
@@ -6274,7 +6403,6 @@ void login_menu_choice() { // 로그인 선택 하는 부분 (회원 관리자 �
 		big_box(87, 31, 6, 95, 33, "관리자", 6);
 		small_box(68, 46, 6, 74, 47, "이전", 6);
 		small_box(110, 46, 6, 116, 47, "다음", 6);
-		//ExClick();
 		while (1) {
 			check = 0;
 			xx = 0, yy = 0;
@@ -6299,6 +6427,12 @@ void login_menu_choice() { // 로그인 선택 하는 부분 (회원 관리자 �
 					big_box(87, 31, 6, 95, 33, "관리자", 6);
 					choice = 2;
 				}
+				else if (yy > 30 && yy < 36) {
+					big_box(87, 15, 6, 96, 17, "회원", 6);
+					big_box(87, 23, 6, 94, 25, "디자이너", 6);
+					big_box(87, 31, 10, 95, 33, "관리자", 6);
+					choice = 3;
+				}
 			}
 			if (xx > 110 && xx < 125) {
 				if (yy > 45 && yy < 49) {
@@ -6314,6 +6448,9 @@ void login_menu_choice() { // 로그인 선택 하는 부분 (회원 관리자 �
 							check = designer_login();
 							choice = 0;
 							break;
+						}
+						else if (choice == 3) {
+							check = admin_login();
 						}
 					}
 				}
