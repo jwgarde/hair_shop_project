@@ -2049,6 +2049,7 @@ int designer_choice(int index) {
 		printf("디자이너");
 		small_box(68, 46, 6, 74, 47, "이전", 6);
 		designer_print(choice);
+		/*ExClick();*/
 		while (1) {
 			xx = 0, yy = 0;
 			click(&xx, &yy);
@@ -2082,7 +2083,7 @@ int designer_choice(int index) {
 						else if (yy > 27 && yy < 31) {
 							r_check = 1;
 						}
-						else {
+						else if(yy > 39 && yy <43) {
 							r_check = 2;
 						}
 					}
@@ -2093,7 +2094,7 @@ int designer_choice(int index) {
 						else if (r_check == 1) {
 							p_y = 29;
 						}
-						else {
+						else if(r_check == 2){
 							p_y = 41;
 						}
 						textcolor(10);
@@ -2126,6 +2127,15 @@ int designer_choice(int index) {
 						}
 						Sleep(700);
 						another_review_see(choice);
+						break;
+					}
+					else {
+						designer_print(choice);
+						Sleep(700);
+						check = date_choice(index, choice);
+						if (check == 1) {
+							return;
+						}
 						break;
 					}
 				}
@@ -2248,7 +2258,7 @@ int h_review_print(int x, int y, int page_count, int count, int review_i, int ch
 	}
 	basic_UI(x, y);
 	goto_xy(x + 34, y + 2);
-	printf("리뷰관리");
+	printf("리뷰정보");
 	small_box(x + 8, 46, 6, x + 14, 47, "이전", 6);
 	goto_xy(x + 31, 42);
 	printf("◁");
@@ -4112,11 +4122,12 @@ int designer_initial_screen(int index) { //디자이너 초기 화면
 		textcolor(6);
 		printf("%s님", d_all[index].name);
 		big_box(87, 14, 6, 94, 16, "예약 관리");
+		design_column_UI(120, 12, 6, 122, 13, "리뷰관리", 7);
 		big_box(87, 22, 6, 93, 24, "디자인 관리");
 		big_box(87, 30, 6, 93, 32, "프로필 관리");
-		big_box(87, 38, 6, 94, 40, "리뷰 관리");
 		small_box(68, 46, 6, 72, 47, "로그아웃", 6);
 		small_box(110, 46, 6, 116, 47, "다음", 6);
+		/*ExClick();*/
 		while (1) {
 			xx = 0, yy = 0;
 			click(&xx, &yy);
@@ -4132,7 +4143,7 @@ int designer_initial_screen(int index) { //디자이너 초기 화면
 					big_box(87, 22, 10, 93, 24, "디자인 관리");
 					big_box(87, 14, 6, 94, 16, "예약 관리");
 					big_box(87, 30, 6, 93, 32, "프로필 관리");
-					big_box(87, 38, 6, 94, 40, "리뷰 관리");
+					design_column_UI(120, 12, 6, 122, 13, "리뷰관리", 7);
 					choice = 2;
 					xx, yy = 0;
 				}
@@ -4140,17 +4151,25 @@ int designer_initial_screen(int index) { //디자이너 초기 화면
 					big_box(87, 22, 6, 93, 24, "디자인 관리");
 					big_box(87, 14, 6, 94, 16, "예약 관리");
 					big_box(87, 30, 10, 93, 32, "프로필 관리");
-					big_box(87, 38, 6, 94, 40, "리뷰 관리");
+					design_column_UI(120, 12, 6, 122, 13, "리뷰관리", 7);
 					choice = 3;
 				}
 				else if (yy > 13 && yy < 19) {
 					big_box(87, 22, 6, 93, 24, "디자인 관리");
 					big_box(87, 14, 10, 94, 16, "예약 관리");
 					big_box(87, 30, 6, 93, 32, "프로필 관리");
-					big_box(87, 38, 6, 94, 40, "리뷰 관리");
+					design_column_UI(120, 12, 6, 122, 13, "리뷰관리", 7);
 					choice = 1;
 				}
-				
+			}
+			if (xx > 120 && xx < 131) {
+				if (yy > 11 && yy < 15) {
+					big_box(87, 22, 6, 93, 24, "디자인 관리");
+					big_box(87, 14, 6, 94, 16, "예약 관리");
+					big_box(87, 30, 6, 93, 32, "프로필 관리");
+					design_column_UI(120, 12, 10, 122, 13, "리뷰관리", 15);
+					choice = 4;
+				}
 			}
 			if (xx > 110 && xx < 125) {
 				if (yy > 45 && yy < 49) {
@@ -4169,6 +4188,11 @@ int designer_initial_screen(int index) { //디자이너 초기 화면
 						}
 						else if (choice == 1) {
 							designer_reserve_manage(index);
+							choice = 0;
+							break;
+						}
+						else if (choice == 4) {
+							another_review_see(index);
 							choice = 0;
 							break;
 						}
@@ -5834,7 +5858,7 @@ int d_review_see(int review_i) {
 	goto_xy(167, 4);
 	printf("[X]");
 	goto_xy(133, 5);
-	printf("리뷰정보");
+	printf("상세정보");
 	for (int i = 0; i < designer_count; i++) {
 		if (strcmp(H_REVIEW[review_i].designer, d_all[i].name) == 0) {
 			same_desinger = i;
