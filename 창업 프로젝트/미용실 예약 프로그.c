@@ -179,6 +179,27 @@ typedef struct {
 	int index;
 }m_review;//본인이 작성한 리뷰
 m_review M_REVIEW[30];
+typedef struct {
+	char name[20];
+	char phone_num[20];
+	char sort[15];
+	char hair[30];
+	char designer[20];
+	int ryear;
+	int rmon;
+	int rday;
+	int rhour;
+	int rmin;
+	int year;
+	int mon;
+	int day;
+	int hour;
+	int min;
+	char detail[240];
+	int score;
+	int index;
+}h_review;
+h_review H_REVIEW[50];
 // 윤년 여부
 int isLeapYear(int year) {
 	if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
@@ -280,6 +301,20 @@ void sort_member_reserve(int m_reserve_count) {
 int compare_reviews(const void* a, const void* b) { //리뷰 정렬
 	const m_review* review_a = (const m_review*)a;
 	const m_review* review_b = (const m_review*)b;
+
+	// 년, 월, 일, 시간, 분 순서로 비교
+	if (review_b->year != review_a->year) return review_b->year - review_a->year;
+	if (review_b->mon != review_a->mon) return review_b->mon - review_a->mon;
+	if (review_b->day != review_a->day) return review_b->day - review_a->day;
+	if (review_b->hour != review_a->hour) return review_b->hour - review_a->hour;
+	if (review_b->min != review_a->min) return review_b->min - review_a->min;
+
+	// 모든 필드가 동일한 경우 순서를 유지
+	return 0;
+}
+int compare_reviews_2(const void* a, const void* b) { //리뷰 정렬
+	const h_review* review_a = (const h_review*)a;
+	const h_review* review_b = (const h_review*)b;
 
 	// 년, 월, 일, 시간, 분 순서로 비교
 	if (review_b->year != review_a->year) return review_b->year - review_a->year;
@@ -773,6 +808,38 @@ void basic_UI(int x, int y) { // 기본 UI
 	}
 	printf("┛");
 }
+void last_basic_UI(int x, int y) { // 기본 UI
+	textcolor(DarkYellow);
+	goto_xy(x, y);
+	printf("┏");
+	for (int i = 0; i < 35; i++)
+	{
+		printf("━");
+	}
+	printf("┓");
+	for (int i = 0; i < 45; i++) {
+		y += 1;
+		if (i == 3) {
+			goto_xy(x, y);
+			printf("┣");
+			for (int i = 0; i < 35; i++) {
+				printf("━");
+			}
+			printf("┫");
+		}
+		else {
+			goto_xy(x, y);
+			printf("┃                                                                      ┃");
+		}
+	}
+	goto_xy(x, y + 1);
+	printf("┗");
+	for (int i = 0; i < 35; i++)
+	{
+		printf("━");
+	}
+	printf("┛");
+}
 void m_basic_UI() { // 로그인 후 회원 기본 UI
 	int x = 60;
 	int y = 3;
@@ -856,6 +923,29 @@ void long_box_UI(int x, int y, int i, int color) {
 			}
 		}
 	}
+}
+void long_box_U2(int x, int y, int color) {
+	textcolor(color);
+	goto_xy(x, y);
+	printf("┏");
+	for (int i = 0; i < 30; i++)
+	{
+		printf("━");
+	}
+	printf("┓");
+
+	for (int i = 0; i < 1; i++) {
+		y += 1;
+		goto_xy(x, y);
+		printf("┃                                                            ┃");
+	}
+	goto_xy(x, y + 1);
+	printf("┗");
+	for (int i = 0; i < 30; i++)
+	{
+		printf("━");
+	}
+	printf("┛");
 }
 void delete_modify_finish(int x, int y, char* str) {
 	textcolor(DarkYellow);
@@ -1877,11 +1967,17 @@ void designer_print(int choice) {
 	int len;
 	int color = 6;
 	for (int i = 0; i < 3; i++) {
+		//여기서 i를 함수로 던져줘소 리뷰를 가져올 것
 		designer_seeUI(x, y, 6);
 		if (i < designer_count) {
 			if (choice == i) {
 				designer_seeUI(x, y, 10);
 				textcolor(6);
+			}
+			int h_review_count = take_h_review(i);
+			float score = 0;
+			for (int k = 0; k < h_review_count; k++) {
+				score += H_REVIEW[k].score;
 			}
 			goto_xy(nx, ny);
 			printf("%s 디자이너", d_all[i].n_name);
@@ -1900,6 +1996,27 @@ void designer_print(int choice) {
 			textcolor(6);
 			goto_xy(nx, ny + 7);
 			printf("★");
+			if (h_review_count != 0) {
+				score = score / h_review_count;
+			}
+			else {
+				score = 0.0;  // 또는 다른 기본값으로 설정
+			}
+			goto_xy(nx + 3, ny + 7);
+			printf("%.1f", score);
+
+			goto_xy(nx + 7, ny + 7);
+			if (h_review_count >= 100) {
+				printf("방문자 리뷰 100+");
+			}
+			else {
+				if (h_review_count == 0) {
+					printf("방문자 리뷰 0");
+				}
+				else {
+					printf("방문자 리뷰 %d", h_review_count);
+				}
+			}
 			buid(i, px, py, 0);
 			y += 12;
 			ny += 12;
@@ -1919,6 +2036,9 @@ int designer_choice(int index) {
 	int xx, yy, lr = 0;
 	int choice = -1;
 	int check = 0;
+	int r_check = -1;
+	float score = 0;
+	int h_review_count = 0;
 	while (1) {
 		box_clear();
 		xx, yy, lr = 0;
@@ -1929,7 +2049,6 @@ int designer_choice(int index) {
 		printf("디자이너");
 		small_box(68, 46, 6, 74, 47, "이전", 6);
 		designer_print(choice);
-		//ExClick();
 		while (1) {
 			xx = 0, yy = 0;
 			click(&xx, &yy);
@@ -1953,17 +2072,241 @@ int designer_choice(int index) {
 			}
 			if (choice != previous_choice) {
 				if (choice < designer_count) {
-					designer_print(choice);
-					Sleep(700);
-					check = date_choice(index, choice);
-					if (check == 1) {
-						return;
+					int p_x = 70;
+					int p_y = 17;
+					r_check = -1;
+					if (xx > 71 && xx < 91) {
+						if (yy > 15 && yy < 19) {
+							r_check = 0;
+						}
+						else if (yy > 27 && yy < 31) {
+							r_check = 1;
+						}
+						else {
+							r_check = 2;
+						}
 					}
-					break;
+					if (r_check > -1) {
+						if (r_check == 0) {
+							p_y = 17;
+						}
+						else if (r_check == 1) {
+							p_y = 29;
+						}
+						else {
+							p_y = 41;
+						}
+						textcolor(10);
+						h_review_count = take_h_review(choice);
+						score = 0;
+						for (int k = 0; k < h_review_count; k++) {
+							score += H_REVIEW[k].score;
+						}
+						goto_xy(p_x, p_y);
+						printf("★");
+						if (h_review_count != 0) {
+							score = score / h_review_count;
+						}
+						else {
+							score = 0.0;  // 또는 다른 기본값으로 설정
+						}
+						goto_xy(p_x + 3, p_y);
+						printf("%.1f", score);
+						goto_xy(p_x + 7, p_y);
+						if (h_review_count >= 100) {
+							printf("방문자 리뷰 100+");
+						}
+						else {
+							if (h_review_count == 0) {
+								printf("방문자 리뷰 0");
+							}
+							else {
+								printf("방문자 리뷰 %d", h_review_count);
+							}
+						}
+						Sleep(700);
+						another_review_see(choice);
+						break;
+					}
 				}
 			}
 		}
 	}
+}
+int another_review_see(int index) {
+	clearconsole();
+	basic_UI(60, 3);
+	goto_xy(94, 5);
+	printf("리뷰");
+	int page_count = 1;
+	int count = 6;
+	int review_i = 0;
+	int xx, yy;
+	int c_i = -1;
+	int check = 0;
+	int x = 0, y = 0;
+	while (1) {
+		int h_review_count = take_h_review(index);
+		review_i = h_review_print(60, 3, page_count, count, review_i, -1);
+		if (review_i == (count * page_count) - 1) {
+			review_i++;
+		}
+		/*ExClick();*/
+		while (1) {
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (xx > 68 && xx < 83) {
+				if (yy > 45 && yy < 49) {
+					small_box(68, 46, 10, 74, 47, "이전", 6);
+					Sleep(500);
+					return;
+				}
+			}
+			if (xx > 89 && xx < 95 && yy > 40 && yy < 44) {
+				if (page_count != 1) {
+					textcolor(10);
+					goto_xy(91, 42);
+					printf("◁");
+					Sleep(500);
+					review_i = (page_count - 2) * count;
+					page_count--;
+					break;
+				}
+			}
+			if (xx > 97 && xx < 104 && yy > 40 && yy < 44) {
+				if (strcmp(H_REVIEW[review_i].name, " ") != 0) {
+					textcolor(10);
+					goto_xy(101, 42);
+					printf("▷");
+					Sleep(500);
+					page_count++;
+					break;
+				}
+			}
+			if (xx > 64 && xx < 128) {
+				if (yy > 11 && yy < 15) {
+					if (H_REVIEW[(page_count * count) - 6].index != -1) {
+						review_i = (page_count * count) - count;
+						h_review_print(22, 3, page_count, count, review_i, (page_count * count) - 6);
+						c_i = (page_count * count) - 6;
+						check = 1;
+					}
+				}
+				else if (yy > 15 && yy < 19) {
+					if (M_REVIEW[(page_count * count) - 5].index != -1) {
+						review_i = (page_count * count) - count;
+						h_review_print(22, 3, page_count, count, review_i, (page_count * count) - 5);
+						check = 1;
+						c_i = (page_count * count) - 5;
+					}
+				}
+				else if (yy > 19 && yy < 23) {
+					if (M_REVIEW[(page_count * count) - 4].index != -1) {
+						review_i = (page_count * count) - count;
+						h_review_print(22, 3, page_count, count, review_i, (page_count * count) - 4);
+						check = 1;
+						c_i = (page_count * count) - 4;
+					}
+				}
+				else if (yy > 23 && yy < 27) {
+					if (M_REVIEW[(page_count * count) - 3].index != -1) {
+						review_i = (page_count * count) - count;
+						h_review_print(22, 3, page_count, count, review_i, (page_count * count) - 3);
+						check = 1;
+						c_i = (page_count * count) - 3;
+					}
+				}
+				else if (yy > 27 && yy < 31) {
+					if (M_REVIEW[(page_count * count) - 2].index != -1) {
+						review_i = (page_count * count) - count;
+						h_review_print(22, 3, page_count, count, review_i, (page_count * count) - 2);
+						check = 1;
+						c_i = (page_count * count) - 2;
+					}
+				}
+				else if (yy > 31 && yy < 35) {
+					if (M_REVIEW[(page_count * count) - 1].index != -1) {
+						review_i = (page_count * count) - count;
+						h_review_print(22, 3, page_count, count, review_i, (page_count * count) - 1);
+						check = 1;
+						c_i = (page_count * count) - 1;
+					}
+				}
+			}
+			if (check == 1) {
+				d_review_see(c_i);
+				review_i = (page_count * count) - count;
+				check = 0;
+				break;
+			}
+		}
+	}
+}
+int h_review_print(int x, int y, int page_count, int count, int review_i, int choice_i) {
+	if (choice_i > -1) {
+		basic_UI_DELETE(30, 3);
+	}
+	basic_UI(x, y);
+	goto_xy(x + 34, y + 2);
+	printf("리뷰관리");
+	small_box(x + 8, 46, 6, x + 14, 47, "이전", 6);
+	goto_xy(x + 31, 42);
+	printf("◁");
+	goto_xy(x + 36, 42);
+	printf("%d", page_count);
+	goto_xy(x + 41, 42);
+	printf("▷");
+	x = x + 5;
+	y = y + 9;
+	for (review_i; review_i < count * page_count; review_i++) {
+		goto_xy(x, y);
+		if (strcmp(H_REVIEW[review_i].name, " ") == 0) {
+			break;
+		}
+		else {
+			textcolor(6);
+			if (choice_i != -1 && choice_i == review_i) {
+				long_box_U2(x, y, 10);
+			}
+			else {
+				long_box_U2(x, y, 6);
+			}
+			textcolor(6);
+			goto_xy(x + 5, y+1); 
+			printf("%s", H_REVIEW[review_i].name); // 글자가 1개인 경우 전체 출력
+			goto_xy(x + 7, y+1);
+			printf("    ");
+			goto_xy(x + 7, y+1);
+			size_t len = wcslen(H_REVIEW[review_i].name);
+			for (int i = 1; i < len; i++) {
+				printf("*");
+			}
+			goto_xy(x + 17, y + 1);
+			printf("%s", H_REVIEW[review_i].hair);
+			goto_xy(x + 31, y + 1);
+			printf("%02d.%02d.%02d", H_REVIEW[review_i].year, H_REVIEW[review_i].mon, H_REVIEW[review_i].day);
+			goto_xy(x + 50, y + 1);
+			textcolor(6);
+			if (H_REVIEW[review_i].score == 1) {
+				printf("★☆☆☆☆");
+			}
+			else if (H_REVIEW[review_i].score == 2) {
+				printf("★★☆☆☆");
+			}
+			else if (H_REVIEW[review_i].score == 3) {
+				printf("★★★☆☆");
+			}
+			else if (H_REVIEW[review_i].score == 4) {
+				printf("★★★★☆");
+			}
+			else {
+				printf("★★★★★");
+			}
+			y -= 1;
+			y += 5;
+		}
+	}
+	return review_i;
 }
 int day_of_week(int year, int month) //총 일수를 구하는 함수(해당 월 1일이 무슨요일인지 알기위해)
 
@@ -4136,6 +4479,39 @@ int take_m_review(int index) {
 	qsort(M_REVIEW, m_review_count, sizeof(m_review), compare_reviews);
 	return m_review_count;
 }
+int take_h_review(int index) {
+	int h_review_count = 0;
+	review_read();
+	for (int i = 0; i < 50; i++) {
+		strcpy(H_REVIEW[i].name, " ");
+		H_REVIEW[i].index = -1;
+	}
+	for (int i = 0; i < review_count; i++) {
+		if (strcmp(REVIEW[i].designer, d_all[index].name) == 0) {
+			strcpy(H_REVIEW[h_review_count].name, REVIEW[i].name);
+			strcpy(H_REVIEW[h_review_count].phone_num, REVIEW[i].phone_num);
+			strcpy(H_REVIEW[h_review_count].designer, REVIEW[i].designer);
+			strcpy(H_REVIEW[h_review_count].sort, REVIEW[i].sort);
+			strcpy(H_REVIEW[h_review_count].hair, REVIEW[i].hair);
+			H_REVIEW[h_review_count].ryear = REVIEW[i].ryear;
+			H_REVIEW[h_review_count].rmon = REVIEW[i].rmon;
+			H_REVIEW[h_review_count].rday = REVIEW[i].rday;
+			H_REVIEW[h_review_count].rhour = REVIEW[i].rhour;
+			H_REVIEW[h_review_count].rmin = REVIEW[i].rmin;
+			H_REVIEW[h_review_count].year = REVIEW[i].year;
+			H_REVIEW[h_review_count].mon = REVIEW[i].mon;
+			H_REVIEW[h_review_count].day = REVIEW[i].day;
+			H_REVIEW[h_review_count].hour = REVIEW[i].hour;
+			H_REVIEW[h_review_count].min = REVIEW[i].min;
+			H_REVIEW[h_review_count].score = REVIEW[i].score;
+			strcpy(H_REVIEW[h_review_count].detail, REVIEW[i].detail);
+			H_REVIEW[h_review_count].index = i;
+			h_review_count++;
+		}
+	}
+	qsort(H_REVIEW, h_review_count, sizeof(h_review), compare_reviews_2);
+	return h_review_count;
+}
 int take_d_reserve(int index, int year, int mon,int day) { //코드 뻑이면 여기 문제
 	int d_reserve_count = 0;
 	int dr_index = -1;
@@ -5442,6 +5818,97 @@ int management_review(int review_i) {
 			}
 		}
 
+	}
+}
+int d_review_see(int review_i) {
+	last_basic_UI(98, 3);
+	textcolor(6);
+	int same_desinger = -1;
+	int x = 111;
+	int y = 37;
+	int xx = 0, yy = 0;
+	char detail[240] = " ";
+	char ch = ' ';
+	int change_check = 0;
+	strcpy(detail, H_REVIEW[review_i].detail);
+	goto_xy(167, 4);
+	printf("[X]");
+	goto_xy(133, 5);
+	printf("리뷰정보");
+	for (int i = 0; i < designer_count; i++) {
+		if (strcmp(H_REVIEW[review_i].designer, d_all[i].name) == 0) {
+			same_desinger = i;
+		}
+	}
+	textcolor(15);
+	goto_xy(110, 13);
+	if (same_desinger > -1) {
+		printf("디  자  이  너 :       %s", d_all[same_desinger].n_name);
+	}
+	else {
+		printf("디  자  이  너 :       정보없음");
+	}
+	goto_xy(110, 18);
+	printf("디 자 인 종 류 :       %s", H_REVIEW[review_i].sort);
+	goto_xy(110, 23);
+	printf("디    자    인 :       %s", H_REVIEW[review_i].hair);
+	goto_xy(126, 28);
+	printf("만      족      도");
+	goto_xy(128, 31);
+	textcolor(6);
+	if (H_REVIEW[review_i].score == 1) {
+		printf("★ ☆ ☆ ☆ ☆");
+	}
+	else if (H_REVIEW[review_i].score == 2) {
+		printf("★ ★ ☆ ☆ ☆");
+	}
+	else if (H_REVIEW[review_i].score == 3) {
+		printf("★ ★ ★ ☆ ☆");
+	}
+	else if (H_REVIEW[review_i].score == 4) {
+		printf("★ ★ ★ ★ ☆");
+	}
+	else {
+		printf("★ ★ ★ ★ ★");
+	}
+	add_box_UI(107, 34, 15, 128, 38, " ");
+	textcolor(15);
+	int len = strlen(detail);
+	int len_2 = 0;
+	int score = 0;
+	goto_xy(x, y);
+	for (int i = 0; i < len; i++) {
+		if (len < sizeof(detail) - 2) {
+			if (len_2 >= 161 - 111 && (len_2 % (161 - 111)) == 0) {
+				if (y >= 41 - 1) {
+					break;
+				}
+				else {
+					handleNewline(&x, &y);
+					len_2 = 0;
+					len_2++;
+					printf("%c", detail[i]);
+				}
+			}
+			else {
+				len_2++;
+				printf("%c", detail[i]);
+			}
+		}
+	}
+	while (1) {
+		xx = 0, yy = 0;
+		click(&xx, &yy);
+		if (xx > 164 && xx < 172) {
+			if (yy > 2 && yy < 6) {
+				textcolor(4);
+				goto_xy(167, 4);
+				printf("[X]");
+				Sleep(500);
+				clearconsole();
+				return 1;
+			}
+		}
 	}
 }
 void review_see_and_delete_modifying(int index) {
