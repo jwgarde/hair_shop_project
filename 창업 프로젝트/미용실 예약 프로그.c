@@ -506,6 +506,9 @@ void file_read() { // 파일 읽어서 구조체에 저장하는 함수
 		}
 	}
 	fclose(member);
+	for (int i = member_count; i < MAX; i++) {
+		strcpy(all[i].name, " ");
+	}
 }
 void file_append() { //파일 이어쓰는 함수
 	FILE* member;
@@ -840,9 +843,7 @@ void last_basic_UI(int x, int y) { // 기본 UI
 	}
 	printf("┛");
 }
-void m_basic_UI() { // 로그인 후 회원 기본 UI
-	int x = 60;
-	int y = 3;
+void m_basic_UI(int x, int y) { // 로그인 후 회원 기본 UI
 	textcolor(DarkYellow);
 	goto_xy(x, y);
 	printf("┏");
@@ -2317,6 +2318,67 @@ int h_review_print(int x, int y, int page_count, int count, int review_i, int ch
 		}
 	}
 	return review_i;
+}
+int member_print(int x, int y, int page_count, int count, int member_i, int choice_i, char *name, char *phone) {
+	if (choice_i > -1) {
+		basic_UI_DELETE(30, 3);
+	}
+	m_basic_UI(x,y);
+	goto_xy(x + 34, y + 2);
+	printf("회원관리");
+	goto_xy(x + 10, y + 6);
+	if(strcmp(name, " ") != 0) {
+		printf("회원 정보를 입력 :     %s %s",name,phone);
+	}
+	else {
+		printf("회원 정보를 입력 : ex) 홍길동 010XXXXXXXX");
+	}
+	small_box(x + 8, 46, 6, x + 14, 47, "이전", 6);
+	goto_xy(x + 31, 42);
+	printf("◁");
+	goto_xy(x + 36, 42);
+	printf("%d", page_count);
+	goto_xy(x + 41, 42);
+	printf("▷");
+	x = x + 5;
+	y = y + 12;
+	for (member_i; member_i < count * page_count; member_i++) {
+		goto_xy(x, y);
+		if (strcmp(all[member_i] .name, " ") == 0) {
+			break;
+		}
+		else {
+			textcolor(6);
+			if (choice_i != -1 && choice_i == member_i) {
+				long_box_U2(x, y, 10);
+			}
+			else {
+				long_box_U2(x, y, 6);
+			}
+			textcolor(6);
+			goto_xy(x + 5, y + 1);
+			printf("%s", all[member_i].name); 
+			goto_xy(x + 16, y + 1);
+			if (strcmp(all[member_i].gender, "남") == 0) {
+				textcolor(9);
+				printf("남자");
+			}
+			else {
+				textcolor(12);
+				printf("여자");
+			}
+			textcolor(6);
+			goto_xy(x + 25, y + 1);
+			printf("%d", all[member_i].brith);
+			goto_xy(x + 40, y + 1);
+			printf("%s", all[member_i].phone);
+			goto_xy(x + 55, y + 1);
+			printf("%s", all[member_i].pw);
+			y -= 1;
+			y += 5;
+		}
+	}
+	return member_i;
 }
 int day_of_week(int year, int month) //총 일수를 구하는 함수(해당 월 1일이 무슨요일인지 알기위해)
 
@@ -4303,7 +4365,6 @@ int designer_login() { //디자이너 로그인
 	}
 }
 void modifying_membership(int index) { //회원정보 수정
-	int n_len = 0;
 	int pw_check = 1;
 	int ph_check = 1;
 	int xx, yy, lr = 0;
@@ -5846,6 +5907,138 @@ int management_review(int review_i) {
 
 	}
 }
+int management_member(int c_i) {
+	basic_UI(98, 3);
+	textcolor(6);
+	int x = 111;
+	int y = 37;
+	int xx = 0, yy = 0;
+	char name[20] = " ";
+	char phone[15] = " ";
+	char pw[15] = " ";
+	int change_check = 0;
+	int pw_check = 1;
+	int ph_check = 1;
+	goto_xy(167, 4);
+	printf("[X]");
+	goto_xy(133, 5);
+	printf("회원정보");
+	textcolor(4);
+	goto_xy(118, 11);
+	printf("이름, 전화번호, 비밀번호만 수정 가능");
+	small_box(107, 46, 6, 113, 47, "삭제", 6);
+	small_box(149, 46, 6, 155, 47, "수정", 6);
+	textcolor(6);
+	goto_xy(110, 14);
+	printf("이       름 :         %s", all[c_i].name);
+	goto_xy(110, 20);
+	printf("전 화 번 호 :         %s", all[c_i].phone);
+	goto_xy(110, 26);
+	printf("성        별 :         ");
+	if (strcmp(all[c_i].gender, "남") == 0) {
+		textcolor(9);
+		printf("남자");
+	}
+	else {
+		textcolor(12);
+		printf("여자");
+	}
+	textcolor(6);
+	goto_xy(110, 32);
+	printf("생 년 월 일 :         %d", all[c_i].brith);
+	goto_xy(110, 38);
+	printf("비 밀 번 호 :         %s", all[c_i].pw);
+	strcpy(name, all[c_i].name);
+	strcpy(pw, all[c_i].pw);
+	strcpy(phone, all[c_i].phone);
+	//ExClick();
+	while (1) {
+		xx = 0, yy = 0;
+		click(&xx, &yy);
+		if (xx > 164 && xx < 172) {
+			if (yy > 2 && yy < 6) {
+				textcolor(4);
+				goto_xy(167, 4);
+				printf("[X]");
+				Sleep(500);
+				clearconsole();
+				return 1;
+			}
+		}
+		if (xx > 121 && xx < 151) {
+			if (yy > 12 && yy < 16) {
+				textcolor(6);
+				goto_xy(129, 14);
+				printf("                                ");
+				goto_xy(132, 14);
+				EnableConsoleCursor();
+				scanf("%s", name);
+				HideCursor();
+			}
+			else if (yy > 18 && yy < 22) {
+				textcolor(6);
+				goto_xy(129, 20);
+				printf("                              ");
+				goto_xy(132, 20);
+				EnableConsoleCursor();
+				scanf("%s", phone);
+				HideCursor();
+				ph_check = isValidPhone_or_pw_Number(phone, 1);
+				if (ph_check == 0) {
+					strcpy(phone, all[c_i].phone);
+					goto_xy(132, 20);
+					printf("형식이 올바르지 않습니다..");
+				}
+			}
+			else if (yy > 36 && yy < 40) {
+				textcolor(6);
+				goto_xy(129, 38);
+				printf("                                 ");
+				goto_xy(132, 38);
+				EnableConsoleCursor();
+				scanf("%s", pw);
+				HideCursor();
+				pw_check = isValidPhone_or_pw_Number(pw, 2);
+				if (pw_check == 0) {
+					strcpy(pw, all[c_i].pw);
+					goto_xy(98, 37);
+					printf("형식이 올바르지 않습니다..");
+				}
+			}
+		}
+		if (yy > 45 && yy < 49) {
+			if (xx > 148 && xx < 163) {
+				if (pw_check != 0 && ph_check != 0) {
+					small_box(149, 46, 10, 155, 47, "수정", 6);
+					Sleep(700);
+					delete_modify_finish(98, 3, "회원정보 수정이 완료 되었습니다.");
+					strcpy(all[c_i].name, name);
+					strcpy(all[c_i].pw, pw);
+					strcpy(all[c_i].phone, phone);
+					file_write();
+					clearconsole();
+					return 0;
+				}
+			}
+			else if (xx > 106 && xx < 122) {
+				small_box(107, 46, 10, 113, 47, "삭제", 6);
+				Sleep(700);
+				delete_modify_finish(98, 3, "회원정보 삭제가 완료 되었습니다.");
+				for (int i = c_i; i < member_count; i++) {
+					strcpy(all[i].name, all[i + 1].name);
+					strcpy(all[i].phone, all[i+1].phone);
+					strcpy(all[i].gender, all[i + 1].gender);
+					strcpy(all[i].pw, all[i + 1].pw);
+					all[i].brith = all[i + 1].brith;
+				}
+				member_count--;
+				file_write();
+				clearconsole();
+				return 0;
+			}
+		}
+	}
+}
 int d_review_see(int review_i) {
 	last_basic_UI(98, 3);
 	textcolor(6);
@@ -6032,7 +6225,7 @@ int member_initial_screen(int index) { //로그인 성공시 회원 초기화면
 	d_file_read();
 	while (1) {
 		box_clear();
-		m_basic_UI();
+		m_basic_UI(60,3);
 		m_reserve_count = 0;
 		reserve_index = -1;
 		xx = 0, yy = 0;
@@ -6385,7 +6578,170 @@ int admin_initial_screen() {
 		small_box(68, 46, 6, 72, 47, "로그아웃", 6);
 		small_box(110, 46, 6, 116, 47, "다음", 6);
 		design_column_UI(120, 9, 6, 122, 10, "리뷰관리", 7);
-		ExClick();
+		while (1) {
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (xx > 86 && xx < 109) {
+				if (yy > 13 && yy < 19) {
+					big_box(87, 14, 10, 94, 16, "회원 관리");
+					big_box(87, 22, 6, 92, 24, "디자이너 관리");
+					big_box(87, 30, 6, 94, 32, "매출 관리");
+					design_column_UI(120, 9, 6, 122, 10, "리뷰관리", 7);
+					file_read();
+					choice = 1;
+				}
+			}
+			if (xx > 110 && xx < 125) {
+				if (yy > 45 && yy < 49) {
+					if (choice != 0) {
+						small_box(110, 46, 10, 116, 47, "다음", 6);
+						Sleep(500);
+						if (choice == 1) {
+							manageUser();
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+int manageUser() {
+	clearconsole();
+	int page_count = 1;
+	int count = 6;
+	int member_i = 0;
+	int xx, yy;
+	int c_i = -1;
+	int check = 0;
+	int x = 0, y = 0;
+	char name[20] = " ";
+	char phone[15] = " ";
+	while (1) {
+		member_i = member_print(60, 3, page_count, count, member_i, -1,name,phone);
+		if (member_i == (count * page_count) - 1) {
+			member_i++;
+		}
+		while (1) {
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (xx > 68 && xx < 83) {
+				if (yy > 45 && yy < 49) {
+					small_box(68, 46, 10, 74, 47, "이전", 6);
+					Sleep(500);
+					return;
+				}
+			}
+			if (xx > 89 && xx < 95 && yy > 40 && yy < 44) {
+				if (page_count != 1) {
+					textcolor(10);
+					goto_xy(91, 42);
+					printf("◁");
+					Sleep(500);
+					member_i = (page_count - 2) * count;
+					page_count--;
+					break;
+				}
+			}
+			if (xx > 97 && xx < 104 && yy > 40 && yy < 44) {
+				if (strcmp(all[member_i].name, " ") != 0) {
+					textcolor(10);
+					goto_xy(101, 42);
+					printf("▷");
+					Sleep(500);
+					page_count++;
+					break;
+				}
+			}
+			if (xx > 87 && xx < 111 && yy > 7 && yy < 11) {
+				strcpy(name, " ");
+				strcpy(phone, " ");
+				goto_xy(89, 9);
+				printf("                                  ");
+				goto_xy(89, 9);
+				EnableConsoleCursor();
+				scanf("%s %s", name, phone);
+				HideCursor();
+				int page_count2 = 1;
+				for (int i = 0; i < member_count; i++) {
+					if (strcmp(all[i].name, name) == 0 && strcmp(all[i].phone, phone) == 0) {
+						c_i = i;
+						check = 1;
+						break;
+					}
+				}
+				if (check == 1) {
+					page_count = (c_i / count) + 1;
+					member_i = (page_count * count) - count;
+					member_print(22, 3, page_count, count, member_i,c_i,name,phone);
+				}
+			}
+			if (xx > 64 && xx < 128) {
+				if (yy > 14 && yy < 18) {
+					if (strcmp(all[(page_count * count) - 6].name," ") != 0){
+						member_i = (page_count * count) - count;
+						member_print(22, 3, page_count, count, member_i, (page_count * count) - 6,name,phone);
+						c_i = (page_count * count) - 6;
+						check = 1;
+					}
+				}
+				else if (yy > 18 && yy < 22) {
+					if (strcmp(all[(page_count * count) - 5].name, " ") != 0) {
+						member_i = (page_count * count) - count;
+						member_print(22, 3, page_count, count, member_i, (page_count * count) - 5, name, phone);
+						check = 1;
+						c_i = (page_count * count) - 5;
+					}
+				}
+				else if (yy > 22 && yy < 26) {
+					if (strcmp(all[(page_count * count) - 4].name, " ") != 0) {
+						member_i = (page_count * count) - count;
+						member_print(22, 3, page_count, count, member_i, (page_count * count) - 4, name, phone);
+						check = 1;
+						c_i = (page_count * count) - 4;
+					}
+				}
+				else if (yy > 26 && yy < 30) {
+					if (strcmp(all[(page_count * count) - 3].name, " ") != 0) {
+						member_i = (page_count * count) - count;
+						member_print(22, 3, page_count, count, member_i, (page_count * count) - 3, name, phone);
+						check = 1;
+						c_i = (page_count * count) - 3;
+					}
+				}
+				else if (yy > 30 && yy < 34) {
+					if (strcmp(all[(page_count * count) - 2].name, " ") != 0) {
+						member_i = (page_count * count) - count;
+						member_print(22, 3, page_count, count, member_i, (page_count * count) - 2, name, phone);
+						check = 1;
+						c_i = (page_count * count) - 2;
+					}
+				}
+				else if (yy > 34 && yy < 38) {
+					if (strcmp(all[(page_count * count) - 1].name, " ") != 0) {
+						member_i = (page_count * count) - count;
+						member_print(22, 3, page_count, count, member_i, (page_count * count) - 1, name, phone);
+						check = 1;
+						c_i = (page_count * count) - 1;
+					}
+				}
+			}
+			if (check == 1) {
+				check = management_member(c_i);
+				strcpy(name, " ");
+				strcpy(phone, " ");
+				if (check == 0) {
+					member_i = 0;
+					page_count = 1;
+				}
+				else {
+					member_i = (page_count * count) - count;
+				}
+				check = 0;
+				break;
+			}
+			
+		}
 	}
 }
 void login_menu_choice() { // 로그인 선택 하는 부분 (회원 관리자 디자이너)
@@ -6451,6 +6807,7 @@ void login_menu_choice() { // 로그인 선택 하는 부분 (회원 관리자 �
 						}
 						else if (choice == 3) {
 							check = admin_login();
+							break;
 						}
 					}
 				}
