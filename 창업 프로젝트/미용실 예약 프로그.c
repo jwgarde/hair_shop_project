@@ -326,6 +326,20 @@ int compare_reviews_2(const void* a, const void* b) { //리뷰 정렬
 	// 모든 필드가 동일한 경우 순서를 유지
 	return 0;
 }
+int compare_reviews_3(const void* a, const void* b) { //리뷰 정렬
+	const review* review_a = (const review*)a;
+	const review* review_b = (const review*)b;
+
+	// 년, 월, 일, 시간, 분 순서로 비교
+	if (review_b->year != review_a->year) return review_b->year - review_a->year;
+	if (review_b->mon != review_a->mon) return review_b->mon - review_a->mon;
+	if (review_b->day != review_a->day) return review_b->day - review_a->day;
+	if (review_b->hour != review_a->hour) return review_b->hour - review_a->hour;
+	if (review_b->min != review_a->min) return review_b->min - review_a->min;
+
+	// 모든 필드가 동일한 경우 순서를 유지
+	return 0;
+}
 // 비교 함수: 두 예약을 비교하여 정렬 순서 결정
 int compareReservations(const d_reserve* a, const d_reserve* b) {
 	if (a->hour != b->hour) {
@@ -6214,6 +6228,7 @@ void review_see_and_delete_modifying(int index) {
 					review_i = (page_count * count) - count;
 				}
 				check = 0;
+				c_i = -1;
 				break;
 			}
 		}
@@ -6741,6 +6756,7 @@ int all_review_management() {
 					review_i = (page_count * count) - count;
 				}
 				check = 0;
+				c_i = -1;
 				break;
 			}
 		}
@@ -6762,6 +6778,7 @@ int all_management_review(int review_i) { //관리자 // 리뷰관리
 	goto_xy(133, 5);
 	printf("리뷰정보");
 	small_box(107, 46, 6, 113, 47, "삭제", 6);
+	d_file_read();
 	for (int i = 0; i < designer_count; i++) {
 		if (strcmp(REVIEW[review_i].designer, d_all[i].name) == 0) {
 			same_desinger = i;
@@ -6908,6 +6925,7 @@ int admin_initial_screen() {
 					big_box(87, 30, 6, 94, 32, "매출 관리");
 					design_column_UI(120, 9, 10, 122, 10, "리뷰관리", 7);
 					review_read();
+					qsort(REVIEW,review_count, sizeof(review), compare_reviews_3);
 					choice = 4;
 				}
 			}
@@ -6922,6 +6940,7 @@ int admin_initial_screen() {
 						}
 						else if (choice == 4) {
 							all_review_management();
+							break;
 						}
 					}
 				}
