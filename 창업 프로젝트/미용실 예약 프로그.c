@@ -5678,7 +5678,7 @@ int management_review(int review_i) {
 	textcolor(15);
 	int len = strlen(detail);
 	int len_2 = 0;
-	int score = 0;
+	int score = M_REVIEW[review_i].score;
 	goto_xy(x,y);
 	for (int i = 0; i < len; i++) {
 		if (len < sizeof(detail) - 2) {
@@ -5750,6 +5750,7 @@ int management_review(int review_i) {
 				add_box_UI(107, 34, 15, 128, 38, " ");// 진행시켜 설명 적는거 해야지
 				len = 0;
 				EnableConsoleCursor();
+				x = 111, y = 37;
 				goto_xy(x, y);
 				textcolor(15);
 				while (1) {
