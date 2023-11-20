@@ -2049,6 +2049,82 @@ void designer_print(int choice) {
 	}
 	previous_choice = choice;
 }
+void designer_print2(int choice) {
+	int x = 62, y = 8;
+	int px = 900, py = 170;
+	int nx = 70, ny = 10;
+	int len;
+	int color = 6;
+	for (int i = 0; i < 3; i++) {
+		//여기서 i를 함수로 던져줘소 리뷰를 가져올 것
+		designer_seeUI(x, y, 6);
+		if (i < designer_count) {
+			if (choice == i) {
+				designer_seeUI(x, y, 10);
+				textcolor(6);
+			}
+			int h_review_count = take_h_review(i);
+			float score = 0;
+			for (int k = 0; k < h_review_count; k++) {
+				score += H_REVIEW[k].score;
+			}
+			goto_xy(nx, ny);
+			printf("%s 디자이너", d_all[i].n_name);
+			len = strlen(d_all[i].introduce);
+			goto_xy(nx + 10, ny + 3);
+			textcolor(7);
+			for (int k = 0; k < len; k++) {
+				printf("%c", d_all[i].introduce[k]);
+				if (k == 25) {
+					goto_xy(nx + 10, ny + 4);
+				}
+				else if (k == 50) {
+					goto_xy(nx + 10, ny + 5);
+				}
+			}
+			textcolor(6);
+			goto_xy(nx, ny + 7);
+			printf("★");
+			if (h_review_count != 0) {
+				score = score / h_review_count;
+			}
+			else {
+				score = 0.0;  // 또는 다른 기본값으로 설정
+			}
+			goto_xy(nx + 3, ny + 7);
+			printf("%.1f", score);
+
+			goto_xy(nx + 7, ny + 7);
+			if (h_review_count >= 100) {
+				printf("방문자 리뷰 100+");
+			}
+			else {
+				if (h_review_count == 0) {
+					printf("방문자 리뷰 0");
+				}
+				else {
+					printf("방문자 리뷰 %d", h_review_count);
+				}
+			}
+			design_column_UI2(nx + 45, ny - 1, 6, nx + 47, ny, "디자인관리", 15);
+			design_column_UI2(nx + 45, ny+2, 6, nx + 48, ny+3, "예약관리", 15);
+			design_column_UI2(nx + 45, ny+5, 6, nx + 47, ny+6, "프로필관리", 15);
+			y += 12;
+			ny += 12;
+			py += 215;
+		}
+		else {
+			if (choice == -2) {
+				designer_seeUI(x, y, 10);
+			}
+			goto_xy(x + 31, y + 5);
+			textcolor(4);
+			printf("비어있음");
+			y += 12;
+		}
+	}
+	previous_choice = choice;
+}
 int designer_choice(int index) {
 	d_file_read();
 	int xx, yy, lr = 0;
@@ -3801,6 +3877,32 @@ int design_column_UI(int x, int y, int color, int xx, int yy, char* str, int col
 	goto_xy(x, y + 1);
 	printf("┗");
 	for (int i = 0; i < 4; i++)
+	{
+		printf("━");
+	}
+	printf("┛");
+	textcolor(color2);
+	goto_xy(xx, yy);
+	printf("%s", str);
+}
+int design_column_UI2(int x, int y, int color, int xx, int yy, char* str, int color2) {
+	textcolor(color);
+	goto_xy(x, y);
+	printf("┏");
+	for (int i = 0; i < 5; i++)
+	{
+		printf("━");
+	}
+	printf("┓");
+
+	for (int i = 0; i < 1; i++) {
+		y += 1;
+		goto_xy(x, y);
+		printf("┃          ┃");
+	}
+	goto_xy(x, y + 1);
+	printf("┗");
+	for (int i = 0; i < 5; i++)
 	{
 		printf("━");
 	}
@@ -6587,7 +6689,7 @@ int all_review_print(int x, int y, int page_count, int count, int review_i, int 
 	}
 	basic_UI(x, y);
 	goto_xy(x + 34, y + 2);
-	printf("리뷰정보");
+	printf("리뷰관리");
 	small_box(x + 8, 46, 6, x + 14, 47, "이전", 6);
 	goto_xy(x + 31, 42);
 	printf("◁");
@@ -6905,9 +7007,17 @@ int admin_initial_screen() {
 		small_box(68, 46, 6, 72, 47, "로그아웃", 6);
 		small_box(110, 46, 6, 116, 47, "다음", 6);
 		design_column_UI(120, 9, 6, 122, 10, "리뷰관리", 7);
+	/*	ExClick();*/
 		while (1) {
 			xx = 0, yy = 0;
 			click(&xx, &yy);
+			if (xx > 68 && xx < 83) {
+				if (yy > 45 && yy < 49) {
+					small_box(68, 46, 10, 72, 47, "로그아웃", 6);
+					Sleep(500);
+					return;
+				}
+			}
 			if (xx > 86 && xx < 109) {
 				if (yy > 13 && yy < 19) {
 					big_box(87, 14, 10, 94, 16, "회원 관리");
@@ -6929,6 +7039,18 @@ int admin_initial_screen() {
 					choice = 4;
 				}
 			}
+			if (xx > 86 && xx < 108) {
+				if (yy > 21 && yy < 27) {
+					big_box(87, 14, 6, 94, 16, "회원 관리");
+					big_box(87, 22, 10, 92, 24, "디자이너 관리");
+					big_box(87, 30, 6, 94, 32, "매출 관리");
+					design_column_UI(120, 9, 6, 122, 10, "리뷰관리", 7);
+					d_file_read();
+					reserve_read();
+					review_read();
+					choice = 2;
+				}
+			}
 			if (xx > 110 && xx < 125) {
 				if (yy > 45 && yy < 49) {
 					if (choice != 0) {
@@ -6942,8 +7064,123 @@ int admin_initial_screen() {
 							all_review_management();
 							break;
 						}
+						else if (choice == 2) {
+							designer_mangement();
+							break;
+						}
 					}
 				}
+			}
+		}
+	}
+}
+int designer_mangement() {
+	int xx, yy, lr = 0;
+	int choice = -1;
+	int check = 0;
+	int r_check = -1;
+	int f_check = -1;
+	int d_check = -1;
+	float score = 0;
+	int h_review_count = 0;
+	int add_check = 0;
+	while (1) {
+		box_clear();
+		xx, yy, lr = 0;
+		previous_choice = -1;
+		basic_UI(60, 3);
+		goto_xy(92, 5);
+		printf("디자이너 관리");
+		small_box(68, 46, 6, 74, 47, "이전", 6);
+		small_box(110, 46, 6, 116, 47, "삭제", 6);
+		designer_print2(choice);
+		while (1) {
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (xx > 68 && xx < 83) {
+				if (yy > 45 && yy < 49) {
+					small_box(68, 46, 10, 74, 47, "이전", 6);
+					Sleep(500);
+					return;
+				}
+			}
+			if (xx > 62 && xx < 131) {
+				if (yy > 7 && yy < 19) {
+					choice = 0;
+				}
+				else if (yy > 19 && yy < 31) {
+					choice = 1;
+				}
+				else if (yy > 31 && yy < 43) {
+					choice = 2;
+				}
+			}
+			if (choice < designer_count) {
+				r_check = -1;
+				f_check = -1;
+				d_check = -1;
+				if (xx > 114 && xx < 128) {
+					if (yy > 8 && yy < 12) {
+						d_check = 0;
+						design_column_UI2(115, 9, 10, 117, 10, "디자인관리", 15);
+					}
+					else if (yy > 11 && yy < 15) {
+						design_column_UI2(115, 12, 10, 118, 13, "예약관리", 15);
+						r_check = 0;
+					}
+					else if (yy > 14 && yy < 18) {
+						design_column_UI2(115, 15, 10, 117, 16, "프로필관리", 15);
+						f_check = 0;
+					}
+					else if (yy > 20 && yy < 24) {
+						design_column_UI2(115, 21, 10, 117, 22, "디자인관리", 15);
+						d_check = 1;
+					}
+					else if (yy > 23 && yy < 27) {
+						design_column_UI2(115, 24, 10, 118, 25, "예약관리", 15);
+						r_check = 1;
+					}
+					else if (yy > 26 && yy < 30) {
+						design_column_UI2(115, 27, 10, 117, 28, "프로필관리", 15);
+						f_check = 1;
+					}
+					else if (yy > 32 && yy < 36) {
+						d_check = 2;
+						design_column_UI2(115, 33, 10, 117, 34, "디자인관리", 15);
+					}
+					else if (yy > 35 && yy < 39) {
+						r_check = 2;
+						design_column_UI2(115, 36, 10, 118, 37, "예약관리", 15);
+					}
+					else if (yy > 38 && yy < 42) {
+						f_check = 2;
+						design_column_UI2(115, 39, 10, 117, 40, "프로필관리", 15);
+					}
+				}
+				if (r_check > -1 || f_check > -1 || d_check > -1) {
+					Sleep(700);
+					if (r_check > -1) {
+						reserve_read();
+						designer_reserve_manage(choice);
+					}
+					else if (f_check > -1) {
+						d_file_read();
+						designer_profile(choice);
+					}
+					else if (d_check > -1) {
+						design_file_read();
+						style_management(choice);
+					}
+					break;
+				}
+				else {
+					break;
+				}
+			}
+			else {
+				designer_print2(-2);
+				small_box(110, 46, 6, 116, 47, "등록", 6);
+				add_check = 1;
 			}
 		}
 	}
