@@ -7074,6 +7074,34 @@ int admin_initial_screen() {
 		}
 	}
 }
+int add_designer() {
+	int MaX_X = 122;//아직
+	int MaX_Y = 38;
+	char name[20] = " ";
+	char phone[20] = " ";
+	char gender[5] = " ";
+	char n_name[20] = " ";
+	int brith = 0;
+	char pw[15] = " ";
+	int xx, yy, lr = 0;
+	basic_UI(60, 3);
+	goto_xy(92, 5);
+	printf("디자이너 등록");
+	small_box(68, 46, 6, 74, 47, "이전", 6);
+	small_box(110, 46, 6, 116, 47, "등록", 6);
+	small_box(80, 11, 6, 86, 12, "남자", 9);
+	small_box(97, 11, 6, 103, 12, "여자", 12);
+	textcolor(15);
+	goto_xy(75, 18);
+	printf("이    름 :");
+	goto_xy(75, 23);
+	printf("전화번호 :");
+	goto_xy(75, 28);
+	printf("생년월일 :");
+	goto_xy(75, 33);
+	printf("닉 네 임 :");
+	ExClick();
+}
 int designer_mangement() {
 	int xx, yy, lr = 0;
 	int choice = -1;
@@ -7102,6 +7130,18 @@ int designer_mangement() {
 					small_box(68, 46, 10, 74, 47, "이전", 6);
 					Sleep(500);
 					return;
+				}
+			}
+			if (xx > 109 && xx < 125) {
+				if (yy > 45 && yy < 49) {
+					if (add_check == 1) {
+						if (designer_count < 3) {
+							small_box(110, 46, 10, 116, 47, "등록", 6);
+							Sleep(500);
+							clearconsole();
+							add_designer();
+						}
+					}
 				}
 			}
 			if (xx > 62 && xx < 131) {
