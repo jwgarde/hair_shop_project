@@ -603,6 +603,12 @@ void d_file_write() { // 디자이너 파일 쓰기
 	}
 	fclose(designer);
 }
+void d_file_append() { // 디자이너 파일 쓰기
+	FILE* designer = fopen("designer.txt", "a");
+	fprintf(designer, "%s %s %s %d %s %s\n", d_all[designer_count].name, d_all[designer_count].phone, d_all[designer_count].gender, d_all[designer_count].brith, d_all[designer_count].n_name, d_all[designer_count].introduce);
+	fclose(designer);
+	designer_count++;
+}
 void design_file_read() { //디자인 파일 읽기
 	char c;
 	FILE* design = fopen("design.txt", "r");
@@ -1859,6 +1865,120 @@ int copy(int index) {
 	EnableConsoleCursor();
 	fgets(sourcePath, sizeof(sourcePath), stdin);
 	HideCursor();
+	sourcePath[strcspn(sourcePath, "\n")] = '\0';  // 개행 문자 제거
+	// 파일 복사 수행
+	FILE* sourceFile = fopen(sourcePath, "rb");
+	FILE* destinationFile = fopen(destinationPath, "wb");
+	if (sourceFile == NULL) {
+		goto_xy(88, 29);
+		printf("                                            ");
+		goto_xy(88, 29);
+		printf("입력한 경로에 파일을 찾을 수 없습니다.\n");
+		return 1;
+	}
+	if (destinationFile == NULL) {
+		goto_xy(88, 29);
+		printf("                                            ");
+		goto_xy(88, 29);
+		printf("목적지 경로에 파일을 생성할 수 없습니다.\n");
+		fclose(sourceFile);
+		return 1;
+	}
+	int bufferSize = 1024;  // 복사할 때 사용할 버퍼 크기
+	char* buffer = (char*)malloc(bufferSize);
+
+	if (buffer == NULL) {
+		goto_xy(88, 29);
+		printf("                                           ");
+		goto_xy(88, 29);
+		printf("메모리 할당에 실패했습니다.\n");
+		fclose(sourceFile);
+		fclose(destinationFile);
+		return 1;
+	}
+
+	size_t bytesRead;
+	while ((bytesRead = fread(buffer, 1, bufferSize, sourceFile)) > 0) {
+		fwrite(buffer, 1, bytesRead, destinationFile);
+	}
+	fclose(sourceFile);
+	fclose(destinationFile);
+	free(buffer);
+	return 0;
+}
+int copy_2(int index) {
+	char sourcePath[100]="C:\\Users\\chlwj\\OneDrive\\바탕 화면\\원본.bmp";  // 입력 받은 경로를 저장할 변수
+	char destinationPath[] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\hair_shop_project-master\\창업 프로젝트\\bitmap2.bmp";
+	char destinationPath_1[] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\hair_shop_project-master\\창업 프로젝트\\bitmap1.bmp";
+	char destinationPath_2[] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\hair_shop_project-master\\창업 프로젝트\\bitmap2.bmp";
+	char destinationPath_3[] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\hair_shop_project-master\\창업 프로젝트\\bitmap3.bmp";
+	if (index == 0) {
+		strcpy(destinationPath, destinationPath_1);
+	}
+	else if (index == 1) {
+		strcpy(destinationPath, destinationPath_2);
+	}
+	else {
+		strcpy(destinationPath, destinationPath_3);
+	}
+	sourcePath[strcspn(sourcePath, "\n")] = '\0';  // 개행 문자 제거
+	// 파일 복사 수행
+	FILE* sourceFile = fopen(sourcePath, "rb");
+	FILE* destinationFile = fopen(destinationPath, "wb");
+	if (sourceFile == NULL) {
+		goto_xy(88, 29);
+		printf("                                            ");
+		goto_xy(88, 29);
+		printf("입력한 경로에 파일을 찾을 수 없습니다.\n");
+		return 1;
+	}
+	if (destinationFile == NULL) {
+		goto_xy(88, 29);
+		printf("                                            ");
+		goto_xy(88, 29);
+		printf("목적지 경로에 파일을 생성할 수 없습니다.\n");
+		fclose(sourceFile);
+		return 1;
+	}
+	int bufferSize = 1024;  // 복사할 때 사용할 버퍼 크기
+	char* buffer = (char*)malloc(bufferSize);
+
+	if (buffer == NULL) {
+		goto_xy(88, 29);
+		printf("                                           ");
+		goto_xy(88, 29);
+		printf("메모리 할당에 실패했습니다.\n");
+		fclose(sourceFile);
+		fclose(destinationFile);
+		return 1;
+	}
+
+	size_t bytesRead;
+	while ((bytesRead = fread(buffer, 1, bufferSize, sourceFile)) > 0) {
+		fwrite(buffer, 1, bytesRead, destinationFile);
+	}
+	fclose(sourceFile);
+	fclose(destinationFile);
+	free(buffer);
+	return 0;
+}
+int copy_3(int index) {
+	char sourcePath[100];  // 입력 받은 경로를 저장할 변수
+	char destinationPath[] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\hair_shop_project-master\\창업 프로젝트\\bitmap2.bmp";
+	char destinationPath_1[] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\hair_shop_project-master\\창업 프로젝트\\bitmap1.bmp";
+	char destinationPath_2[] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\hair_shop_project-master\\창업 프로젝트\\bitmap2.bmp";
+	char destinationPath_3[] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\hair_shop_project-master\\창업 프로젝트\\bitmap3.bmp";
+	if (index == 0) {
+		strcpy(destinationPath, destinationPath_1);
+		strcpy(sourcePath, destinationPath_2);
+	}
+	else if (index == 1) {
+		strcpy(destinationPath, destinationPath_2);
+		strcpy(sourcePath, destinationPath_3);
+	}
+	else {
+		return;
+	}
 	sourcePath[strcspn(sourcePath, "\n")] = '\0';  // 개행 문자 제거
 	// 파일 복사 수행
 	FILE* sourceFile = fopen(sourcePath, "rb");
@@ -7074,19 +7194,21 @@ int admin_initial_screen() {
 		}
 	}
 }
-int add_designer() {
-	int MaX_X = 122;//아직
-	int MaX_Y = 38;
+int add_designer() { //마지마 버튼이 이상헤서 왼쪽 부분을 클릭해야 넘어감
 	char name[20] = " ";
 	char phone[20] = " ";
 	char gender[5] = " ";
 	char n_name[20] = " ";
 	int brith = 0;
 	char pw[15] = " ";
+	int check = 0;
 	int xx, yy, lr = 0;
 	basic_UI(60, 3);
-	goto_xy(92, 5);
+	goto_xy(91, 5);
 	printf("디자이너 등록");
+	textcolor(4);
+	goto_xy(76, 9);
+	printf("※이미지와 자기소개글은 기본값으로 등록");
 	small_box(68, 46, 6, 74, 47, "이전", 6);
 	small_box(110, 46, 6, 116, 47, "등록", 6);
 	small_box(80, 11, 6, 86, 12, "남자", 9);
@@ -7097,10 +7219,119 @@ int add_designer() {
 	goto_xy(75, 23);
 	printf("전화번호 :");
 	goto_xy(75, 28);
-	printf("생년월일 :");
+	printf("생년월일:");
 	goto_xy(75, 33);
 	printf("닉 네 임 :");
-	ExClick();
+	while (1) {
+		xx = 0, yy = 0;
+		click(&xx, &yy);
+		if (xx > 68 && xx < 88) {
+			if (yy > 45 && yy < 49) {
+				small_box(68, 46, 10, 74, 47, "이전", 6);
+				Sleep(500);
+				return;
+			}
+		}
+		if (xx > 80 && xx < 94) {
+			if (yy > 10 && yy < 14) {
+				strcpy(gender, "남");
+				small_box(97, 11, 6, 103, 12, "여자", 12);
+				small_box(80, 11, 10, 86, 12, "남자", 9);
+			}
+		}
+		if (xx > 97 && xx < 112) {
+			if (yy > 10 && yy < 14) {
+				strcpy(gender, "여");
+				small_box(80, 11, 6, 86, 12, "남자", 9);
+				small_box(97, 11, 10, 103, 12, "여자", 12);
+			}
+		}
+		if (xx > 84 && xx < 116) {
+			if (yy > 17 && yy < 20) {
+				strcpy(name, " ");
+				textcolor(15);
+				goto_xy(90, 18);
+				printf("                                 ");
+				goto_xy(90, 18);
+				EnableConsoleCursor();
+				gets(name);
+				HideCursor();
+			}
+			if (yy > 32 && yy < 35) {
+				strcpy(n_name, " ");
+				textcolor(15);
+				goto_xy(90, 33);
+				printf("                                 ");
+				goto_xy(90, 33);
+				EnableConsoleCursor();
+				gets(n_name);
+				HideCursor();
+			}
+			if (yy > 22 && yy < 25) {
+				textcolor(15);
+				goto_xy(90, 23);
+				printf("                                 ");
+				goto_xy(90, 23);
+				EnableConsoleCursor();
+				scanf("%s", phone);
+				HideCursor();
+				check = isValidPhone_or_pw_Number(phone, 1);
+				if (check == 0) {
+					strcpy(phone, " ");
+					goto_xy(90, 23);
+					printf("형식이 올바르지 않습니다..");
+				}
+			}
+			if (yy > 27 && yy < 30) {
+				textcolor(15);
+				goto_xy(90, 28);
+				printf("                                 ");
+				goto_xy(90, 28);
+				EnableConsoleCursor();
+				scanf("%d", &brith);
+				HideCursor();
+				check = isValidDate(brith);
+				if (check == 0) {
+					brith = 0;
+					goto_xy(90, 28);
+					printf("형식이 올바르지 않습니다..");
+				}
+			}
+		}
+		if (xx > 110 && xx < 125) {
+			if (yy > 45 && yy < 49) {
+				if (strcmp(name, " ") != 0 && strcmp(gender, " ") != 0 && strcmp(n_name, " ") != 0 && strcmp(phone, " ") != 0 && brith != 0) {
+					check = 0;
+					for (int i = 0; i < designer_count; i++) {
+						if (strcmp(d_all[i].phone, phone) == 0) {
+							check = 1;
+						}
+					}
+					if (check == 1) {
+						textcolor(4);
+						goto_xy(86, 41);
+						printf("이미 등록된 디자이너 입니다.");
+						continue;
+					}
+					else {
+						small_box(110, 46, 10, 116, 47, "등록", 6);
+						Sleep(500);
+						copy_2(designer_count);
+						goto_xy(81, 24);
+						delete_modify_finish(60, 3,"디자이너 등록이 완료되었습니다.");
+						strcpy(d_all[designer_count].name, name);
+						strcpy(d_all[designer_count].phone, phone);
+						strcpy(d_all[designer_count].n_name, n_name);
+						strcpy(d_all[designer_count].gender, gender);
+						strcpy(d_all[designer_count].introduce,"고객님을 위해 최선을 다하겠습니다.");
+						d_all[designer_count].brith = brith;
+						d_file_append();
+						return;
+					}	
+				}
+			}
+		}
+	}
 }
 int designer_mangement() {
 	int xx, yy, lr = 0;
@@ -7140,6 +7371,25 @@ int designer_mangement() {
 							Sleep(500);
 							clearconsole();
 							add_designer();
+							break;
+						}
+					}
+					else {
+						if (choice != -1) {
+							small_box(110, 46, 10, 116, 47, "삭제", 6);
+							for (int i = choice; i < designer_count; i++) {
+								strcpy(d_all[i].name, d_all[i + 1].name);
+								strcpy(d_all[i].n_name, d_all[i + 1].n_name);
+								strcpy(d_all[i].phone, d_all[i + 1].phone);
+								strcpy(d_all[i].gender, d_all[i + 1].gender);
+								strcpy(d_all[i].introduce, d_all[i].introduce);
+								d_all[i].brith = d_all[i + 1].brith;
+								copy_3(i);
+							}
+							delete_modify_finish(60, 3, "디자이너 삭제가 완료되었습니다.");
+							designer_count--;
+							d_file_write();
+							break;
 						}
 					}
 				}
@@ -7218,9 +7468,11 @@ int designer_mangement() {
 				}
 			}
 			else {
-				designer_print2(-2);
-				small_box(110, 46, 6, 116, 47, "등록", 6);
-				add_check = 1;
+				if (choice == designer_count) {
+					designer_print2(-2);
+					small_box(110, 46, 6, 116, 47, "등록", 6);
+					add_check = 1;
+				}
 			}
 		}
 	}
