@@ -572,7 +572,7 @@ void review_read() {
 			if (feof(review) != 0) {
 				break;
 			}
-			fscanf(review,"%s %s %s %s %s %d/%d/%d/%d/%d %d/%d/%d/%d/%d %d/%[^\n]\n", REVIEW[review_count].name, REVIEW[review_count].phone_num, REVIEW[review_count].sort,REVIEW[review_count].hair, REVIEW[review_count].designer, &REVIEW[review_count].ryear, &REVIEW[review_count].rmon, &REVIEW[review_count].rday, &REVIEW[review_count].rhour, &REVIEW[review_count].rmin, &REVIEW[review_count].year, &REVIEW[review_count].mon, &REVIEW[review_count].day, &REVIEW[review_count].hour, &REVIEW[review_count].min, &REVIEW[review_count].score, REVIEW[review_count].detail);
+			fscanf(review, "%s %s %s %s %s %d/%d/%d/%d/%d %d/%d/%d/%d/%d %d/%[^\n]\n", REVIEW[review_count].name, REVIEW[review_count].phone_num, REVIEW[review_count].sort, REVIEW[review_count].hair, REVIEW[review_count].designer, &REVIEW[review_count].ryear, &REVIEW[review_count].rmon, &REVIEW[review_count].rday, &REVIEW[review_count].rhour, &REVIEW[review_count].rmin, &REVIEW[review_count].year, &REVIEW[review_count].mon, &REVIEW[review_count].day, &REVIEW[review_count].hour, &REVIEW[review_count].min, &REVIEW[review_count].score, REVIEW[review_count].detail);
 			review_count++;
 		}
 	}
@@ -1907,7 +1907,7 @@ int copy(int index) {
 	return 0;
 }
 int copy_2(int index) {
-	char sourcePath[100]="C:\\Users\\chlwj\\OneDrive\\바탕 화면\\원본.bmp";  // 입력 받은 경로를 저장할 변수
+	char sourcePath[100] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\원본.bmp";  // 입력 받은 경로를 저장할 변수
 	char destinationPath[] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\hair_shop_project-master\\창업 프로젝트\\bitmap2.bmp";
 	char destinationPath_1[] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\hair_shop_project-master\\창업 프로젝트\\bitmap1.bmp";
 	char destinationPath_2[] = "C:\\Users\\chlwj\\OneDrive\\바탕 화면\\hair_shop_project-master\\창업 프로젝트\\bitmap2.bmp";
@@ -1918,7 +1918,7 @@ int copy_2(int index) {
 	else if (index == 1) {
 		strcpy(destinationPath, destinationPath_2);
 	}
-	else {
+	else if(index == 2){
 		strcpy(destinationPath, destinationPath_3);
 	}
 	sourcePath[strcspn(sourcePath, "\n")] = '\0';  // 개행 문자 제거
@@ -2227,8 +2227,8 @@ void designer_print2(int choice) {
 				}
 			}
 			design_column_UI2(nx + 45, ny - 1, 6, nx + 47, ny, "디자인관리", 15);
-			design_column_UI2(nx + 45, ny+2, 6, nx + 48, ny+3, "예약관리", 15);
-			design_column_UI2(nx + 45, ny+5, 6, nx + 47, ny+6, "프로필관리", 15);
+			design_column_UI2(nx + 45, ny + 2, 6, nx + 48, ny + 3, "예약관리", 15);
+			design_column_UI2(nx + 45, ny + 5, 6, nx + 47, ny + 6, "프로필관리", 15);
 			y += 12;
 			ny += 12;
 			py += 215;
@@ -2263,7 +2263,6 @@ int designer_choice(int index) {
 		printf("디자이너");
 		small_box(68, 46, 6, 74, 47, "이전", 6);
 		designer_print(choice);
-		/*ExClick();*/
 		while (1) {
 			xx = 0, yy = 0;
 			click(&xx, &yy);
@@ -2297,7 +2296,7 @@ int designer_choice(int index) {
 						else if (yy > 27 && yy < 31) {
 							r_check = 1;
 						}
-						else if(yy > 39 && yy <43) {
+						else if (yy > 39 && yy < 43) {
 							r_check = 2;
 						}
 					}
@@ -2308,7 +2307,7 @@ int designer_choice(int index) {
 						else if (r_check == 1) {
 							p_y = 29;
 						}
-						else if(r_check == 2){
+						else if (r_check == 2) {
 							p_y = 41;
 						}
 						textcolor(10);
@@ -2496,11 +2495,11 @@ int h_review_print(int x, int y, int page_count, int count, int review_i, int ch
 				long_box_U2(x, y, 6);
 			}
 			textcolor(6);
-			goto_xy(x + 5, y+1); 
+			goto_xy(x + 5, y + 1);
 			printf("%s", H_REVIEW[review_i].name); // 글자가 1개인 경우 전체 출력
-			goto_xy(x + 7, y+1);
+			goto_xy(x + 7, y + 1);
 			printf("    ");
-			goto_xy(x + 7, y+1);
+			goto_xy(x + 7, y + 1);
 			size_t len = wcslen(H_REVIEW[review_i].name);
 			for (int i = 1; i < len; i++) {
 				printf("*");
@@ -2532,16 +2531,16 @@ int h_review_print(int x, int y, int page_count, int count, int review_i, int ch
 	}
 	return review_i;
 }
-int member_print(int x, int y, int page_count, int count, int member_i, int choice_i, char *name, char *phone) {
+int member_print(int x, int y, int page_count, int count, int member_i, int choice_i, char* name, char* phone) {
 	if (choice_i > -1) {
 		basic_UI_DELETE(30, 3);
 	}
-	m_basic_UI(x,y);
+	m_basic_UI(x, y);
 	goto_xy(x + 34, y + 2);
 	printf("회원관리");
 	goto_xy(x + 10, y + 6);
-	if(strcmp(name, " ") != 0) {
-		printf("회원 정보를 입력 :     %s %s",name,phone);
+	if (strcmp(name, " ") != 0) {
+		printf("회원 정보를 입력 :     %s %s", name, phone);
 	}
 	else {
 		printf("회원 정보를 입력 : ex) 홍길동 010XXXXXXXX");
@@ -2557,7 +2556,7 @@ int member_print(int x, int y, int page_count, int count, int member_i, int choi
 	y = y + 12;
 	for (member_i; member_i < count * page_count; member_i++) {
 		goto_xy(x, y);
-		if (strcmp(all[member_i] .name, " ") == 0) {
+		if (strcmp(all[member_i].name, " ") == 0) {
 			break;
 		}
 		else {
@@ -2570,7 +2569,7 @@ int member_print(int x, int y, int page_count, int count, int member_i, int choi
 			}
 			textcolor(6);
 			goto_xy(x + 5, y + 1);
-			printf("%s", all[member_i].name); 
+			printf("%s", all[member_i].name);
 			goto_xy(x + 16, y + 1);
 			if (strcmp(all[member_i].gender, "남") == 0) {
 				textcolor(9);
@@ -2786,8 +2785,8 @@ void print_calendar_2(int choice, int sd, int year, int month, int x, int y, int
 						check = 1;
 						textcolor(8);
 					}
-					else if(now->tm_mon + 1 == month){
-						if(i == d_day) {
+					else if (now->tm_mon + 1 == month) {
+						if (i == d_day) {
 							textcolor(10);
 						}
 					}
@@ -2932,7 +2931,7 @@ int xx_yy_date_find_2(int xx, int yy) { //101 19
 		return 0;
 	}
 }
-int desinger_date(int x, int y, int index,int *c_year,int*c_mon,int *c_day) {
+int desinger_date(int x, int y, int index, int* c_year, int* c_mon, int* c_day) {
 	time_t seconds = time(NULL);
 	struct tm* now = localtime(&seconds);
 	int xx, yy, lr = 0;
@@ -2966,9 +2965,9 @@ int desinger_date(int x, int y, int index,int *c_year,int*c_mon,int *c_day) {
 		printf("선택불가");
 		while (1) {
 			reserve_read();
-			goto_xy(x + 22, y+4);
+			goto_xy(x + 22, y + 4);
 			printf("%d년 %02d월", year, mon);
-			print_calendar(index, day, year, mon, x+5, y + 9, d_day);
+			print_calendar(index, day, year, mon, x + 5, y + 9, d_day);
 			while (1) {
 				xx = 0, yy = 0;
 				click(&xx, &yy);
@@ -2994,7 +2993,7 @@ int desinger_date(int x, int y, int index,int *c_year,int*c_mon,int *c_day) {
 						goto_xy(x + 19, y + 4);
 						printf("◀");
 						break;
-					}	
+					}
 					else if (xx > 141 && xx < 145) {
 						goto_xy(x + 34, y + 4);
 						textcolor(10);
@@ -3015,7 +3014,7 @@ int desinger_date(int x, int y, int index,int *c_year,int*c_mon,int *c_day) {
 				}
 				else if (yy > 16 && yy < 30) {
 					if (xx > 113 && xx < 157) {
-						choice_day = xx_yy_date_find(xx, yy,1);
+						choice_day = xx_yy_date_find(xx, yy, 1);
 						if (choice_day != 0) {
 							goto_xy(xx - 1, yy);
 							textcolor(10);
@@ -3050,7 +3049,10 @@ void basic_UI_2_clear() {
 		y++;
 	}
 }
-int date_choice(int index, int choice) {
+int date_choice(int index, int choice) {//디자이너가 3명이면 비트맵이 깨지는 현상이 일어남..
+	clearconsole();
+	d_file_read();
+	goto_xy(0, 0);
 	time_t seconds = time(NULL);
 	struct tm* now = localtime(&seconds);
 	int xx, yy, lr = 0;
@@ -3100,7 +3102,6 @@ int date_choice(int index, int choice) {
 			goto_xy(x + 17, y);
 			printf("%d년 %02d월", year, mon);
 			print_calendar(choice, day, year, mon, x, y + 7, d_day);
-			/*ExClick();*/
 			while (1) {
 				xx = 0, yy = 0;
 				click(&xx, &yy);
@@ -3157,7 +3158,7 @@ int date_choice(int index, int choice) {
 				}
 				if (xx > 100 && xx < 145) {
 					if (yy > 18 && yy < 35) {
-						choice_day = xx_yy_date_find(xx, yy,0);
+						choice_day = xx_yy_date_find(xx, yy, 0);
 						if (choice_day != 0) {
 							goto_xy(xx - 1, yy);
 							textcolor(10);
@@ -3179,7 +3180,7 @@ int date_choice(int index, int choice) {
 		}
 	}
 }
-int again_time(int x, int y,int choice, int year, int mon, int choice_day, int *c_hour, int *c_min) {
+int again_time(int x, int y, int choice, int year, int mon, int choice_day, int* c_hour, int* c_min) {
 	int hour = 10;
 	int min = 0;
 	int xx = 0, yy = 0, lr = 0;
@@ -3253,7 +3254,7 @@ int again_time(int x, int y,int choice, int year, int mon, int choice_day, int *
 		y = r_y;
 		int e_hour = 0;
 		while (1) {
-		/*	ExClick();*/
+			/*	ExClick();*/
 			hour = 0;
 			min = 0;
 			last_time_check = 0;
@@ -4152,7 +4153,7 @@ int designer_profile(int index) {
 			}
 			else {
 				len_2++;
-				printf("%c",intro[i]);
+				printf("%c", intro[i]);
 			}
 		}
 	}
@@ -4199,7 +4200,7 @@ int designer_profile(int index) {
 			}
 		}
 		if (xx > 76 && xx < 87) {
-			if (yy > 24 &&yy < 28) {
+			if (yy > 24 && yy < 28) {
 				design_column_UI(76, 25, 7, 80, 26, "변경", 15);
 				Sleep(800);
 				design_column_UI(76, 25, 15, 80, 26, "변경", 15);
@@ -4276,7 +4277,7 @@ int designer_profile(int index) {
 				}
 			}
 		}
-		
+
 	}
 }
 int desinger_money(int index, int year, int mon) {
@@ -4321,7 +4322,7 @@ int designer_reserve_manage(int index) {
 			goto_xy(x, y + 4);
 			printf("일     월     화     수     목     금     토");
 			print_calendar_2(index, day, year, mon, x, y + 7, d_day);
-			goto_xy(x + 35, y+25);
+			goto_xy(x + 35, y + 25);
 			mon_money = desinger_money(index, year, mon);
 			textcolor(15);
 			printf("                     ");
@@ -4396,7 +4397,7 @@ int designer_reserve_manage(int index) {
 							printf("%2d", choice_day);
 							Sleep(700);
 							textcolor(15);
-							int d_reserve_count = take_d_reserve(index,year, mon, choice_day);
+							int d_reserve_count = take_d_reserve(index, year, mon, choice_day);
 							sortReservationsByTime(designer_reserve, d_reserve_count);
 							designer_getReservationHistory();
 							box_clear();
@@ -4412,12 +4413,12 @@ int designer_reserve_manage(int index) {
 	}
 } //예약관리
 int designer_initial_screen(int index) { //디자이너 초기 화면
-	int xx, yy, lr = 0;	
+	int xx, yy, lr = 0;
 	int choice = 0;
 	design_file_read();
 	while (1) {
 		box_clear();
-		basic_UI(60,3);
+		basic_UI(60, 3);
 		xx = 0, yy = 0;
 		goto_xy(93, 5);
 		textcolor(6);
@@ -4632,7 +4633,7 @@ void modifying_membership(int index) { //회원정보 수정
 	printf("성          별  :");
 	goto_xy(98, 27);
 	if (strcmp(all[index].gender, "남") == 0) {
-			printf("남자");
+		printf("남자");
 	}
 	else {
 		printf("여자");
@@ -4723,12 +4724,12 @@ int take_m_reserve(int index, int* reserve_index) { //코드 뻑이면 여기 �
 	int result_min = 0;
 	int possible_count = 0; //예약이 안지난 예약의 횟수를 계산해서 초기 값을 정해 놓기 위해
 	for (int i = 0; i < 50; i++) {
-		strcpy(member_reserve[i].name," ");
+		strcpy(member_reserve[i].name, " ");
 		member_reserve[i].index = -1;
 	}
 	reserve_read();
 	for (int i = 0; i < reserve_count; i++) {
-		if (strcmp(all[index].name, all_reserve[i].name )== 0 && strcmp(all[index].phone, all_reserve[i].phone) == 0) {
+		if (strcmp(all[index].name, all_reserve[i].name) == 0 && strcmp(all[index].phone, all_reserve[i].phone) == 0) {
 			strcpy(member_reserve[m_reserve_count].name, all_reserve[i].name);
 			strcpy(member_reserve[m_reserve_count].phone, all_reserve[i].phone);//전화번호
 			member_reserve[m_reserve_count].year = all_reserve[i].year;//선택 연도
@@ -4837,7 +4838,7 @@ int take_h_review(int index) {
 	qsort(H_REVIEW, h_review_count, sizeof(h_review), compare_reviews_2);
 	return h_review_count;
 }
-int take_d_reserve(int index, int year, int mon,int day) { //코드 뻑이면 여기 문제
+int take_d_reserve(int index, int year, int mon, int day) { //코드 뻑이면 여기 문제
 	int d_reserve_count = 0;
 	int dr_index = -1;
 	int result_min = 0;
@@ -4898,13 +4899,13 @@ int calculateRemainingMinutes(int year, int month, int day, int hour, int minute
 
 	return minutesRemaining;
 }
-int m_reserve_print(int x, int y, int page_count, int count, int reserve_i,int choice_i) {
+int m_reserve_print(int x, int y, int page_count, int count, int reserve_i, int choice_i) {
 	d_file_read();
 	if (choice_i > -1) {
 		basic_UI_DELETE(30, 3);
 	}
 	basic_UI(x, y);
-	goto_xy(x+31, y+2);
+	goto_xy(x + 31, y + 2);
 	printf("예약내역 조회");
 	small_box(x + 8, 46, 6, x + 14, 47, "이전", 6);
 	goto_xy(x + 31, 42);
@@ -4915,7 +4916,7 @@ int m_reserve_print(int x, int y, int page_count, int count, int reserve_i,int c
 	printf("▷");
 	/*ExClick();*/
 	int same_desinger = -1;
-	x = x+2, y = y+5;
+	x = x + 2, y = y + 5;
 	for (reserve_i; reserve_i < count * page_count; reserve_i++) {
 		goto_xy(x, y);
 		if (strcmp(member_reserve[reserve_i].name, " ") == 0) {
@@ -4963,7 +4964,7 @@ int m_reserve_print(int x, int y, int page_count, int count, int reserve_i,int c
 			}
 			goto_xy(x + 10, y + 2);
 			if (same_desinger > -1) {
-				printf("디자이너 :     %s",d_all[same_desinger].n_name);
+				printf("디자이너 :     %s", d_all[same_desinger].n_name);
 			}
 			else {
 				printf("디자이너 :     정보없음");
@@ -4998,7 +4999,7 @@ int m_review_print(int x, int y, int page_count, int count, int review_i, int ch
 
 	for (review_i; review_i < count * page_count; review_i++) {
 		goto_xy(x, y);
-		if (strcmp(M_REVIEW[review_i].name," ") == 0) {
+		if (strcmp(M_REVIEW[review_i].name, " ") == 0) {
 			break;
 		}
 		else {
@@ -5087,7 +5088,7 @@ int d_reserve_print(int x, int y, int page_count, int count, int reserve_i, int 
 					same_desinger = i;
 				}
 			}
-			int check = calculateRemainingMinutes(designer_reserve[reserve_i].year, designer_reserve[reserve_i].mon,designer_reserve[reserve_i].day, designer_reserve[reserve_i].hour, designer_reserve[reserve_i].min);
+			int check = calculateRemainingMinutes(designer_reserve[reserve_i].year, designer_reserve[reserve_i].mon, designer_reserve[reserve_i].day, designer_reserve[reserve_i].hour, designer_reserve[reserve_i].min);
 			if (check > 0 && designer_reserve[reserve_i].cancel_check == 1) {
 				textcolor(15);
 				goto_xy(x + 50, y + 2);
@@ -5103,7 +5104,7 @@ int d_reserve_print(int x, int y, int page_count, int count, int reserve_i, int 
 				}
 				else {
 					goto_xy(x + 50, y + 2);
-					printf("%02d.%02d.%02d 결제", designer_reserve[reserve_i].pyear,designer_reserve[reserve_i].pmon, designer_reserve[reserve_i].pday);
+					printf("%02d.%02d.%02d 결제", designer_reserve[reserve_i].pyear, designer_reserve[reserve_i].pmon, designer_reserve[reserve_i].pday);
 					textcolor(8);
 				}
 			}
@@ -5185,7 +5186,7 @@ int d_management_reserve(int check, int reserve_i) {
 		}
 		else {
 			goto_xy(111, 26);
-			printf("방문일자 :        %02d.%02d.%02d.%02d:%02d", designer_reserve[reserve_i].year, designer_reserve[reserve_i].mon, designer_reserve[reserve_i].day,designer_reserve[reserve_i].hour, designer_reserve[reserve_i].min);
+			printf("방문일자 :        %02d.%02d.%02d.%02d:%02d", designer_reserve[reserve_i].year, designer_reserve[reserve_i].mon, designer_reserve[reserve_i].day, designer_reserve[reserve_i].hour, designer_reserve[reserve_i].min);
 		}
 		goto_xy(111, 34);
 		printf("요청사항");
@@ -5362,7 +5363,7 @@ int designer_getReservationHistory() { //예약 내약 확인 해주는 함수
 }
 int getReservationHistory() { //예약 내약 확인 해주는 함수
 	int page_count = 1;
-	int count = 3;  
+	int count = 3;
 	int reserve_i = 0;
 	int r_check = -2;
 	int xx, yy;
@@ -5371,7 +5372,7 @@ int getReservationHistory() { //예약 내약 확인 해주는 함수
 	int late_or_cancel_check = 0; //리뷰 체크
 	int x = 0, y = 0;
 	while (1) {
-		reserve_i = m_reserve_print(60,3,page_count, count, reserve_i,-1);
+		reserve_i = m_reserve_print(60, 3, page_count, count, reserve_i, -1);
 		if (reserve_i == (count * page_count) - 1) {
 			reserve_i++;
 		}
@@ -5438,25 +5439,25 @@ int getReservationHistory() { //예약 내약 확인 해주는 함수
 					if (yy > 14 && yy < 18) {
 						r_check = review_check(c_i);
 					}
-					else if(yy > 25 && yy < 29){
+					else if (yy > 25 && yy < 29) {
 						r_check = review_check(c_i);
 					}
-					else if(yy > 36 && yy < 40){
+					else if (yy > 36 && yy < 40) {
 						r_check = review_check(c_i);
 					}
 				}
-				if(r_check == -2 || r_check >= 0){
+				if (r_check == -2 || r_check >= 0) {
 					check = calculateRemainingMinutes(member_reserve[c_i].year, member_reserve[c_i].mon, member_reserve[c_i].day, member_reserve[c_i].hour, member_reserve[c_i].min);
 					management_reserve(check, c_i);
 					check = 0;
 					break;
 				}
-				else{
+				else {
 					if (r_check == -1) {
 						if (yy > 14 && yy < 18) {
-							design_column_UI(80,15,10,82,16, "리뷰쓰기", 15);
+							design_column_UI(80, 15, 10, 82, 16, "리뷰쓰기", 15);
 							Sleep(300);
-							design_column_UI(80, 15,15, 82, 16, "리뷰쓰기", 15);
+							design_column_UI(80, 15, 15, 82, 16, "리뷰쓰기", 15);
 						}
 						else if (yy > 25 && yy < 29) {
 							design_column_UI(80, 26, 10, 82, 27, "리뷰쓰기", 15);
@@ -5464,7 +5465,7 @@ int getReservationHistory() { //예약 내약 확인 해주는 함수
 							design_column_UI(80, 26, 15, 82, 27, "리뷰쓰기", 15);
 						}
 						else if (yy > 36 && yy < 40) {
-							design_column_UI(80,37, 10, 82, 38, "리뷰쓰기", 15);
+							design_column_UI(80, 37, 10, 82, 38, "리뷰쓰기", 15);
 							Sleep(300);
 							design_column_UI(80, 37, 15, 82, 38, "리뷰쓰기", 15);
 						}
@@ -5516,13 +5517,13 @@ int review_new_write(int c_i) {
 	}
 	goto_xy(110, 16);
 	printf("디 자 인 종 류 :       %s", member_reserve[c_i].sort);
-	goto_xy(110, 20); 
+	goto_xy(110, 20);
 	printf("디    자    인 :       %s", member_reserve[c_i].style);
 	goto_xy(110, 24);
 	printf("방  문  날  짜 :       %d/%d/%d/%02d:%02d", member_reserve[c_i].year, member_reserve[c_i].mon, member_reserve[c_i].day, member_reserve[c_i].hour, member_reserve[c_i].min);
 	goto_xy(126, 27);
 	printf("만      족      도");
-	goto_xy(128,29);
+	goto_xy(128, 29);
 	textcolor(6);
 	printf("☆ ☆ ☆ ☆ ☆");
 	textcolor(15);
@@ -5635,7 +5636,7 @@ int review_new_write(int c_i) {
 				if (strcmp(detail, " ") != 0 && score != 0) {
 					small_box(148, 46, 10, 154, 47, "등록", 6);
 					Sleep(700);
-					delete_modify_finish(98,3,"리뷰 등록이 완료 되었습니다.");
+					delete_modify_finish(98, 3, "리뷰 등록이 완료 되었습니다.");
 					strcpy(REVIEW[review_count].name, member_reserve[c_i].name);
 					strcpy(REVIEW[review_count].phone_num, member_reserve[c_i].phone);
 					strcpy(REVIEW[review_count].designer, member_reserve[c_i].designer);
@@ -5661,13 +5662,13 @@ int review_new_write(int c_i) {
 		}
 	}
 }
-int review_check(int c_i){
+int review_check(int c_i) {
 	//-2이면 지나지  않았거나 취소 된 에약 파일 1이면 이미 작성된 예약 파일,  2면 작성가능한 예약 파일
 	int check = calculateRemainingMinutes(member_reserve[c_i].year, member_reserve[c_i].mon, member_reserve[c_i].day, member_reserve[c_i].hour, member_reserve[c_i].min);
 	if (check > 0 || member_reserve[c_i].cancel_check == 0) { //지나거나 캔슬된 예약 리턴 -2
 		return -2;
 	}
-	else{ //이미 리뷰가 작성된 예약은 인덱스를 반환 새로 작성해야하면 -1반환
+	else { //이미 리뷰가 작성된 예약은 인덱스를 반환 새로 작성해야하면 -1반환
 		check = -1;
 		review_read();
 		for (int i = 0; i < review_count; i++) {
@@ -5683,11 +5684,11 @@ int review_check(int c_i){
 		}
 	}
 }
-int management_reserve(int check,int reserve_i) {
-	basic_UI(98,3);
+int management_reserve(int check, int reserve_i) {
+	basic_UI(98, 3);
 	textcolor(6);
 	int same_desinger = -1;
-	int color = 0,c_year = 0,c_mon = 0,c_day = 0,c_hour = 0 ,c_min = 0;
+	int color = 0, c_year = 0, c_mon = 0, c_day = 0, c_hour = 0, c_min = 0;
 	int x = 126;
 	int y = 35;
 	int xx = 0, yy = 0;
@@ -5978,7 +5979,7 @@ int management_review(int review_i) {
 	int len = strlen(detail);
 	int len_2 = 0;
 	int score = M_REVIEW[review_i].score;
-	goto_xy(x,y);
+	goto_xy(x, y);
 	for (int i = 0; i < len; i++) {
 		if (len < sizeof(detail) - 2) {
 			if (len_2 >= 161 - 111 && (len_2 % (161 - 111)) == 0) {
@@ -6107,7 +6108,7 @@ int management_review(int review_i) {
 					M_REVIEW[review_i].score = score;
 					strcpy(M_REVIEW[review_i].detail, detail);
 					REVIEW[M_REVIEW[review_i].index].score = M_REVIEW[review_i].score;
-					strcpy(REVIEW[M_REVIEW[review_i].index].detail,M_REVIEW[review_i].detail);
+					strcpy(REVIEW[M_REVIEW[review_i].index].detail, M_REVIEW[review_i].detail);
 					review_write();
 					clearconsole();
 					return 0;
@@ -6126,12 +6127,12 @@ int management_review(int review_i) {
 					REVIEW[i].ryear, REVIEW[i + 1].ryear;
 					REVIEW[i].rmon, REVIEW[i + 1].rmon;
 					REVIEW[i].rday, REVIEW[i + 1].rday;
-					REVIEW[i].rhour,REVIEW[i + 1].rhour;
-					REVIEW[i].rmin,REVIEW[i + 1].rmin;
-					REVIEW[i].year,REVIEW[i + 1].year;
+					REVIEW[i].rhour, REVIEW[i + 1].rhour;
+					REVIEW[i].rmin, REVIEW[i + 1].rmin;
+					REVIEW[i].year, REVIEW[i + 1].year;
 					REVIEW[i].mon, REVIEW[i + 1].mon;
 					REVIEW[i].day, REVIEW[i + 1].day;
-					REVIEW[i].hour,REVIEW[i + 1].hour;
+					REVIEW[i].hour, REVIEW[i + 1].hour;
 					REVIEW[i].min, REVIEW[i + 1].min;
 					strcpy(REVIEW[i].detail, REVIEW[i + 1].detail);
 					REVIEW[i].score = REVIEW[i + 1].score;
@@ -6264,7 +6265,7 @@ int management_member(int c_i) {
 				delete_modify_finish(98, 3, "회원정보 삭제가 완료 되었습니다.");
 				for (int i = c_i; i < member_count; i++) {
 					strcpy(all[i].name, all[i + 1].name);
-					strcpy(all[i].phone, all[i+1].phone);
+					strcpy(all[i].phone, all[i + 1].phone);
 					strcpy(all[i].gender, all[i + 1].gender);
 					strcpy(all[i].pw, all[i + 1].pw);
 					all[i].brith = all[i + 1].brith;
@@ -6464,7 +6465,7 @@ int member_initial_screen(int index) { //로그인 성공시 회원 초기화면
 	d_file_read();
 	while (1) {
 		box_clear();
-		m_basic_UI(60,3);
+		m_basic_UI(60, 3);
 		m_reserve_count = 0;
 		reserve_index = -1;
 		xx = 0, yy = 0;
@@ -6494,7 +6495,7 @@ int member_initial_screen(int index) { //로그인 성공시 회원 초기화면
 		small_box(68, 46, 6, 72, 47, "로그아웃", 6);
 		small_box(110, 46, 6, 116, 47, "다음", 6);
 		design_column_UI(120, 12, 6, 122, 13, "리뷰관리", 7);
-	/*	ExClick();*/
+		/*	ExClick();*/
 		while (1) {
 			xx = 0, yy = 0;
 			click(&xx, &yy);
@@ -6920,7 +6921,7 @@ int all_review_management() {
 			}
 			if (xx > 64 && xx < 128) {
 				if (yy > 11 && yy < 15) {
-					if (strcmp(REVIEW[(page_count * count) - 6].name," ")!=0) {
+					if (strcmp(REVIEW[(page_count * count) - 6].name, " ") != 0) {
 						review_i = (page_count * count) - count;
 						all_review_print(22, 3, page_count, count, review_i, (page_count * count) - 6);
 						c_i = (page_count * count) - 6;
@@ -7127,7 +7128,7 @@ int admin_initial_screen() {
 		small_box(68, 46, 6, 72, 47, "로그아웃", 6);
 		small_box(110, 46, 6, 116, 47, "다음", 6);
 		design_column_UI(120, 9, 6, 122, 10, "리뷰관리", 7);
-	/*	ExClick();*/
+		/*	ExClick();*/
 		while (1) {
 			xx = 0, yy = 0;
 			click(&xx, &yy);
@@ -7155,7 +7156,7 @@ int admin_initial_screen() {
 					big_box(87, 30, 6, 94, 32, "매출 관리");
 					design_column_UI(120, 9, 10, 122, 10, "리뷰관리", 7);
 					review_read();
-					qsort(REVIEW,review_count, sizeof(review), compare_reviews_3);
+					qsort(REVIEW, review_count, sizeof(review), compare_reviews_3);
 					choice = 4;
 				}
 			}
@@ -7318,16 +7319,16 @@ int add_designer() { //마지마 버튼이 이상헤서 왼쪽 부분을 클릭�
 						Sleep(500);
 						copy_2(designer_count);
 						goto_xy(81, 24);
-						delete_modify_finish(60, 3,"디자이너 등록이 완료되었습니다.");
+						delete_modify_finish(60, 3, "디자이너 등록이 완료되었습니다.");
 						strcpy(d_all[designer_count].name, name);
 						strcpy(d_all[designer_count].phone, phone);
 						strcpy(d_all[designer_count].n_name, n_name);
 						strcpy(d_all[designer_count].gender, gender);
-						strcpy(d_all[designer_count].introduce,"고객님을 위해 최선을 다하겠습니다.");
+						strcpy(d_all[designer_count].introduce, "고객님을 위해 최선을 다하겠습니다.");
 						d_all[designer_count].brith = brith;
 						d_file_append();
 						return;
-					}	
+					}
 				}
 			}
 		}
@@ -7489,7 +7490,7 @@ int manageUser() {
 	char name[20] = " ";
 	char phone[15] = " ";
 	while (1) {
-		member_i = member_print(60, 3, page_count, count, member_i, -1,name,phone);
+		member_i = member_print(60, 3, page_count, count, member_i, -1, name, phone);
 		if (member_i == (count * page_count) - 1) {
 			member_i++;
 		}
@@ -7544,14 +7545,14 @@ int manageUser() {
 				if (check == 1) {
 					page_count = (c_i / count) + 1;
 					member_i = (page_count * count) - count;
-					member_print(22, 3, page_count, count, member_i,c_i,name,phone);
+					member_print(22, 3, page_count, count, member_i, c_i, name, phone);
 				}
 			}
 			if (xx > 64 && xx < 128) {
 				if (yy > 14 && yy < 18) {
-					if (strcmp(all[(page_count * count) - 6].name," ") != 0){
+					if (strcmp(all[(page_count * count) - 6].name, " ") != 0) {
 						member_i = (page_count * count) - count;
-						member_print(22, 3, page_count, count, member_i, (page_count * count) - 6,name,phone);
+						member_print(22, 3, page_count, count, member_i, (page_count * count) - 6, name, phone);
 						c_i = (page_count * count) - 6;
 						check = 1;
 					}
@@ -7611,7 +7612,7 @@ int manageUser() {
 				check = 0;
 				break;
 			}
-			
+
 		}
 	}
 }
