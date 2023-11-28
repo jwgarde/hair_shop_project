@@ -7286,6 +7286,7 @@ int sales_see() {
 		grap_UI(68,12);
 		sales_UI(8, 3, 73, 27);
 		small_box(68, 46, 6, 74, 47, "이전", 6);
+		small_box(110, 46, 6, 115, 47, "일매출", 6);
 		for (int i = 1; i <= 12; i++) {
 			goto_xy(x, y);
 			textcolor(6);
@@ -7339,14 +7340,78 @@ int sales_see() {
 			if (yy > 7 && yy < 12) {
 				if (xx > 88 && xx < 93) {
 					goto_xy(90, 9);
+					textcolor(10);
 					printf("◀");
+					Sleep(500);
 					year -= 1;
 					break;
 				}
 				else if(xx > 102 && xx < 107) {
 					goto_xy(104, 9);
+					textcolor(10);
 					printf("▶");
+					Sleep(500);
 					year += 1;
+					break;
+				}
+			}
+			if (xx > 68 && xx < 83) {
+				if (yy > 45 && yy < 49) {
+					small_box(68, 46, 10, 74, 47, "이전", 6);
+					Sleep(500);
+					return;
+				}
+			}
+			if (xx > 109 && xx < 125) {
+				if (yy > 45 && yy < 49) {
+					small_box(110, 46, 10, 115, 47, "일매출", 6);
+					day_sales();
+					break;
+				}
+			}
+
+		}
+	}
+}
+int day_sales() {
+	reserve_read();
+	time_t seconds = time(NULL);
+	int xx, yy = 0;
+	struct tm* now = localtime(&seconds);
+	int year = now->tm_year + 1900;
+	int mon = now->tm_mon + 1;
+	int day = now->tm_mday;
+	clearconsole();
+	m_basic_UI(60,3);
+	goto_xy(94, 5);
+	printf("일매출");
+	small_box(68, 46, 6, 74, 47, "이전", 6);
+	goto_xy(70, 9);
+	printf("검색하실 날짜 입력 : ex) xxxx xx xx ");
+	while (1) {
+		int p_sum = 0;
+		for (int i = 0; i < reserve_count; i++) {
+			if (all_reserve[i].pyear == year && all_reserve[i].pmon == mon && all_reserve[i].pday == day && all_reserve[i].cancel_check != 0) {
+				p_sum += all_reserve[i].pay;
+			}
+		}
+		goto_xy(80, 26);
+		printf("                                                ");
+		goto_xy(80, 26);
+		textcolor(4);
+		printf("※%d/%d/%d 일매출은 %d원 입니다※.", year,mon,day,p_sum);
+		while (1) {
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (xx > 83 && xx < 113) {
+				if (yy > 7 && yy < 11) {
+					goto_xy(90, 9);
+					printf("                                    ");
+					goto_xy(90, 9);
+					EnableConsoleCursor();
+					textcolor(6);
+					scanf("%d %d %d", &year, &mon, &day);
+					HideCursor();
 					break;
 				}
 			}
@@ -7359,6 +7424,9 @@ int sales_see() {
 			}
 		}
 	}
+
+
+	ExClick();
 }
 int grap_UI(int x, int y) {
 	goto_xy(x, y);
