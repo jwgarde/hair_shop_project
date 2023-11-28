@@ -11,6 +11,7 @@
 #include"resource.h"
 #include <limits.h>
 #include <wchar.h>
+#include <locale.h>
 #define MAX_X 174
 #define MAX_2_X 135
 #define MAX_Y 40
@@ -4328,7 +4329,6 @@ int designer_reserve_manage(int index) {
 			printf("                     ");
 			goto_xy(x + 35, y + 25);
 			printf("총 월매출 %d원", mon_money);
-			/*ExClick();*/
 			while (1) {
 				xx = 0, yy = 0;
 				click(&xx, &yy);
@@ -4388,7 +4388,7 @@ int designer_reserve_manage(int index) {
 						return;
 					}
 				}
-				if (xx > 78 && xx < 120) {
+				if (xx > 75 && xx < 120) {
 					if (yy > 16 && yy < 32) {
 						choice_day = xx_yy_date_find_2(xx, yy);
 						if (choice_day != 0) {
@@ -5656,7 +5656,7 @@ int review_new_write(int c_i) {
 					strcpy(REVIEW[review_count].detail, detail);
 					review_append();
 					clearconsole();
-					return 0;
+					return 1;
 				}
 			}
 		}
@@ -7118,7 +7118,7 @@ int admin_initial_screen() {
 	int xx, yy, lr = 0;
 	int choice = 0;
 	while (1) {
-		box_clear();
+		clearconsole();
 		basic_UI(60, 3);
 		goto_xy(94, 5);
 		printf("관리자");
@@ -7128,7 +7128,6 @@ int admin_initial_screen() {
 		small_box(68, 46, 6, 72, 47, "로그아웃", 6);
 		small_box(110, 46, 6, 116, 47, "다음", 6);
 		design_column_UI(120, 9, 6, 122, 10, "리뷰관리", 7);
-		/*	ExClick();*/
 		while (1) {
 			xx = 0, yy = 0;
 			click(&xx, &yy);
@@ -7148,6 +7147,23 @@ int admin_initial_screen() {
 					file_read();
 					choice = 1;
 				}
+				else if (yy > 21 && yy < 27) {
+					big_box(87, 14, 6, 94, 16, "회원 관리");
+					big_box(87, 22, 10, 92, 24, "디자이너 관리");
+					big_box(87, 30, 6, 94, 32, "매출 관리");
+					design_column_UI(120, 9, 6, 122, 10, "리뷰관리", 7);
+					d_file_read();
+					reserve_read();
+					review_read();
+					choice = 2;
+				}
+				else if (yy > 29 && yy < 35) {
+					big_box(87, 14, 6, 94, 16, "회원 관리");
+					big_box(87, 22, 6, 92, 24, "디자이너 관리");
+					big_box(87, 30, 10, 94, 32, "매출 관리");
+					design_column_UI(120, 9, 6, 122, 10, "리뷰관리", 7);
+					choice = 3;
+				}
 			}
 			if (xx > 120 && xx < 131) {
 				if (yy > 8 && yy < 12) {
@@ -7158,18 +7174,6 @@ int admin_initial_screen() {
 					review_read();
 					qsort(REVIEW, review_count, sizeof(review), compare_reviews_3);
 					choice = 4;
-				}
-			}
-			if (xx > 86 && xx < 108) {
-				if (yy > 21 && yy < 27) {
-					big_box(87, 14, 6, 94, 16, "회원 관리");
-					big_box(87, 22, 10, 92, 24, "디자이너 관리");
-					big_box(87, 30, 6, 94, 32, "매출 관리");
-					design_column_UI(120, 9, 6, 122, 10, "리뷰관리", 7);
-					d_file_read();
-					reserve_read();
-					review_read();
-					choice = 2;
 				}
 			}
 			if (xx > 110 && xx < 125) {
@@ -7189,11 +7193,202 @@ int admin_initial_screen() {
 							designer_mangement();
 							break;
 						}
+						else if (choice == 3) {
+							sales_see();
+							break;
+						}
 					}
 				}
 			}
 		}
 	}
+}
+void sales_UI(int numRows, int numCols,  int x, int y) {
+
+	goto_xy(x, y);
+	setlocale(LC_ALL, "");
+
+	// 좌상단 구석
+	wprintf(L"┏");
+
+	// 헤더 출력
+	for (int i = 0; i < numCols; i++) {
+		wprintf(L"━━━━━━━");
+		if (i < numCols - 1) {
+			wprintf(L"┳");
+		}
+	}
+	wprintf(L"┓");
+	y += 1;
+	goto_xy(x, y);
+		// 데이터 행 출력
+	for (int i = 0; i < numRows; i++) {
+		// 행 시작 전에 세로선 출력
+		if (i > 0) {
+			wprintf(L"┣");
+			for (int j = 0; j < numCols; j++) {
+				wprintf(L"━━━━━━━");
+				if (j < numCols - 1) {
+					wprintf(L"╋");
+				}
+			}
+			wprintf(L"┫");
+			y += 1;
+			goto_xy(x, y);
+		}
+			//데이터 행 출력
+		wprintf(L"┃ ");
+		for (int j = 0; j < numCols; j++) {
+			wprintf(L"             ");
+			wprintf(L"┃ ");
+		}
+		y += 1;
+		goto_xy(x, y);
+	}
+	//// 우하단 구석
+	wprintf(L"┗");
+	for (int i = 0; i < numCols; i++) {
+		wprintf(L"━━━━━━━");
+		if (i < numCols - 1) {
+			wprintf(L"┻");
+		}
+	}
+	wprintf(L"┛");
+
+}
+int sales_see() {
+	reserve_read();
+	time_t seconds = time(NULL);
+	struct tm* now = localtime(&seconds);
+	int year = now->tm_year + 1900;
+	int m_sum = 0;
+	int y_sum = 0;
+	int x = 81, y = 28;
+	int x2 = 68;
+	int y2 = 25;
+	int xx, yy = 0;
+	while (1) {
+		clearconsole();
+		basic_UI(60, 3);
+		m_sum = 0;
+		y_sum = 0;
+		x = 81, y = 28;
+		x2 = 68;
+		y2 = 25;
+		goto_xy(94, 5);
+		printf("매출관리");
+		goto_xy(90, 9);
+		printf("◀");
+		goto_xy(96, 9);
+		printf("%d", year);
+		goto_xy(104, 9);
+		printf("▶");
+		grap_UI(68,12);
+		sales_UI(8, 3, 73, 27);
+		small_box(68, 46, 6, 74, 47, "이전", 6);
+		for (int i = 1; i <= 12; i++) {
+			goto_xy(x, y);
+			textcolor(6);
+			printf("%d월", i);
+			m_sum = sales_return(year,i);
+			goto_xy(x2+2,y2);
+			printf("%02d월", i);
+			int block_num = m_sum / 1000000;
+			for (int m = 0; m < block_num; m++) {
+				goto_xy(x2+3, y2-3);
+				textcolor(15);
+				printf("■");
+				y2 -= 2;
+				if (m == 5) {
+					break;
+				}
+			}
+			x2 += 5;
+			y2 = 25;
+			m_sum = m_sum / 10000;
+			y_sum += m_sum;
+			goto_xy(x, y+2);
+			textcolor(7);
+			if (m_sum < 1) {
+				printf("%d원", m_sum);
+			}
+			else {
+				if (m_sum > 99) {
+					goto_xy(x-1, y + 2);
+				}
+				printf("%d만원", m_sum);
+			}
+			x += 16;
+			if (i % 3 == 0) {
+				x = 81;
+				y += 4;
+			}
+		}
+		goto_xy(115, 9);
+		printf("단  위 : 만원");
+		goto_xy(115, 10);
+		if (y_sum == 0) {
+			printf("연매출 : %d원", y_sum);
+		}
+		else {
+			printf("연매출 : %d만원", y_sum);
+		}
+		while (1) {
+			xx = 0, yy = 0;
+			click(&xx, &yy);
+			if (yy > 7 && yy < 12) {
+				if (xx > 88 && xx < 93) {
+					goto_xy(90, 9);
+					printf("◀");
+					year -= 1;
+					break;
+				}
+				else if(xx > 102 && xx < 107) {
+					goto_xy(104, 9);
+					printf("▶");
+					year += 1;
+					break;
+				}
+			}
+			if (xx > 68 && xx < 83) {
+				if (yy > 45 && yy < 49) {
+					small_box(68, 46, 10, 74, 47, "이전", 6);
+					Sleep(500);
+					return;
+				}
+			}
+		}
+	}
+}
+int grap_UI(int x, int y) {
+	goto_xy(x, y);
+	int pay_count = 500;
+	for (int i = 7; i < 19; i++) {
+		goto_xy(x, y);
+		printf("┃");
+		if (i > 7 && i % 2 != 0) {
+			goto_xy(x - 3, y);
+			printf("%d", pay_count);
+			pay_count -= 100;
+		}
+		if (i == 18) {
+			goto_xy(x, y + 1);
+			printf("┗");
+			for (int k = 0; k < 30; k++) {
+				printf("━");
+			}
+		}
+		y += 1;
+	}
+}
+int sales_return(int year, int mon) {
+	int sum = 0;
+	for (int i = 0; i < reserve_count; i++) {
+		if (all_reserve[i].pyear == year && all_reserve[i].pmon == mon && all_reserve[i].cancel_check != 0) {
+			sum += all_reserve[i].pay;
+		}
+	}
+	return sum;
 }
 int add_designer() { //마지마 버튼이 이상헤서 왼쪽 부분을 클릭해야 넘어감
 	char name[20] = " ";
@@ -7372,6 +7567,7 @@ int designer_mangement() {
 							Sleep(500);
 							clearconsole();
 							add_designer();
+							add_check = 0;
 							break;
 						}
 					}
