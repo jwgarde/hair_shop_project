@@ -5,6 +5,13 @@ garden 헤어 미용실 전용으로 한 사전에 예약을 하고 예약을 �
 c언어로 구현하였으며 파일을 사용하여 데이터를 저장하고 불러와서 데이터를 사용.
 naver 미용실 예약기능을 모방하여 최대한 모든 기능 구현.
 
+# **프로젝트의 전체적인 구조**
+<br/>
+<div style="display: flex; align-items: center;">
+    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/a53c1ed6-f755-43f1-b61a-99e36aa0e218" width="100%" style="max-width: 800px; border: 1px solid #ddd;">
+</div>
+<br/>
+
 # **기능표**
 
 <br/>
