@@ -25,7 +25,7 @@ GUI를 통해 클릭으로 예약과 관리를 진행하며,
 # **프로젝트 주요 관심사**
 
 __공통사항__
-- **<span style="font-size:larger;">성능 개선 및 DB사용 및 JAVA로 구현</span>**
+- **<span style="font-size:larger;">성능 개선 및 DB사용 및 JAVA로 재구현</span>**
 - **지저분한 코드 및 간결화 시킬 수 있는 코드에 대한 리팩토링**
 
 __성능 최적화__
