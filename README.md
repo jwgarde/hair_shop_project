@@ -17,7 +17,7 @@ naver 미용실 예약기능을 모방하여 최대한 모든 기능 구현.
 # **사용 언어 및 환경**
 <br/>
 <div style="display: flex; align-items: center;">
-    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/1661cd72-9e5a-4c00-86ee-8c777e44b58e" width="100%" style="max-width: 500px; border: 1px solid #ddd;">
+    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/1661cd72-9e5a-4c00-86ee-8c777e44b58e" width="80%" style="max-width: 500px; border: 1px solid #ddd;">
 </div>
 <br/>
 
