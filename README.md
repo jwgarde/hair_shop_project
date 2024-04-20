@@ -40,6 +40,13 @@ __공통사항__
 </div>
 <br/>
 
+# **화면설계**
+<br/>
+<div style="display: flex; align-items: center;">
+    <img src="![image](https://github.com/jwgarde/hair_shop_project/assets/113418319/1312c553-ece3-4a66-82fb-03ebf22f63a8)
+" width="50%" style="max-width: 500px; border: 1px solid #ddd;">
+</div>
+<br/>
 
 # **기능표**
 
