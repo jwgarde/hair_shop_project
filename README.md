@@ -15,7 +15,7 @@ GUI를 통해 클릭으로 예약과 관리를 진행하며,
 # **프로젝트의 전체적인 구조**
 <br/>
 <div style="display: flex; align-items: center;">
-    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/a53c1ed6-f755-43f1-b61a-99e36aa0e218" width="80%" style="max-width: 800px; border: 1px solid #ddd;">
+    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/a53c1ed6-f755-43f1-b61a-99e36aa0e218" width="80%" style="max-width: 20px; border: 1px solid #ddd;">
 </div>
 <br/>
 ● 데이터 처리 : 총 5개의 텍스트 파일(회원정보, 디자이너 정보, 헤어스타일 정보, 예약,리뷰)을 사용하여 데이터 처리.
