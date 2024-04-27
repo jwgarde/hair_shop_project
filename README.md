@@ -52,7 +52,7 @@ __공통사항__
 **디자이너 화면 프로토타입**
  <br/>
 <div style="display: flex; align-items: center;">
-     <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/3115f879-86e0-4b8d-b350-62c49ee118a7" style="max-width: 800px; border: 1.5px solid #ddd;">
+     <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/3115f879-86e0-4b8d-b350-62c49ee118a7" width="80%" style="max-width: 800px; border: 1.5px solid #ddd;">
 </div>
 <br/>
 <br/>
