@@ -41,12 +41,25 @@ __공통사항__
 <br/>
 
 # **화면설계**
+**회원 화면 프로토타입**
 <br/>
 <div style="display: flex; align-items: center;">
      <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/06783c19-2e9e-45be-ae93-7d880782d591" width="80%" style="max-width: 800px; border: 1.5px solid #ddd;">
 </div>
 <br/>
+<br/>
 
+**디자이너 화면 프로토타입**
+ <br/>
+<div style="display: flex; align-items: center;">
+     <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/3115f879-86e0-4b8d-b350-62c49ee118a7" style="max-width: 800px; border: 1.5px solid #ddd;">
+</div>
+<br/>
+<br/>
+
+**관리자 화면 프로토타입**
+<br/>
+<br/>
 # **기능표**
 
 <br/>
