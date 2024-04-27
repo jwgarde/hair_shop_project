@@ -43,7 +43,7 @@ __공통사항__
 # **화면설계**
 <br/>
 <div style="display: flex; align-items: center;">
-     <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/72deb216-9e41-46bb-81a5-81781a7951c1" width="80%" style="max-width: 800px; border: 1.5px solid #ddd;">
+     <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/06783c19-2e9e-45be-ae93-7d880782d591" width="80%" style="max-width: 800px; border: 1.5px solid #ddd;">
 </div>
 <br/>
 
