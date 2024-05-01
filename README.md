@@ -87,20 +87,12 @@ __공통사항__
 
 # **프로젝트 파일설계**
 
+<br/>
+
+
 <div style="display: flex; align-items: center;">
-    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/bac155ea-89c9-41b6-80bb-1c1de2d9febe" width="100%" style="max-width: 600px; border: 1px solid #ddd;">
+    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/8468f5c3-30fc-4185-95c2-0a3336ff71c5" width="70%" style="max-width: 600px; border: 1px solid #ddd;">
 </div>
 <br/>
 <hr/>
 
-<div style="display: flex; align-items: center;">
-    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/68632e1a-6ea5-429b-9d5b-36e88eb659b8" width="100%" style="max-width: 400px; border: 1px solid #ddd;">
-</div>
-<br/>
-<hr/>
-
-<div style="display: flex; align-items: center;">
-    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/cb60075c-8790-4eeb-acd6-723494719451" width="60%" style="max-width: 600px; border: 1px solid #ddd;">
-</div>
-<br/>
-<br/>
