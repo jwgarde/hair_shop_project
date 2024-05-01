@@ -72,7 +72,7 @@ __공통사항__
  <br/>
  <br/>
  
-# **기능표**
+# **기능 소개 및 개발 진척 (Feature Introduction & Development Progress)**
 
 <br/>
 
