@@ -58,8 +58,13 @@ __공통사항__
 <br/>
 
 **관리자 화면 프로토타입**
-<br/>
-<br/>
+  <br/>
+ <div style="display: flex; align-items: center;">
+     <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/b5c3af20-4211-441c-9268-532a2e1bd1de" width="80%" style="max-width: 800px; border: 1.5px solid #ddd;">
+ </div>
+ <br/>
+ <br/>
+ 
 # **기능표**
 
 <br/>
