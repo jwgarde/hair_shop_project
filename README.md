@@ -41,7 +41,7 @@ __공통사항__
 <br/>
 
 # **화면설계**
-**회원 화면 프로토타입**
+**●회원 화면 프로토타입**
 <br/>
 <br/>
 <div style="display: flex; align-items: center;">
@@ -52,7 +52,7 @@ __공통사항__
 <br/>
 
 
-**디자이너 화면 프로토타입**
+**●디자이너 화면 프로토타입**
  <br/>
  <br/>
 <div style="display: flex; align-items: center;">
@@ -62,7 +62,7 @@ __공통사항__
 <br/>
 <br/>
 
-**관리자 화면 프로토타입**
+**●관리자 화면 프로토타입**
   <br/>
   <br/>
  <div style="display: flex; align-items: center;">
