@@ -77,20 +77,9 @@ __공통사항__
 <br/>
 
 <div style="display: flex; align-items: center;">
-    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/ea667353-29c9-453a-bc20-571314920f18" width="100%" style="max-width: 800px; border: 1px solid #ddd;">
+    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/087d2678-29fd-4cc9-b68a-ed6c1795a4cc" width="100%" style="max-width: 800px; border: 1px solid #ddd;">
 </div>
 <hr/>
-
-<div style="display: flex; align-items: center;">
-    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/bfa47083-4066-4b55-a8c2-0c42a4a8bd5a" width="100%" style="max-width: 800px; border: 1px solid #ddd;">
-</div>
-<hr/>
-
-<div style="display: flex; align-items: center;">
-    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/d2b6a3aa-9c8c-42c3-a96b-83a78c6db5d3" width="100%" style="max-width: 800px; border: 1px solid #ddd;">
-</div>
-<hr/>
-
 <br/>
 <br/>
 <br/>
