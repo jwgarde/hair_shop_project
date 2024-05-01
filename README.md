@@ -77,7 +77,7 @@ __공통사항__
 <br/>
 
 <div style="display: flex; align-items: center;">
-    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/087d2678-29fd-4cc9-b68a-ed6c1795a4cc" width="100%" style="max-width: 800px; border: 1px solid #ddd;">
+    <img src="https://github.com/jwgarde/hair_shop_project/assets/113418319/9c3367fd-804f-4d80-a8ea-75bb93b232a3" width="80%" style="max-width: 800px; border: 1.5px solid #ddd;">
 </div>
 <hr/>
 <br/>
